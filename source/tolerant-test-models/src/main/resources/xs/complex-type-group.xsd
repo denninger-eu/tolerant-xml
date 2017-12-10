@@ -1,0 +1,22 @@
+<xs:schema xmlns="http://k5.eu/tr"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:tr="http://k5.eu/tr"
+        targetNamespace="http://k5.eu/tr">
+
+    <xs:group name="custGroup">
+        <xs:sequence>
+            <xs:element name="customer" type="xs:string"/>
+            <xs:element name="orderdetails" type="xs:string"/>
+            <xs:element name="billto" type="xs:string"/>
+            <xs:element name="shipto" type="xs:string"/>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:element name="order" type="ordertype"/>
+
+    <xs:complexType name="ordertype">
+        <xs:group ref="tr:custGroup"/>
+        <xs:attribute name="status" type="xs:string"/>
+    </xs:complexType>
+
+</xs:schema>

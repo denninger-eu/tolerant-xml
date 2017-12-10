@@ -1,0 +1,42 @@
+<xs:schema xmlns="http://k5.eu/tr/complex"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://k5.eu/tr/complex">
+
+
+    <xs:element name="root" type="ComplexRoot"/>
+
+    <xs:complexType name="ComplexRoot">
+        <xs:sequence>
+            <xs:element name="here" type="CType"/>
+            <xs:element name="inherited" type="BaseType" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CType">
+        <xs:sequence>
+            <xs:element name="be" type="xs:string"/>
+            <xs:element name="cyclic" type="CType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BaseType">
+        <xs:sequence>
+            <xs:element name="baseElement" type="xs:string"/>
+
+        </xs:sequence>
+        <xs:attribute name="baseAttribute" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="SubType">
+        <xs:complexContent>
+            <xs:extension base="BaseType">
+                <xs:sequence>
+                    <xs:element name="subElement" type="xs:string" />
+                </xs:sequence>
+                <xs:attribute name="subAttribute" type="xs:string" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+</xs:schema>

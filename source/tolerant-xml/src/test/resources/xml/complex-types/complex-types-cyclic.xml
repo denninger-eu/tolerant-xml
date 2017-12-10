@@ -1,0 +1,10 @@
+<root>
+
+    <here>
+        <be>dragons</be>
+        <cyclic>
+            <be>dragons</be>
+        </cyclic>
+    </here>
+
+</root>

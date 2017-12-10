@@ -1,0 +1,15 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:tr="http://k5.eu/tr"
+        targetNamespace="http://k5.eu/tr">
+
+
+    <xs:complexType name="shoesizeSimpleContent">
+        <xs:simpleContent>
+            <xs:extension base="xs:integer">
+                <xs:attribute name="country" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+</schema>

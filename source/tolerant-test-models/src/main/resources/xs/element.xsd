@@ -1,0 +1,12 @@
+<xs:schema xmlns="http://k5.eu/tr"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://k5.eu/tr">
+
+
+    <xs:element name="order2" type="ordertype2"/>
+
+    <xs:complexType name="ordertype2">
+        <xs:attribute name="status" type="xs:string"/>
+    </xs:complexType>
+
+</xs:schema>

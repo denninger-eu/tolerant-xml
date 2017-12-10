@@ -1,0 +1,20 @@
+<xs:schema xmlns="http://k5.eu/tr/minimal"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tr="http://k5.eu/tr/minimal"
+           targetNamespace="http://k5.eu/tr/minimal">
+
+
+    <xs:element name="root" type="root"/>
+
+    <xs:complexType name="root">
+        <xs:sequence>
+            <xs:element name="custom" type="myType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="myType">
+        <xs:restriction base="xs:string">
+
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

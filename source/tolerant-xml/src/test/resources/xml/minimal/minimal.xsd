@@ -1,0 +1,17 @@
+<xs:schema xmlns="http://k5.eu/tr/minimal"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tr="http://k5.eu/tr/minimal"
+           targetNamespace="http://k5.eu/tr/minimal">
+
+
+    <xs:element name="root" type="root"/>
+
+    <xs:complexType name="root">
+        <xs:sequence>
+            <xs:element name="test" type="xs:string"/>
+            <xs:element name="test2" type="xs:string"/>
+            <xs:element name="list" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="attribute" type="xs:string"/>
+    </xs:complexType>
+</xs:schema>

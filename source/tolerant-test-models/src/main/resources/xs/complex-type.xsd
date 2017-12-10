@@ -1,0 +1,27 @@
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:tr="http://k5.eu/tr"
+        targetNamespace="http://k5.eu/tr">
+
+
+    <xs:complexType name="personinfo">
+        <xs:sequence>
+            <xs:element name="firstname" type="xs:string"/>
+            <xs:element name="lastname" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="attrib" type="xs:string" />
+    </xs:complexType>
+
+    <xs:complexType name="fullpersoninfo">
+        <xs:complexContent>
+            <xs:extension base="tr:personinfo">
+                <xs:sequence>
+                    <xs:element name="address" type="xs:string"/>
+                    <xs:element name="city" type="xs:string"/>
+                    <xs:element name="country" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+</xs:schema>

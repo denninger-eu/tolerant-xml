@@ -1,0 +1,16 @@
+<xs:schema xmlns="http://www.w3.org/2001/XMLSchema"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://k5.eu/tr">
+
+
+    <xs:simpleType name="sizeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="XS"/>
+            <xs:enumeration value="S"/>
+            <xs:enumeration value="M"/>
+            <xs:enumeration value="L"/>
+            <xs:enumeration value="XL"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

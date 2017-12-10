@@ -1,0 +1,15 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:tr="http://k5.eu/tr"
+        targetNamespace="http://k5.eu/tr">
+
+
+<!--    <xs:element name="person">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element name="employee" type="employee"/>
+                <xs:element name="member" type="member"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element> -->
+</schema>

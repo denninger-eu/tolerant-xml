@@ -1,0 +1,13 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:tr="http://k5.eu/tr"
+        targetNamespace="http://k5.eu/tr">
+
+
+    <xs:element name="orderanon">
+        <xs:simpleType>
+            <xs:restriction base="xs:string"></xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+
+</schema>

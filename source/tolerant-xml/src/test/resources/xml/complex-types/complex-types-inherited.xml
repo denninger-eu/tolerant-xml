@@ -1,0 +1,11 @@
+<root>
+    <inherited baseAttribute="baseAttrValue" subAttribute="subAttrValue"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:trc="http://k5.eu/tr/complex"
+               xsi:type="trc:SubType">
+        <baseElement>baseValue</baseElement>
+        <subElement>subValue</subElement>
+
+    </inherited>
+
+</root>

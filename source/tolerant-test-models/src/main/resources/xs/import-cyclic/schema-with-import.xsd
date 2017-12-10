@@ -1,0 +1,7 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tr="http://k5.eu/tr"
+        targetNamespace="http://k5.eu/tr">
+
+    <import namespace="http://k5.eu/tr2" schemaLocation="schema-imported.xsd" />
+
+</schema>
