@@ -1,9 +1,10 @@
 package eu.k5.tolerantreader.xs
 
 import com.google.common.base.Joiner
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.FileInputStream
 import java.io.InputStream
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
@@ -91,27 +92,18 @@ class PathStream(absolutPath: String, private val path: Path) : Stream(absolutPa
 
 class ClasspathStreamSource(private val classloader: ClassLoader) : StreamSource {
     override fun resolveRelative(parentLocation: String, location: String): Stream {
-        val locationParts = location.split(':')
+        val resolved = ArrayDeque(parentLocation.split('/').reversed())
 
-        val loc = ArrayDeque(parentLocation.split('/').reversed())
-
-        loc.pop()
-
-        for (part in locationParts) {
-            if (part == ".") {
-
-            } else if (part == "..") {
-                loc.pop()
-            } else {
-                loc.push(part)
+        resolved.pop() // remove filename from stack
+        for (part in location.split(':')) {
+            when (part) {
+                "." -> {
+                }
+                ".." -> resolved.pop()
+                else -> resolved.push(part)
             }
         }
-
-
-
-
-        return ClasspathStream(classloader, Joiner.on('/').join(loc.reversed()))
-
+        return ClasspathStream(classloader, Joiner.on('/').join(resolved.reversed()))
     }
 
     override fun resolveAbsolute(location: String): Stream {
@@ -122,8 +114,11 @@ class ClasspathStreamSource(private val classloader: ClassLoader) : StreamSource
 
 class ClasspathStream(private val classloader: ClassLoader, absolutPath: String) : Stream(absolutPath) {
     override fun openStream(): InputStream? {
-        println(absolutPath)
-        val resourceAsStream: InputStream? = classloader.getResourceAsStream(absolutPath)
-        return resourceAsStream
+        LOGGER.debug("Opening stream to {}", absolutPath)
+        return classloader.getResourceAsStream(absolutPath)
+    }
+
+    companion object {
+        private val LOGGER: Logger = LoggerFactory.getLogger(ClasspathStream::class.java)
     }
 }
