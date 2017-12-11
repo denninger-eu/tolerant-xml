@@ -1,6 +1,5 @@
 package eu.k5.tolerantreader.source.model
 
-import com.example.myschema.StrictRoot
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import java.lang.UnsupportedOperationException
@@ -68,11 +67,11 @@ class XjcRegistry(seed: List<Class<*>>) {
 
     }
 
-    fun getElements(): List<Class<*>> {
-        val elements = ArrayList<Class<*>>()
-        elements.add(StrictRoot::class.java)
-        return elements
+    fun getElements(): List<XjcType> {
+        return ArrayList()
     }
+
+
 }
 
 class XjcXmlRegistry(val packageName: String, val namespace: String) {

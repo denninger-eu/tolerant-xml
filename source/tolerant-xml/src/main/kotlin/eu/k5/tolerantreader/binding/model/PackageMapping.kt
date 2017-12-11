@@ -5,7 +5,9 @@ import com.google.common.collect.ImmutableMap
 class PackageMapping(val mappings: ImmutableMap<String, String>) {
 
     fun getPackage(namespace: String): String {
-        return mappings.get(namespace)!!
+        val pckage = mappings.get(namespace)
+                ?: throw IllegalArgumentException("No package mapping for namespace:" + namespace)
+        return pckage
     }
 }
 

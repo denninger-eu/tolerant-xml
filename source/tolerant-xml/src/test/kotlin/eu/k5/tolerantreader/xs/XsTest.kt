@@ -1,5 +1,6 @@
 package eu.k5.tolerantreader.xs
 
+import eu.k5.tolerantreader.XSD_NAMESPACE
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

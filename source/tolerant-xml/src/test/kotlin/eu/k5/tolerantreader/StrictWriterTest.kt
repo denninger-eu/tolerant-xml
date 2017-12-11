@@ -34,14 +34,17 @@ class StrictWriterTest {
 
 
     private fun getBasePath(): Path {
-        return Paths.get("src", "test", "resources", "tolerant-test-models/src/test/resources/xs")
+        return Paths.get("src", "test", "resources", "/xs")
     }
 
+
+
     fun initStrictWriter(): StrictWriter {
-        val path = getBasePath().resolve("strict/strict-minimal.xsd")
-        val xsRegistry = Schema.parse(path.toString(), ClasspathStreamSource(StrictWriterTest::class.java.classLoader))
+        val xsRegistry = Schema.parse("classpath:xs/strict/strict-minimal.xsd")
         xsRegistry.init()
-        val strictSchemaBuilder = StrictSchemaBuilder(XjcRegistry(Arrays.asList(StrictRoot::class.java)), xsRegistry)
+        val xjcRegistry = XjcRegistry(Arrays.asList(StrictRoot::class.java))
+        xjcRegistry.init()
+        val strictSchemaBuilder = StrictSchemaBuilder(xjcRegistry, xsRegistry)
 
         return StrictWriter(strictSchemaBuilder.build())
 

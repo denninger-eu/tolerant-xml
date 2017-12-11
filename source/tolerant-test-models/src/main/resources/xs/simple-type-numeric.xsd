@@ -1,11 +1,33 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        targetNamespace="http://k5.eu/tr">
+        targetNamespace="http://k5.eu/tr/model">
 
 
-    <xs:simpleType name="sizeString">
-        <xs:restriction base="xs:string"/>
-    </xs:simpleType>
+    <xs:element name="NumericTypes">
+        <xs:complexType>
+
+            <xs:sequence>
+                <xs:element name="byte" type="xs:byte"/>
+                <xs:element name="decimal" type="xs:decimal"/>
+                <xs:element name="int" type="xs:int"/>
+                <xs:element name="integer" type="xs:integer"/>
+                <xs:element name="long" type="xs:long"/>
+                <xs:element name="negativeInteger" type="xs:negativeInteger"/>
+                <xs:element name="nonNegativeInteger" type="xs:nonNegativeInteger"/>
+                <xs:element name="nonPositiveInteger" type="xs:nonPositiveInteger"/>
+                <xs:element name="positiveInteger" type="xs:positiveInteger"/>
+                <xs:element name="short" type="xs:short"/>
+                <xs:element name="unsignedLong" type="xs:unsignedLong"/>
+                <xs:element name="unsignedInt" type="xs:unsignedInt"/>
+                <xs:element name="unsignedShort" type="xs:unsignedShort"/>
+                <xs:element name="unsignedByte" type="xs:unsignedByte"/>
+
+                <xs:element name="double" type="xs:double"/>
+                <xs:element name="float" type="xs:float"/>
+            </xs:sequence>
+
+        </xs:complexType>
+    </xs:element>
     <!--
     byte	A signed 8-bit integer
             decimal	A decimal value

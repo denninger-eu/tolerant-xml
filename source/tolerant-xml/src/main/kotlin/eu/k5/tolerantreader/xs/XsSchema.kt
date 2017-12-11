@@ -1,6 +1,6 @@
 package eu.k5.tolerantreader.xs
 
-import javax.xml.bind.Unmarshaller
+import eu.k5.tolerantreader.XSD_NAMESPACE
 import javax.xml.bind.annotation.*
 import javax.xml.namespace.QName
 

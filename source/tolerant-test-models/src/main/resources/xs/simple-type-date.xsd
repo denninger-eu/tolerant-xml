@@ -1,14 +1,20 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        targetNamespace="http://k5.eu/tr">
+        targetNamespace="http://k5.eu/tr/model">
 
 
     <xs:complexType name="DateTypes">
 
         <xs:sequence>
-            <xs:element name="date" type="xs:date" />
-
-
+            <xs:element name="date" type="xs:date"/>
+            <xs:element name="dateTime" type="xs:dateTime"/>
+            <xs:element name="duration" type="xs:duration"/>
+            <xs:element name="gDay" type="xs:gDay"/>
+            <xs:element name="gMonth" type="xs:gMonth"/>
+            <xs:element name="gMonthDay" type="xs:gMonthDay"/>
+            <xs:element name="gYear" type="xs:gYear"/>
+            <xs:element name="gYearMonth" type="xs:gYearMonth"/>
+            <xs:element name="time" type="xs:time"/>
         </xs:sequence>
 
     </xs:complexType>

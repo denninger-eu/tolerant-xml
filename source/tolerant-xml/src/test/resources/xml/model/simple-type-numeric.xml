@@ -1,0 +1,18 @@
+<NumericTypes>
+    <byte>1</byte>
+    <decimall>1.01</decimall>
+    <int>1</int>
+    <integer>1</integer>
+    <long>1</long>
+    <negativInteger>-1</negativInteger>
+    <nonNegativeInteger>0</nonNegativeInteger>
+    <nonPositiveInteger>0</nonPositiveInteger>
+    <nonPositiveInteger>1</nonPositiveInteger>
+    <short>1</short>
+    <unsignedLong>1</unsignedLong>
+    <unsignedInt>1</unsignedInt>
+    <unsignedShort>1</unsignedShort>
+    <unsignedByte>1</unsignedByte>
+    <double>1.01</double>
+    <float>1.01</float>
+</NumericTypes>

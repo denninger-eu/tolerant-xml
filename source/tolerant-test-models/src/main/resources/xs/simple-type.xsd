@@ -1,6 +1,6 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        targetNamespace="http://k5.eu/tr">
+        targetNamespace="http://k5.eu/tr/model">
 
 
     <xs:simpleType name="sizeString">

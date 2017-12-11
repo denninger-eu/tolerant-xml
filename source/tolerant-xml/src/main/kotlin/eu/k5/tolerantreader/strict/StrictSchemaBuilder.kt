@@ -6,7 +6,7 @@ import eu.k5.tolerantreader.Reader
 import eu.k5.tolerantreader.source.model.XjcRegistry
 import eu.k5.tolerantreader.tolerant.TolerantMap
 import eu.k5.tolerantreader.tolerant.TolerantMapBuilder
-import eu.k5.tolerantreader.xs.XSD_NAMESPACE
+import eu.k5.tolerantreader.XSD_NAMESPACE
 import eu.k5.tolerantreader.xs.XsComplexType
 import eu.k5.tolerantreader.xs.XsElement
 import eu.k5.tolerantreader.xs.XsRegistry
@@ -57,16 +57,18 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
     private fun initElements() {
         for (element in xjcRegistry.getElements()) {
-            val annotation = element.getAnnotation(XmlRootElement::class.java)
+
+
+            val annotation = element.type.getAnnotation(XmlRootElement::class.java)
             val xsElement = elements.get(annotation.namespace, annotation.name)
 
             val xsComplexType = xsElement?.complexType
 
-            val strictType = createComplexType(element, xsComplexType!!)
+            val strictType = createComplexType(element.type, xsComplexType!!)
 
 
             val strictElement = StrictElement(xsElement!!.getQualifiedName(), strictType)
-            strictElements.put(element, strictElement)
+            strictElements.put(element.type, strictElement)
         }
 
     }
@@ -98,7 +100,6 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
 
     private fun initComplexTypes() {
-
 
 
     }

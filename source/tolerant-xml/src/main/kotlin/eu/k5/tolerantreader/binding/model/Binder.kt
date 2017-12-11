@@ -1,12 +1,11 @@
 package eu.k5.tolerantreader.binding.model
 
-import eu.k5.tolerantreader.BindContext
-import eu.k5.tolerantreader.InitContext
+import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.Assigner
 import eu.k5.tolerantreader.binding.TolerantWriter
-import eu.k5.tolerantreader.xs.XSD_NAMESPACE
 import java.lang.reflect.Method
+import javax.xml.datatype.XMLGregorianCalendar
 import javax.xml.namespace.QName
 
 class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
@@ -16,7 +15,21 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     private val classCache: MutableMap<QName, Class<*>> = HashMap()
 
     init {
-        classCache.put(QName(XSD_NAMESPACE, "string"), java.lang.String::class.java)
+        classCache.put(xsString, java.lang.String::class.java)
+        classCache.put(xsBase64Binary, ByteArray::class.java)
+        classCache.put(xsBoolean, Boolean::class.java)
+        classCache.put(xsHexBinary, ByteArray::class.java)
+        classCache.put(xsQname, QName::class.java)
+        classCache.put(xsDate, XMLGregorianCalendar::class.java)
+        classCache.put(xsDatetime, XMLGregorianCalendar::class.java)
+        classCache.put(xsDuration, XMLGregorianCalendar::class.java)
+        classCache.put(xsGDay, XMLGregorianCalendar::class.java)
+        classCache.put(xsGMonth, XMLGregorianCalendar::class.java)
+        classCache.put(xsGMonthDay, XMLGregorianCalendar::class.java)
+        classCache.put(xsGYear, XMLGregorianCalendar::class.java)
+        classCache.put(xsGYearMonth, XMLGregorianCalendar::class.java)
+        classCache.put(xsTime, XMLGregorianCalendar::class.java)
+
 
     }
 
@@ -57,7 +70,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
 
     override fun createContext(schema: TolerantSchema): BindContext = BindContext(schema, BindRoot())
 
-    override fun rootAssigner(elementName: QName ): Assigner = BindRootAssigner
+    override fun rootAssigner(elementName: QName): Assigner = BindRootAssigner
 
 
     private fun createListAppendAssigner(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: String): Assigner {

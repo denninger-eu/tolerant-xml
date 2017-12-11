@@ -1,7 +1,7 @@
-<xs:schema xmlns="http://k5.eu/tr"
+<xs:schema xmlns="http://k5.eu/tr/model"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:tr="http://k5.eu/tr"
-           targetNamespace="http://k5.eu/tr">
+           xmlns:tr="http://k5.eu/tr/model"
+           targetNamespace="http://k5.eu/tr/model">
 
     <xs:group name="custGroup">
         <xs:sequence>

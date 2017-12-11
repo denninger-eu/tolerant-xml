@@ -14,9 +14,11 @@ import javax.xml.stream.XMLStreamReader
 
 abstract class AbstractTolerantReaderTest {
 
-    fun readSimpleType(request: String): Any? = read(SIMPLE_TYPES + "/" + request, getReader(SIMPLE_TYPES + "/simple-types.xsd"))
-    fun readComplexType(request: String): Any? = read(COMPLEX_TYPES + "/" + request, getReader(COMPLEX_TYPES + "/complex-types.xsd"))
-    fun readMinimalType(request: String): Any? = read(MINIMAL + "/" + request, getReader(MINIMAL + "/minimal.xsd"))
+    fun readSimpleType(request: String): Any? = read(SIMPLE_TYPES + "/" + request, getReader("xml/" + SIMPLE_TYPES + "/simple-types.xsd"))
+    fun readComplexType(request: String): Any? = read(COMPLEX_TYPES + "/" + request, getReader("xml/" + COMPLEX_TYPES + "/complex-types.xsd"))
+    fun readMinimalType(request: String): Any? = read(MINIMAL + "/" + request, getReader("xml/" + MINIMAL + "/minimal.xsd"))
+
+    fun readModelType(request: String): Any? = read(MODEL + "/" + request, getReader("xs/import.xsd"))
 
 
     private fun read(request: String, reader: TolerantReader): Any? {
@@ -38,6 +40,7 @@ abstract class AbstractTolerantReaderTest {
         const val MINIMAL = "minimal"
         const val COMPLEX_TYPES = "complex-types"
         const val SIMPLE_TYPES = "simple-types"
+        const val MODEL = "model"
     }
 
     private fun getBasePath(): Path {
@@ -55,17 +58,13 @@ class ReaderCache(val writer: TolerantWriter) {
     fun getReader(xsPath: String): TolerantReader = readers.computeIfAbsent(xsPath) { createReader(it) }
 
     private fun createReader(xsdPath: String): TolerantReader {
-        val path = getBasePath().resolve(xsdPath)
 
 
-        val xsRegistry = Schema.parse(path.toString(), ClasspathStreamSource(ReaderCache::class.java.classLoader))
+        val xsRegistry = Schema.parse(xsdPath, ClasspathStreamSource(ReaderCache::class.java.classLoader))
         xsRegistry.init()
         val tolerantSchema = TolerantSchemaBuilder(xsRegistry, writer).build()
         return TolerantReader(tolerantSchema)
     }
 
-    private fun getBasePath(): Path {
-        return Paths.get("xml")
-    }
 
 }

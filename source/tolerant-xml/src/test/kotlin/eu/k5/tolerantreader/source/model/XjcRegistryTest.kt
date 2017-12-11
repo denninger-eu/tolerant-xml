@@ -1,6 +1,6 @@
 package eu.k5.tolerantreader.source.model
 
-import com.example.myschema.StrictRoot
+import eu.k5.tr.strict.StrictRoot
 import org.junit.jupiter.api.Test
 import java.util.*
 

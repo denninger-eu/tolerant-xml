@@ -1,7 +1,7 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns:tr="http://k5.eu/tr"
-        targetNamespace="http://k5.eu/tr">
+        xmlns:tr="http://k5.eu/tr/model"
+        targetNamespace="http://k5.eu/tr/model">
 
 
     <xs:element name="ordercanon">

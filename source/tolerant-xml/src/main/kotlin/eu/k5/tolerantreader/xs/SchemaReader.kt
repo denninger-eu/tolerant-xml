@@ -13,6 +13,15 @@ import javax.xml.bind.JAXBContext
 object Schema {
     val context = JAXBContext.newInstance(XsSchema::class.java)
 
+    fun parse(location: String): XsRegistry {
+        if (location.startsWith("classpath:", ignoreCase = true)) {
+            return parse(location.substring("classpath:".length), ClasspathStreamSource(Thread.currentThread().contextClassLoader))
+        } else if (location.startsWith("file:", ignoreCase = true)) {
+            return parse(location.substring("file:".length), PathStreamSource())
+        }
+        TODO("Support other protocols")
+    }
+
     fun parse(location: String, source: StreamSource): XsRegistry {
 
         val stream = source.resolveAbsolute(location)
@@ -93,7 +102,6 @@ class PathStream(absolutPath: String, private val path: Path) : Stream(absolutPa
 class ClasspathStreamSource(private val classloader: ClassLoader) : StreamSource {
     override fun resolveRelative(parentLocation: String, location: String): Stream {
         val resolved = ArrayDeque(parentLocation.split('/').reversed())
-
         resolved.pop() // remove filename from stack
         for (part in location.split(':')) {
             when (part) {

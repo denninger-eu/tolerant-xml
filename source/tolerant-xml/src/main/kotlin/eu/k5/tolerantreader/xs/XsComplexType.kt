@@ -1,5 +1,7 @@
 package eu.k5.tolerantreader.xs
 
+import eu.k5.tolerantreader.XSD_NAMESPACE
+import eu.k5.tolerantreader.XsNamed
 import javax.xml.bind.annotation.*
 import javax.xml.namespace.QName
 

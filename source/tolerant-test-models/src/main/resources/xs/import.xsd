@@ -1,0 +1,11 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://k5.eu/tr/model">
+
+    <import namespace="http://k5.eu/tr/model" schemaLocation="simple-type-date.xsd"/>
+
+    <import namespace="http://k5.eu/tr/model" schemaLocation="simple-type-numeric.xsd"/>
+
+    <import namespace="http://k5.eu/tr/model" schemaLocation="simple-type-misc.xsd"/>
+
+
+</schema>
