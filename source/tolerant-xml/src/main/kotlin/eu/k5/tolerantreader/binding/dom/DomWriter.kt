@@ -1,15 +1,120 @@
 package eu.k5.tolerantreader.binding.dom
 
-import eu.k5.tolerantreader.BindContext
-import eu.k5.tolerantreader.InitContext
+import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.Assigner
 import eu.k5.tolerantreader.binding.TolerantWriter
+import eu.k5.tolerantreader.binding.model.ReflectionUtils
 import org.w3c.dom.Node
+import java.math.BigDecimal
+import java.math.BigInteger
+import java.util.*
+import javax.xml.datatype.Duration
+import javax.xml.datatype.XMLGregorianCalendar
 import javax.xml.namespace.QName
 import javax.xml.parsers.DocumentBuilderFactory
 
+
 class DomWriter : TolerantWriter {
+
+    private val utils = ReflectionUtils()
+    private val simpleTypeAdapter = HashMap<QName, (Any) -> String>()
+
+    init {
+        simpleTypeAdapter.put(xsString) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsBase64Binary) {
+            Base64.getEncoder().encodeToString(it as ByteArray)
+        }
+        simpleTypeAdapter.put(xsBoolean) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsHexBinary) {
+            Base64.getEncoder().encodeToString(it as ByteArray)
+        }
+        simpleTypeAdapter.put(xsQname) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsDate) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsDatetime) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsDuration) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsGDay) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsGMonth) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsGMonthDay) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsGYear) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsGYearMonth) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsTime) {
+            it.toString()
+        }
+
+
+        simpleTypeAdapter.put(xsByte) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsDecimal) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsInt) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsInteger) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsLong) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsNegativeInteger) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsNonNegativeInteger) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsNonPositiveInteger) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsPositiveInteger) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsShort) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsUnsignedLong) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsUnsignedInt) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsUnsignedShort) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsUnsignedByte) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsDouble) {
+            it.toString()
+        }
+        simpleTypeAdapter.put(xsFloat) {
+            it.toString()
+        }
+    }
+
     override fun createAttributeAssigner(initContext: InitContext, attribute: QName, name: String, typeName: QName): Assigner {
         return DomAttributeAssigner(attribute)
     }
@@ -25,10 +130,11 @@ class DomWriter : TolerantWriter {
     }
 
     override fun createElementAssigner(initContext: InitContext, base: QName, element: QName, target: QName, list: Boolean, weight: Int): Assigner {
-        return if (target.localPart == "string") {
-            DomTextContentAssigner(element, weight)
+        if (simpleTypeAdapter.containsKey(target)) {
+            return DomTextContentAssigner(element, weight, simpleTypeAdapter.get(target)!!)
         } else {
-            DomElementAssigner(element, weight)
+
+            return DomElementAssigner(element, weight)
         }
     }
 
@@ -109,13 +215,12 @@ class DomRootAssigner(val elementName: QName) : Assigner {
     }
 }
 
-class DomTextContentAssigner(var elementName: QName, val weight: Int) : Assigner {
+class DomTextContentAssigner(var elementName: QName, val weight: Int, private val toString: (Any) -> String) : Assigner {
     override fun assign(context: BindContext, instance: Any, value: Any?) {
         if (instance is DomValue) {
             if (value != null) {
                 val element = instance.element
-                element?.elements?.add(DomTextContent(elementName, value.toString(), weight))
-
+                element?.elements?.add(DomTextContent(elementName, toString(value), weight))
             }
         } else {
             TODO("unsupported")

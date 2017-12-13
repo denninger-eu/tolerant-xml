@@ -1,6 +1,20 @@
 package eu.k5.tolerantreader
 
+import org.slf4j.LoggerFactory
+
+enum class Type {
+    MISSING_SETTER
+}
+
 class InitContext {
+    fun addFinding(type: Type, s: String) {
+        LOGGER.warn(type.toString() + ": " + s)
+
+    }
+
+    companion object {
+        val LOGGER = LoggerFactory.getLogger(InitContext::class.java)
+    }
 
 
 }

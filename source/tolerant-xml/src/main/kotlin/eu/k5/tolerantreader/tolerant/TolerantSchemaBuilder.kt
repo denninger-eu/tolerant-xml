@@ -78,7 +78,22 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
         simpleTypes.put(xsGYearMonth, TolerantTemporalType(xsGYearMonth))
         simpleTypes.put(xsTime, TolerantTemporalType(xsTime))
 
-
+        simpleTypes.put(xsByte, byteType)
+        simpleTypes.put(xsDecimal, decimalType)
+        simpleTypes.put(xsInt, intType)
+        simpleTypes.put(xsInteger, integerType)
+        simpleTypes.put(xsLong, longType)
+        simpleTypes.put(xsNegativeInteger, negativeIntegerType)
+        simpleTypes.put(xsNonNegativeInteger, nonNegativeIntegerType)
+        simpleTypes.put(xsNonPositiveInteger, nonPositiveIntegerType)
+        simpleTypes.put(xsPositiveInteger, positiveIntegerType)
+        simpleTypes.put(xsShort, shortType)
+        simpleTypes.put(xsUnsignedLong, unsignedLongType)
+        simpleTypes.put(xsUnsignedInt, unsignedIntType)
+        simpleTypes.put(xsUnsignedShort, unsignedShortType)
+        simpleTypes.put(xsUnsignedByte, unsignedByteType)
+        simpleTypes.put(xsDouble, doubleType)
+        simpleTypes.put(xsFloat, floatType)
     }
 
 
@@ -102,11 +117,20 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
     private fun prepareComplexTypes() {
         for (xsComplexType in xsRegistry.getAllComplexTypes()) {
-            val qname = xsComplexType.getQualifiedName()
-            val createSupplier = writer.createSupplier(qname)
-            var builder = ComplexTypeBuilder(qname, createSupplier, xsComplexType, TolerantComplexProxy(qname))
-            complexTypeBuilders[xsComplexType.getQualifiedName()] = builder
+            prepareComplexType(xsComplexType)
         }
+        for (xsElement in xsRegistry.getAllElements()) {
+            if (xsElement.complexType != null) {
+                prepareComplexType(xsElement.complexType!!)
+            }
+        }
+    }
+
+    private fun prepareComplexType(xsComplexType: XsComplexType) {
+        val qname = xsComplexType.getQualifiedName()
+        val createSupplier = writer.createSupplier(qname)
+        var builder = ComplexTypeBuilder(qname, createSupplier, xsComplexType, TolerantComplexProxy(qname))
+        complexTypeBuilders[xsComplexType.getQualifiedName()] = builder
     }
 
     private fun finishComplexTypes() {
@@ -152,7 +176,7 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
                 val qname = QName(qualifiedName.namespaceURI, element.name)
 
 
-                val tolerantElement = TolerantElement(qname, tolerantType, assigner, true)
+                val tolerantElement = TolerantElement(qname, tolerantType, assigner, false)
                 typeBuilder.addElement(element.name!!, tolerantElement)
             }
         }
@@ -179,6 +203,14 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
                 val bindElement = TolerantElement(element.getQualifiedName(), complexType!!, writer.rootAssigner(element.getQualifiedName()), false)
 
                 elements.put(element.localName!!, bindElement)
+            } else if (element.complexType != null) {
+
+                val complexType = tolerantComplexTypes?.get(element.getQualifiedName())
+
+                val bindElement = TolerantElement(element.getQualifiedName(), complexType!!, writer.rootAssigner(element.getQualifiedName()), false)
+
+                elements.put(element.localName!!, bindElement)
+
             }
 
         }

@@ -67,7 +67,10 @@ class TolerantComplexType(val name: QName,
 
     override fun pushedOnStack(): Boolean = true
 
-    fun getElement(namespaceURI: String?, localName: String?): TolerantElement? = elements.get(localName)
+    fun getElement(namespaceURI: String?, localName: String?): TolerantElement? {
+
+        return elements.get(localName)
+    }
 
     fun getAllConcreteSubtypes(): List<XsComplexType> {
         return ArrayList()

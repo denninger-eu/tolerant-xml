@@ -1,11 +1,10 @@
-<NumericTypes>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<NumericTypes xmlns="http://k5.eu/tr/model">
     <byte>1</byte>
     <decimal>1.01</decimal>
     <int>1</int>
-
-    <long>1</long>
     <integer>1</integer>
-
+    <long>1</long>
     <negativeInteger>-1</negativeInteger>
     <nonNegativeInteger>0</nonNegativeInteger>
     <nonPositiveInteger>0</nonPositiveInteger>

@@ -22,6 +22,23 @@ val xsGYear = QName(XSD_NAMESPACE, "gYear")
 val xsGYearMonth = QName(XSD_NAMESPACE, "gYearMonth")
 val xsTime = QName(XSD_NAMESPACE, "time")
 
+val xsByte = QName(XSD_NAMESPACE, "byte")
+val xsDecimal = QName(XSD_NAMESPACE, "decimal")
+val xsInt = QName(XSD_NAMESPACE, "int")
+val xsInteger = QName(XSD_NAMESPACE, "integer")
+val xsLong = QName(XSD_NAMESPACE, "long")
+val xsNegativeInteger = QName(XSD_NAMESPACE, "negativeInteger")
+val xsNonNegativeInteger = QName(XSD_NAMESPACE, "nonNegativeInteger")
+val xsNonPositiveInteger = QName(XSD_NAMESPACE, "nonPositiveInteger")
+val xsPositiveInteger = QName(XSD_NAMESPACE, "positiveInteger")
+val xsShort = QName(XSD_NAMESPACE, "short")
+val xsUnsignedLong = QName(XSD_NAMESPACE, "unsignedLong")
+val xsUnsignedInt = QName(XSD_NAMESPACE, "unsignedInt")
+val xsUnsignedShort = QName(XSD_NAMESPACE, "unsignedShort")
+val xsUnsignedByte = QName(XSD_NAMESPACE, "unsignedByte")
+val xsDouble = QName(XSD_NAMESPACE, "double")
+val xsFloat = QName(XSD_NAMESPACE, "float")
+
 
 abstract class XsNamed {
 

@@ -4,7 +4,11 @@ import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.Assigner
 import eu.k5.tolerantreader.binding.TolerantWriter
+import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
+import java.math.BigDecimal
+import java.math.BigInteger
+import javax.xml.datatype.Duration
 import javax.xml.datatype.XMLGregorianCalendar
 import javax.xml.namespace.QName
 
@@ -22,7 +26,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
         classCache.put(xsQname, QName::class.java)
         classCache.put(xsDate, XMLGregorianCalendar::class.java)
         classCache.put(xsDatetime, XMLGregorianCalendar::class.java)
-        classCache.put(xsDuration, XMLGregorianCalendar::class.java)
+        classCache.put(xsDuration, Duration::class.java)
         classCache.put(xsGDay, XMLGregorianCalendar::class.java)
         classCache.put(xsGMonth, XMLGregorianCalendar::class.java)
         classCache.put(xsGMonthDay, XMLGregorianCalendar::class.java)
@@ -31,6 +35,22 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
         classCache.put(xsTime, XMLGregorianCalendar::class.java)
 
 
+        classCache.put(xsByte, Byte::class.java)
+        classCache.put(xsDecimal, BigDecimal::class.java)
+        classCache.put(xsInt, Int::class.java)
+        classCache.put(xsInteger, BigInteger::class.java)
+        classCache.put(xsLong, Long::class.java)
+        classCache.put(xsNegativeInteger, BigInteger::class.java)
+        classCache.put(xsNonNegativeInteger, BigInteger::class.java)
+        classCache.put(xsNonPositiveInteger, BigInteger::class.java)
+        classCache.put(xsPositiveInteger, BigInteger::class.java)
+        classCache.put(xsShort, Short::class.java)
+        classCache.put(xsUnsignedLong, BigInteger::class.java)
+        classCache.put(xsUnsignedInt, Long::class.java)
+        classCache.put(xsUnsignedShort, Int::class.java)
+        classCache.put(xsUnsignedByte, Short::class.java)
+        classCache.put(xsDouble, Double::class.java)
+        classCache.put(xsFloat, Float::class.java)
     }
 
     private fun resolveJavaClass(name: QName): Class<*> {
@@ -72,7 +92,6 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
 
     override fun rootAssigner(elementName: QName): Assigner = BindRootAssigner
 
-
     private fun createListAppendAssigner(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: String): Assigner {
         try {
             val getter = baseClass.getMethod(utils.getGetterName(element))
@@ -88,6 +107,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
             val setter = baseClass.getMethod(utils.getSetterName(element), propertyClass)
             return SetterAssigner(setter)
         } catch (exception: Exception) {
+            initContext.addFinding(Type.MISSING_SETTER, element)
             return NoopAssigner
         }
     }
@@ -96,8 +116,9 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
 }
 
 object NoopAssigner : Assigner {
+    private val LOGGER = LoggerFactory.getLogger(NoopAssigner::class.java)
     override fun assign(context: BindContext, instance: Any, value: Any?) {
-
+        LOGGER.debug("Usage for NOOP Assigner")
     }
 }
 
@@ -115,7 +136,11 @@ object BindRootAssigner : Assigner {
 
 class SetterAssigner(private val setter: Method) : Assigner {
     override fun assign(context: BindContext, instance: Any, value: Any?) {
-        setter.invoke(instance, value)
+        try {
+            setter.invoke(instance, value)
+        } catch (exception: IllegalArgumentException) {
+            context.addViolation(Violation.TYPE_MISMATCH, exception.message!!)
+        }
     }
 }
 

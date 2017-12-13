@@ -3,14 +3,19 @@ package eu.k5.tolerantreader
 import eu.k5.tolerantreader.binding.model.Binder
 import eu.k5.tolerantreader.binding.model.PackageMapping
 import eu.k5.tolerantreader.binding.model.PackageMappingBuilder
+import eu.k5.tr.model.DateTypes
 import eu.k5.tr.model.NumericTypes
 import model.complex.ComplexRoot
 import model.complex.SubType
 import model.minimal.Root
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import java.math.BigInteger
+import java.time.LocalDate
+import javax.xml.datatype.XMLGregorianCalendar
 
 class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
 
@@ -103,8 +108,39 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         val obj = readModelType("simple-type-numeric")
                 as? NumericTypes ?: fail<Nothing>("Invalid root type")
 
-        assertEquals(1, obj.byte)
+        assertEquals(1, obj.byte, "byte")
+        assertEquals(1, obj.int, "int")
+        assertEquals(BigInteger.valueOf(1), obj.integer, "integer")
+        assertEquals(1, obj.long, "long")
+        assertEquals(BigInteger.valueOf(-1), obj.negativeInteger, "negativeInteger")
 
+        assertEquals(BigInteger.valueOf(0), obj.nonNegativeInteger, "nonNegativeInteger")
+        assertEquals(BigInteger.valueOf(0), obj.nonPositiveInteger, "nonPositiveInteger")
+        assertEquals(BigInteger.valueOf(1), obj.positiveInteger, "positiveInteger")
+        assertEquals(java.lang.Short(1), obj.short, "short")
+        assertEquals(BigInteger.valueOf(1), obj.unsignedLong, "unsignedLong")
+
+        assertEquals(java.lang.Long(1), obj.unsignedInt, "unsignedInt")
+
+        assertEquals(1, obj.unsignedShort, "unsignedShort")
+
+        assertEquals(java.lang.Short(1), obj.unsignedByte, "unsignedShort")
+
+        assertEquals(2.02, obj.double, "double")
+
+        assertEquals(1.01f, obj.float, "float")
+    }
+
+
+    @Test
+    @DisplayName("Read simple type. Numeric Types")
+    fun readSimpleTypeTemporal() {
+        val obj = readModelType("simple-type-temporal")
+                as? DateTypes ?: fail<Nothing>("Invalid root type")
+
+        assertEquals(13, obj.date.day)
+        assertEquals(12, obj.date.month)
+        assertEquals(2017, obj.date.year)
     }
 
 

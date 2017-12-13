@@ -1,11 +1,15 @@
 package eu.k5.tolerantreader
 
 import eu.k5.tolerantreader.tolerant.*
+import org.slf4j.LoggerFactory
 import java.util.*
 import javax.xml.namespace.QName
 import javax.xml.stream.XMLStreamReader
 import javax.xml.stream.events.XMLEvent
 
+enum class Violation {
+    TYPE_MISMATCH
+}
 
 class BindContext(private val schema: TolerantSchema, private val root: RootElement) {
 
@@ -61,6 +65,13 @@ class BindContext(private val schema: TolerantSchema, private val root: RootElem
         return schema.getComplexType(name)
     }
 
+    fun addViolation(type: Violation, description: String) {
+        logger.warn("{}: {}", type, description)
+    }
+
+    companion object {
+        val logger = LoggerFactory.getLogger(BindContext.javaClass)
+    }
 }
 
 
@@ -106,7 +117,7 @@ class TolerantReader(val schema: TolerantSchema) {
 
 
             } else if (XMLEvent.END_ELEMENT == event) {
-                 context.pop()
+                context.pop()
             }
         }
 

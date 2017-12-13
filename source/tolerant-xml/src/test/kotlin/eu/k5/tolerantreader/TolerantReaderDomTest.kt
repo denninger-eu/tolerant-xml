@@ -53,6 +53,11 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testComplex("complex-types-cyclic")
     }
 
+    @Test
+    fun readSimpleTypesNumeric() {
+        testModel("simple-type-numeric")
+    }
+
     private fun testMinimal(testCase: String) {
         val obj = readMinimalType(testCase)
                 as? Document ?: Assertions.fail<Nothing>("Invalid root type")
@@ -65,6 +70,15 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
 
     private fun testComplex(testCase: String) {
         val obj = readComplexType(testCase)
+                as? Document ?: Assertions.fail<Nothing>("Invalid root type")
+
+        toString(obj)
+
+        assertSimilar(testCase, obj)
+    }
+
+    private fun testModel(testCase: String) {
+        val obj = readModelType(testCase)
                 as? Document ?: Assertions.fail<Nothing>("Invalid root type")
 
         toString(obj)
