@@ -1,0 +1,16 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://k5.eu/tr/model">
+
+
+    <xs:element name="NillableType">
+        <xs:complexType>
+
+            <xs:sequence>
+
+                <xs:element name="nillable" type="xs:string" nillable="true" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+
+        </xs:complexType>
+    </xs:element>
+</schema>

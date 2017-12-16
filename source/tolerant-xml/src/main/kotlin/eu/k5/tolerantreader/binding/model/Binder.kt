@@ -1,5 +1,6 @@
 package eu.k5.tolerantreader.binding.model
 
+import com.sun.deploy.security.ValidationState
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.Assigner
@@ -8,8 +9,10 @@ import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.tolerant.IdRefType
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
+import java.lang.reflect.ParameterizedType
 import java.math.BigDecimal
 import java.math.BigInteger
+import javax.xml.bind.JAXBElement
 import javax.xml.datatype.Duration
 import javax.xml.datatype.XMLGregorianCalendar
 import javax.xml.namespace.QName
@@ -78,7 +81,6 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     }
 
 
-
     override fun createElementAssigner(initContext: InitContext, entityName: QName, element: QName, target: QName, parameters: ElementParameters): Assigner {
 
         val baseClass = resolveJavaClass(entityName)
@@ -89,7 +91,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
                 if (parameters.list) {
                     createListAppendAssigner(initContext, baseClass, propertyClass, element.localPart)
                 } else {
-                    createSetterAssigner(initContext, baseClass, propertyClass, element.localPart)
+                    createSetterAssigner(initContext, baseClass, propertyClass, element)
                 }
 
 
@@ -115,13 +117,54 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
         }
     }
 
-    private fun createSetterAssigner(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: String): Assigner {
+    private fun createSetterAssigner(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: QName): Assigner {
         try {
-            val setter = baseClass.getMethod(utils.getSetterName(element), propertyClass)
-            return SetterAssigner(setter)
-        } catch (exception: Exception) {
-            initContext.addFinding(Type.MISSING_SETTER, element)
+            if (hasBasicSetter(initContext, baseClass, propertyClass, element.localPart)) {
+                return createBasicSetterAssigner(initContext, baseClass, propertyClass, element.localPart)
+            }
+            if (hasJaxbElementSetter(initContext, baseClass, propertyClass, element)) {
+                return createJaxbElementSetterAssigner(initContext, baseClass, propertyClass, element)
+            }
+            initContext.addFinding(Type.MISSING_SETTER, element.toString())
+
             return NoOpAssigner
+        } catch (exception: Exception) {
+            initContext.addFinding(Type.MISSING_SETTER, element.localPart)
+            return NoOpAssigner
+        }
+    }
+
+    private fun createBasicSetterAssigner(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: String): Assigner {
+        val setter = baseClass.getMethod(utils.getSetterName(element), propertyClass)
+        return BasicSetterAssigner(setter)
+    }
+
+    private fun createJaxbElementSetterAssigner(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: QName): Assigner {
+        val setter = baseClass.getMethod(utils.getSetterName(element.localPart), JAXBElement::class.java)
+
+        return JaxbElementSetterAssigner(setter) { JAXBElement(element, propertyClass as Class<Any?>, propertyClass.cast(it)) }
+    }
+
+    private fun hasBasicSetter(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: String): Boolean {
+        return try {
+            baseClass.getMethod(utils.getSetterName(element), propertyClass)
+            true
+        } catch (exception: NoSuchMethodException) {
+            false
+        }
+    }
+
+    private fun hasJaxbElementSetter(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: QName): Boolean {
+        return try {
+            val method = baseClass.getMethod(utils.getSetterName(element.localPart), JAXBElement::class.java)
+            val parameter = method.genericParameterTypes[0]
+
+            if (parameter !is ParameterizedType) {
+                return false
+            }
+            return (parameter.actualTypeArguments[0] as Class<*>).isAssignableFrom(propertyClass)
+        } catch (exception: NoSuchMethodException) {
+            return false
         }
     }
 
@@ -147,13 +190,21 @@ object BindRootAssigner : Assigner {
 
 }
 
-class SetterAssigner(private val setter: Method) : Assigner {
+class BasicSetterAssigner(private val setter: Method) : Assigner {
     override fun assign(context: BindContext, instance: Any, value: Any?) {
         try {
             setter.invoke(instance, value)
         } catch (exception: IllegalArgumentException) {
             context.addViolation(Violation.TYPE_MISMATCH, exception.message!!)
         }
+    }
+}
+
+class JaxbElementSetterAssigner(private val setter: Method, private val jaxb: (Any?) -> JAXBElement<*>) : Assigner {
+    override fun assign(context: BindContext, instance: Any, value: Any?) {
+
+        setter.invoke(instance, jaxb(value))
+
     }
 }
 

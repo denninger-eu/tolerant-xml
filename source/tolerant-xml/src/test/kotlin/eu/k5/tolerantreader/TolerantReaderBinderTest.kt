@@ -3,9 +3,7 @@ package eu.k5.tolerantreader
 import eu.k5.tolerantreader.binding.model.Binder
 import eu.k5.tolerantreader.binding.model.PackageMapping
 import eu.k5.tolerantreader.binding.model.PackageMappingBuilder
-import eu.k5.tr.model.DateTypes
-import eu.k5.tr.model.MiscTypes
-import eu.k5.tr.model.NumericTypes
+import eu.k5.tr.model.*
 import eu.k5.tr.model.idref.Reference
 import eu.k5.tr.model.idref.Referenced
 import model.complex.ComplexRoot
@@ -187,6 +185,34 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
                 as? Reference ?: fail<Nothing>("Invalid root type")
 
         assertIdref(obj)
+    }
+
+
+    @Test
+    @DisplayName("Read model type. nillable type")
+    fun readModelNillable() {
+        val obj = readModelType("simple-type-nillable")
+                as? NillableType ?: fail<Nothing>("Invalid root type")
+
+        if (obj.nillable == null) {
+            fail<Nothing>("nillable not present")
+        }
+
+        assertEquals("present", obj.nillable.value)
+    }
+
+
+    @Test
+    @DisplayName("Read model type. list")
+    fun readModelList() {
+        val obj = readModelType("simple-type-list")
+                as? ListType ?: fail<Nothing>("Invalid root type")
+
+
+        assertEquals(2, obj.list.size)
+
+        assertEquals("abc", obj.list[0])
+        assertEquals("edf", obj.list[1])
     }
 
 
