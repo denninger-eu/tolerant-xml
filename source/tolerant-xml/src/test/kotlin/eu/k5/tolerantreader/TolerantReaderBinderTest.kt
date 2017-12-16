@@ -11,14 +11,11 @@ import eu.k5.tr.model.idref.Referenced
 import model.complex.ComplexRoot
 import model.complex.SubType
 import model.minimal.Root
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import java.math.BigInteger
-import java.time.LocalDate
-import javax.xml.datatype.XMLGregorianCalendar
 
 class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
 
@@ -179,12 +176,33 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         val obj = readModelType("complex-type-idref")
                 as? Reference ?: fail<Nothing>("Invalid root type")
 
-        val idref = obj.idref
-        val referenced = obj.referenced
+        assertIdref(obj)
+    }
+
+
+    @Test
+    @DisplayName("Read model type. idref forward")
+    fun readModelIdrefForward() {
+        val obj = readModelType("complex-type-idref-forward")
+                as? Reference ?: fail<Nothing>("Invalid root type")
+
+        assertIdref(obj)
+    }
+
+
+    private fun assertIdref(reference: Reference) {
+        val idref = reference.idref
+        val referenced = reference.referenced
 
 
         assertEquals("firstname", referenced.firstname)
         assertEquals("lastname", referenced.lastname)
+        if (idref is Referenced) {
+            assertEquals("firstname", idref.firstname)
+            assertEquals("lastname", idref.lastname)
+        } else {
+            fail("Invalid type in idref: " + idref)
+        }
     }
 
 

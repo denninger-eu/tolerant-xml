@@ -3,7 +3,9 @@ package eu.k5.tolerantreader.binding.model
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.Assigner
+import eu.k5.tolerantreader.binding.ElementParameters
 import eu.k5.tolerantreader.binding.TolerantWriter
+import eu.k5.tolerantreader.tolerant.IdRefType
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import java.math.BigDecimal
@@ -51,6 +53,10 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
         classCache.put(xsUnsignedByte, Short::class.java)
         classCache.put(xsDouble, Double::class.java)
         classCache.put(xsFloat, Float::class.java)
+
+
+        classCache.put(xsIdRef, Object::class.java)
+        classCache.put(xsId, String::class.java)
     }
 
     private fun resolveJavaClass(name: QName): Class<*> {
@@ -71,21 +77,28 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
         return { constructor.newInstance() }
     }
 
-    override fun createAttributeAssigner(initContext: InitContext, qualifiedName: QName, name: String, typeName: QName): Assigner {
-        return createElementAssigner(initContext, qualifiedName, QName(qualifiedName.namespaceURI, name), typeName, false, 0)
-    }
 
-    override fun createElementAssigner(initContext: InitContext, base: QName, element: QName, target: QName, list: Boolean, weight: Int): Assigner {
 
-        val baseClass = resolveJavaClass(base)
+    override fun createElementAssigner(initContext: InitContext, entityName: QName, element: QName, target: QName, parameters: ElementParameters): Assigner {
+
+        val baseClass = resolveJavaClass(entityName)
         val propertyClass = resolveJavaClass(target)
 
-        if (list) {
-            return createListAppendAssigner(initContext, baseClass, propertyClass, element.localPart)
-        } else {
-            return createSetterAssigner(initContext, baseClass, propertyClass, element.localPart)
-        }
 
+        val assigner =
+                if (parameters.list) {
+                    createListAppendAssigner(initContext, baseClass, propertyClass, element.localPart)
+                } else {
+                    createSetterAssigner(initContext, baseClass, propertyClass, element.localPart)
+                }
+
+
+        if (target == xsIdRef) {
+            return IdRefAssigner(assigner)
+        } else if (target == xsId) {
+            return IdAssigner(assigner)
+        }
+        return assigner
     }
 
     override fun createContext(schema: TolerantSchema): BindContext = BindContext(schema, BindRoot())
@@ -98,7 +111,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
             // TODO: validate getter return type
             return ListAppendAssigner(getter)
         } catch (exception: Exception) {
-            return NoopAssigner
+            return NoOpAssigner
         }
     }
 
@@ -108,15 +121,15 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
             return SetterAssigner(setter)
         } catch (exception: Exception) {
             initContext.addFinding(Type.MISSING_SETTER, element)
-            return NoopAssigner
+            return NoOpAssigner
         }
     }
 
 
 }
 
-object NoopAssigner : Assigner {
-    private val LOGGER = LoggerFactory.getLogger(NoopAssigner::class.java)
+object NoOpAssigner : Assigner {
+    private val LOGGER = LoggerFactory.getLogger(NoOpAssigner::class.java)
     override fun assign(context: BindContext, instance: Any, value: Any?) {
         LOGGER.debug("Usage for NOOP Assigner")
     }
@@ -152,4 +165,31 @@ class ListAppendAssigner(private val getter: Method) : Assigner {
         val list = obj as MutableList<Any?>
         list.add(value)
     }
+}
+
+class IdRefAssigner(private val delegate: Assigner) : Assigner {
+
+    override fun assign(context: BindContext, instance: Any, value: Any?) {
+        if (value !is IdRefType) {
+            TODO("Find proper error handling here")
+        }
+        if (value.entity != null) {
+            delegate.assign(context, instance, value.entity)
+        } else {
+            context.addOpenIdRef(value.id, instance, delegate)
+        }
+
+    }
+}
+
+class IdAssigner(private val delegate: Assigner) : Assigner {
+    override fun assign(context: BindContext, instance: Any, value: Any?) {
+        if (value !is String) {
+            TODO("Find proper error handling here")
+        }
+        delegate.assign(context, instance, value)
+        context.registerEntity(value, instance)
+
+    }
+
 }

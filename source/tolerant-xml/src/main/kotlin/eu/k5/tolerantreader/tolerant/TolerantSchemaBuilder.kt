@@ -2,6 +2,7 @@ package eu.k5.tolerantreader.tolerant
 
 import com.google.common.collect.ImmutableMap
 import eu.k5.tolerantreader.*
+import eu.k5.tolerantreader.binding.ElementParameters
 import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.xs.XsComplexType
 import eu.k5.tolerantreader.xs.XsRegistry
@@ -108,7 +109,7 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
                 val type = TolerantStringType(simpleType.getQualifiedName())
 
-                simpleTypes.put(type.name, type)
+                simpleTypes.put(type.getQualifiedName(), type)
             } else {
                 TODO("not implement yet")
             }
@@ -159,7 +160,8 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
         for (attribute in typeBuilder.xsComplexType.getAllAttributes()) {
             val type = attribute.type!!
             val simpleType = resolveType(type)
-            val assigner = writer.createAttributeAssigner(initContext, qualifiedName, attribute.name!!, simpleType.getTypeName())
+            val parameters = ElementParameters(false, 0, true)
+            val assigner = writer.createElementAssigner(initContext, qualifiedName, QName(qualifiedName.namespaceURI, attribute.name!!), simpleType.getTypeName(), parameters)
 
             val qname = QName(qualifiedName.namespaceURI, attribute.name)
 
@@ -174,7 +176,10 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
             } else {
                 val typeName = element.getTypeName()
                 val tolerantType = resolveType(typeName)
-                val assigner = writer.createElementAssigner(initContext, qualifiedName, element.getQualifiedName(), tolerantType.getTypeName(), element.isList(), elementWeight)
+
+                val parameters = ElementParameters(element.isList(), elementWeight, false)
+
+                val assigner = writer.createElementAssigner(initContext, qualifiedName, element.getQualifiedName(), tolerantType.getTypeName(), parameters)
 
                 val qname = QName(qualifiedName.namespaceURI, element.name)
 

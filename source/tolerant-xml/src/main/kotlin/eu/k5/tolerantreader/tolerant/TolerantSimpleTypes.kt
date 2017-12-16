@@ -7,15 +7,15 @@ import java.util.*
 import javax.xml.namespace.QName
 
 class TolerantStringType(name: QName) : TolerantSimpleType(name, xsString) {
-    override fun parse(text: String): Any = text
+    override fun parse(context: BindContext, text: String): Any = text
 }
 
 class TolerantBooleanType : TolerantSimpleType(xsBoolean, xsBoolean) {
-    override fun parse(text: String): Any = java.lang.Boolean.valueOf(text.trim())
+    override fun parse(context: BindContext, text: String): Any = java.lang.Boolean.valueOf(text.trim())
 }
 
 class TolerantQNameType : TolerantSimpleType(xsQname, xsQname) {
-    override fun parse(text: String): Any {
+    override fun parse(context: BindContext, text: String): Any {
         TODO("Implement")
     }
 
@@ -23,29 +23,29 @@ class TolerantQNameType : TolerantSimpleType(xsQname, xsQname) {
 
 
 class TolerantBase64BinaryType : TolerantSimpleType(xsBase64Binary, xsBase64Binary) {
-    override fun parse(text: String): Any {
+    override fun parse(context: BindContext, text: String): Any {
         return Base64.getDecoder().decode(text)
     }
 }
 
 
 class TolerantHexBinaryType : TolerantSimpleType(xsHexBinary, xsHexBinary) {
-    override fun parse(text: String): Any {
+    override fun parse(context: BindContext, text: String): Any {
         return Base64.getDecoder().decode(text)
     }
 }
 
 class TolerantTemporalType(name: QName) : TolerantSimpleType(name, name) {
-    override fun parse(text: String): Any {
+    override fun parse(context: BindContext, text: String): Any {
         TODO("Implement")
     }
 }
 
 
 class TolerantNumericType(name: QName, private val parser: (String) -> Any) : TolerantSimpleType(name, name) {
-    override fun parse(text: String): Any = parser(text)
+    override fun parse(context: BindContext, text: String): Any = parser(text)
 
-    override fun toString(): String = name.toString()
+    override fun toString(): String = getQualifiedName().toString()
 }
 
 val decimalType = TolerantNumericType(xsDecimal) {

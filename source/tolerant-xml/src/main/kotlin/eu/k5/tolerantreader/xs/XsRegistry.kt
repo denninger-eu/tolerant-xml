@@ -46,7 +46,7 @@ class XsRegistry(val initSchema: XsSchema, private val allSchemas: Map<String, X
         return first
     }
 
-    fun getComplextType(localName: String): XsComplexType {
+    fun getComplexType(localName: String): XsComplexType {
 
         val first = allSchemas.values.first().complexTypes.first { n -> localName.equals(n.localName) }
 

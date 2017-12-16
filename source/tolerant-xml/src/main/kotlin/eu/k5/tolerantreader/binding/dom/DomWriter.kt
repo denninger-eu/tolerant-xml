@@ -3,8 +3,10 @@ package eu.k5.tolerantreader.binding.dom
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.Assigner
+import eu.k5.tolerantreader.binding.ElementParameters
 import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.binding.model.ReflectionUtils
+import eu.k5.tolerantreader.tolerant.IdRefType
 import org.w3c.dom.Node
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -113,11 +115,16 @@ class DomWriter : TolerantWriter {
         simpleTypeAdapter.put(xsFloat) {
             it.toString()
         }
+
+        simpleTypeAdapter.put(xsIdRef) {
+            (it as IdRefType).id
+        }
+
+        simpleTypeAdapter.put(xsId){
+            it.toString()
+        }
     }
 
-    override fun createAttributeAssigner(initContext: InitContext, attribute: QName, name: String, typeName: QName): Assigner {
-        return DomAttributeAssigner(attribute)
-    }
 
     override fun rootAssigner(elementName: QName): Assigner {
         return DomRootAssigner(elementName)
@@ -129,12 +136,15 @@ class DomWriter : TolerantWriter {
         return BindContext(schema, DomRoot(documentBuilder.newDocument()))
     }
 
-    override fun createElementAssigner(initContext: InitContext, base: QName, element: QName, target: QName, list: Boolean, weight: Int): Assigner {
+    override fun createElementAssigner(initContext: InitContext, base: QName, element: QName, target: QName, parameter: ElementParameters): Assigner {
+        if (parameter.attribute){
+            return DomAttributeAssigner(element)
+        }
         if (simpleTypeAdapter.containsKey(target)) {
-            return DomTextContentAssigner(element, weight, simpleTypeAdapter.get(target)!!)
+            return DomTextContentAssigner(element, parameter.weight, simpleTypeAdapter.get(target)!!)
         } else {
 
-            return DomElementAssigner(element, weight)
+            return DomElementAssigner(element, parameter.weight)
         }
     }
 
@@ -236,9 +246,9 @@ class DomElementAssigner(val element: QName, val weight: Int) : Assigner {
             if (value is DomValue) {
 
                 val domElement = DomElement(element, value.typeName, weight)
+                domElement.attributes.addAll(value.attributes)
 
                 instance.element!!.elements.add(domElement)
-                instance.element!!.attributes.addAll(value.attributes)
                 value.element = domElement
             }
 

@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<root xmlns:ns0="http://k5.eu/tr/minimal" ns0:root="Hello" xmlns="http://k5.eu/tr/minimal"/>
+<root xmlns:ns0="http://k5.eu/tr/minimal" ns0:attribute="Hello" xmlns="http://k5.eu/tr/minimal"/>

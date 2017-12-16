@@ -1,6 +1,7 @@
 package eu.k5.tolerantreader
 
 import eu.k5.tolerantreader.binding.dom.DomWriter
+import eu.k5.tr.model.idref.Reference
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -57,6 +58,20 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
     fun readSimpleTypesNumeric() {
         testModel("simple-type-numeric")
     }
+
+    @Test
+    @DisplayName("Read model type. idref")
+    fun readModelIdref() {
+        testModel("complex-type-idref")
+    }
+
+
+    @Test
+    @DisplayName("Read model type. idref forward")
+    fun readModelIdrefForward() {
+        testModel("complex-type-idref-forward")
+    }
+
 
     private fun testMinimal(testCase: String) {
         val obj = readMinimalType(testCase)

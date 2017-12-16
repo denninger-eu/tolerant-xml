@@ -5,7 +5,7 @@ import eu.k5.tolerantreader.xs.XsComplexType
 import javax.xml.namespace.QName
 import javax.xml.stream.XMLStreamReader
 
-class TolerantComplexType(val name: QName,
+class TolerantComplexType(private val name: QName,
                           private val konstructor: (elemantName: QName) -> Any,
                           private val elements: Map<String, TolerantElement>,
                           private val concreteSubtypes: TolerantMap<QName>) : TolerantType() {
@@ -45,9 +45,7 @@ class TolerantComplexType(val name: QName,
         return ""
     }
 
-    override fun getQualifiedName(): QName {
-        return name
-    }
+    override fun getQualifiedName(): QName = name
 
     override fun readValue(context: BindContext, element: TolerantElement, stream: XMLStreamReader): Any {
         val newInstance = konstructor(element.qname)
@@ -56,7 +54,7 @@ class TolerantComplexType(val name: QName,
     }
 
     private fun handleAttributes(context: BindContext, stream: XMLStreamReader, instance: Any) {
-        for (index in 0..stream.attributeCount) {
+        for (index in 0 until stream.attributeCount) {
             val localName = stream.getAttributeLocalName(index)
             val attributeElement = elements.get(localName)
 
@@ -68,12 +66,7 @@ class TolerantComplexType(val name: QName,
     override fun pushedOnStack(): Boolean = true
 
     fun getElement(namespaceURI: String?, localName: String?): TolerantElement? {
-
         return elements.get(localName)
-    }
-
-    fun getAllConcreteSubtypes(): List<XsComplexType> {
-        return ArrayList()
     }
 
 

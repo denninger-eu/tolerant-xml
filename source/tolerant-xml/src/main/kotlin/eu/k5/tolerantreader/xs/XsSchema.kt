@@ -49,7 +49,7 @@ class XsSchema {
     }
 
     fun getComplexType(baseName: QName): XsComplexType? {
-        return registry?.getComplextType(baseName.localPart)
+        return registry?.getComplexType(baseName.localPart)
 
     }
 

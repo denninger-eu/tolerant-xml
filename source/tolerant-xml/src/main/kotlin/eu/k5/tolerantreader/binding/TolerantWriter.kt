@@ -10,14 +10,16 @@ interface TolerantWriter {
 
     fun createSupplier(typeName: QName): (elementName: QName) -> Any
 
-    fun createElementAssigner(initContext: InitContext, base: QName, element: QName, target: QName, list: Boolean, weight: Int): Assigner
+    fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner
 
-    fun createAttributeAssigner(initContext: InitContext, qualifiedName: QName, name: String, typeName: QName): Assigner
-
-    fun noopAssigner(): Assigner = NoopAssigner
 
     fun rootAssigner(elementName: QName): Assigner
+
     fun createContext(schema: TolerantSchema): BindContext
+
+}
+
+class ElementParameters(val list: Boolean, val weight: Int, val attribute: Boolean) {
 
 }
 

@@ -1,16 +1,21 @@
 package eu.k5.tolerantreader
 
+import eu.k5.tolerantreader.binding.Assigner
 import eu.k5.tolerantreader.tolerant.*
 import org.slf4j.LoggerFactory
 import java.util.*
 import javax.xml.namespace.QName
 import javax.xml.stream.XMLStreamReader
 import javax.xml.stream.events.XMLEvent
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 enum class Violation {
     TYPE_MISMATCH,
 
-    UNKNOWN_CONTENT
+    UNKNOWN_CONTENT,
+
+    MISSING_ENTITY
 }
 
 class BindContext(private val schema: TolerantSchema, private val root: RootElement) {
@@ -19,11 +24,22 @@ class BindContext(private val schema: TolerantSchema, private val root: RootElem
     private val types: Deque<TolerantType> = ArrayDeque()
     private val instances: Deque<Any> = ArrayDeque()
 
+    private val openReferences: MutableList<OpenReference> = ArrayList()
+
     init {
         instances.push(root)
     }
 
     fun postProcess() {
+        for (open in openReferences) {
+            val entity = getEntityById(open.id)
+            if (entity != null) {
+                open.assigner.assign(this, open.instance, entity)
+            } else {
+                addViolation(Violation.MISSING_ENTITY, "")
+            }
+
+        }
     }
 
     fun isEmpty(): Boolean {
@@ -49,6 +65,7 @@ class BindContext(private val schema: TolerantSchema, private val root: RootElem
     fun pop() {
         elements.pop()
         instances.pop()
+        types.pop()
     }
 
     fun getCurrent(): TolerantElement? {
@@ -74,6 +91,24 @@ class BindContext(private val schema: TolerantSchema, private val root: RootElem
     companion object {
         val logger = LoggerFactory.getLogger(BindContext.javaClass)
     }
+
+    private val entities: MutableMap<String, Any> = HashMap()
+
+    fun getEntityById(id: String): Any? {
+        return entities[id]
+    }
+
+    fun addOpenIdRef(id: String, instance: Any, delegate: Assigner) {
+        openReferences.add(OpenReference(id, instance, delegate))
+    }
+
+    fun registerEntity(value: String, instance: Any) {
+        entities.put(value, instance)
+    }
+}
+
+class OpenReference(val id: String, val instance: Any, val assigner: Assigner) {
+
 }
 
 
@@ -93,13 +128,12 @@ class TolerantReader(val schema: TolerantSchema) {
                 val namespaceURI: String? = stream.namespaceURI
                 val qname = QName(namespaceURI, localName)
 
-                val element: TolerantElement?
-
-                if (context.isEmpty()) {
-                    element = schema.getElement(namespaceURI, localName)
-                } else {
-                    element = context.getElement(namespaceURI, localName)
-                }
+                val element =
+                        if (context.isEmpty()) {
+                            schema.getElement(namespaceURI, localName)
+                        } else {
+                            context.getElement(namespaceURI, localName)
+                        }
 
                 if (element == null) {
                     // balance stream

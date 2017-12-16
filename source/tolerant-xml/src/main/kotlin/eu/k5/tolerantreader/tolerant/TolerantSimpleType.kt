@@ -5,19 +5,13 @@ import javax.xml.namespace.QName
 import javax.xml.stream.XMLStreamReader
 import javax.xml.stream.events.XMLEvent
 
-abstract class TolerantSimpleType(val name: QName, val baseName: QName) : TolerantType() {
+abstract class TolerantSimpleType(private val name: QName, private val baseName: QName) : TolerantType() {
 
-    override fun getTypeName(): QName {
-        return baseName
-    }
+    override fun getTypeName(): QName = baseName
 
-    override fun getQualifiedName(): QName {
-        return name
-    }
+    override fun getQualifiedName(): QName = name
 
-    override fun pushedOnStack(): Boolean {
-        return false
-    }
+    override fun pushedOnStack(): Boolean = false
 
     override fun readValue(context: BindContext, element: TolerantElement, stream: XMLStreamReader): Any? {
         var text = ""
@@ -30,7 +24,7 @@ abstract class TolerantSimpleType(val name: QName, val baseName: QName) : Tolera
             } else if (event == XMLEvent.END_ELEMENT) {
                 balance--
                 if (balance == 0) {
-                    return parse(text)
+                    return parse(context, text)
                 }
             } else if (event == XMLEvent.START_ELEMENT) {
                 balance++
@@ -40,5 +34,5 @@ abstract class TolerantSimpleType(val name: QName, val baseName: QName) : Tolera
     }
 
 
-    abstract fun parse(text: String): Any
+    abstract fun parse(context: BindContext, text: String): Any?
 }
