@@ -8,15 +8,15 @@ import javax.xml.namespace.QName
 
 interface TolerantWriter {
 
-    fun createSupplier(typeName: QName): (elementName: QName) -> Any
+    fun createSupplier(initContext: InitContext, typeName: QName): (elementName: QName) -> Any
+
+    fun createEnumSupplier(initContext: InitContext, enumName: QName): (BindContext, String) -> Any?
 
     fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner
-
 
     fun rootAssigner(elementName: QName): Assigner
 
     fun createContext(schema: TolerantSchema): BindContext
-
 }
 
 class ElementParameters(val list: Boolean, val weight: Int, val attribute: Boolean) {

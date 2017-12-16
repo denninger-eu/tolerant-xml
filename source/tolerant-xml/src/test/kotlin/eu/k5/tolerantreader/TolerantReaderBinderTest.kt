@@ -9,11 +9,13 @@ import eu.k5.tr.model.idref.Referenced
 import model.complex.ComplexRoot
 import model.complex.SubType
 import model.minimal.Root
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.fail
+import org.junit.Ignore
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import java.math.BigInteger
+import java.nio.charset.StandardCharsets
 
 class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
 
@@ -155,10 +157,14 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
                 as? MiscTypes ?: fail<Nothing>("Invalid root type")
 
         assertEquals("http://www.k5.eu", obj.anyUri)
+
+        assertArrayEquals("test".toByteArray(StandardCharsets.UTF_8), obj.base64Binary)
+
     }
 
     @Test
-    @DisplayName("Read simple type. Numeric Types")
+    @Disabled
+    @DisplayName("Read simple type. Temporal Types")
     fun readSimpleTypeTemporal() {
         val obj = readModelType("simple-type-temporal")
                 as? DateTypes ?: fail<Nothing>("Invalid root type")
@@ -215,6 +221,29 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertEquals("edf", obj.list[1])
     }
 
+    @Test
+    @DisplayName("Read model type. enum")
+    fun readModelEnum() {
+        val obj = readModelType("simple-type-enum")
+                as? EnumType ?: fail<Nothing>("Invalid root type")
+
+
+
+        assertEquals(SizeEnum.XL, obj.size)
+        assertEquals(SizeEnum.S, obj.sizeAttribute)
+    }
+
+    @Test
+    @DisplayName("Read model type. enum invalid")
+    fun readModelEnumInvalid() {
+        val obj = readModelType("simple-type-enum-invalid")
+                as? EnumType ?: fail<Nothing>("Invalid root type")
+
+
+
+        assertNull(obj.size)
+        assertNull(obj.sizeAttribute)
+    }
 
     private fun assertIdref(reference: Reference) {
         val idref = reference.idref

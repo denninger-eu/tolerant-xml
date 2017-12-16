@@ -1,7 +1,18 @@
 <xs:schema xmlns="http://www.w3.org/2001/XMLSchema"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tr="http://k5.eu/tr/model"
            targetNamespace="http://k5.eu/tr/model">
 
+
+    <xs:element name="EnumType">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="size" type="tr:sizeEnum"/>
+            </xs:sequence>
+            <xs:attribute name="sizeAttribute" type="tr:sizeEnum"/>
+        </xs:complexType>
+
+    </xs:element>
 
     <xs:simpleType name="sizeEnum">
         <xs:restriction base="xs:string">

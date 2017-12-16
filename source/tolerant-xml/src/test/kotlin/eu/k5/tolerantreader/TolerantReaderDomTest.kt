@@ -79,6 +79,12 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testModel("simple-type-list")
     }
 
+    @Test
+    @DisplayName("Read model type. enum")
+    fun readModelEnum() {
+        testModel("simple-type-enum")
+    }
+
     private fun testMinimal(testCase: String) {
         val obj = readMinimalType(testCase)
                 as? Document ?: Assertions.fail<Nothing>("Invalid root type")

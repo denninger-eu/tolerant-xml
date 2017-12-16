@@ -57,8 +57,11 @@ class TolerantComplexType(private val name: QName,
         for (index in 0 until stream.attributeCount) {
             val localName = stream.getAttributeLocalName(index)
             val attributeElement = elements.get(localName)
-
-            attributeElement?.assigner?.assign(context, instance, stream.getAttributeValue(index))
+            val type = attributeElement?.type
+            if (type is TolerantSimpleType) {
+                val value = type.parse(context, stream.getAttributeValue(index))
+                attributeElement?.assigner?.assign(context, instance, value)
+            }
         }
     }
 

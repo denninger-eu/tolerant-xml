@@ -1,5 +1,6 @@
 package eu.k5.tolerantreader.xs
 
+import eu.k5.tolerantreader.XSD_NAMESPACE
 import eu.k5.tolerantreader.XsNamed
 import javax.xml.bind.annotation.*
 import javax.xml.namespace.QName
@@ -11,7 +12,7 @@ class XsSimpleType : XsNamed() {
     @XmlAttribute(name = "name")
     var name: String? = null
 
-    @XmlElement(name = "restriction")
+    @XmlElement(namespace = XSD_NAMESPACE, name = "restriction")
     var restriction: XsSimpleTypeRestriction? = null
 
 
@@ -20,11 +21,13 @@ class XsSimpleType : XsNamed() {
     }
 
 
-
     override fun localPartName(): String {
         return name!!
     }
 
+    fun isEnum(): Boolean {
+        return restriction?.isEnum() ?: false
+    }
 }
 
 @XmlAccessorType(XmlAccessType.NONE)
@@ -35,6 +38,8 @@ class XsSimpleTypeRestriction {
 
     @XmlElement(name = "enumeration")
     var enumeration: List<XsEnumerationRestriction> = ArrayList()
+
+    fun isEnum(): Boolean = !enumeration.isEmpty()
 
 }
 

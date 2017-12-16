@@ -8,6 +8,7 @@ import eu.k5.tolerantreader.binding.ElementParameters
 import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.tolerant.IdRefType
 import org.slf4j.LoggerFactory
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
 import java.math.BigDecimal
@@ -75,9 +76,24 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     }
 
 
-    override fun createSupplier(base: QName): (QName) -> Any {
+    override fun createSupplier(initContext: InitContext, base: QName): (QName) -> Any {
         val constructor = resolveJavaClass(base).getConstructor()
         return { constructor.newInstance() }
+    }
+
+    override fun createEnumSupplier(initContext: InitContext, enumName: QName): (BindContext, String) -> Any? {
+        val enumClass = resolveJavaClass(enumName)
+        val factoryMethod = enumClass.getMethod("fromValue", String::class.java)
+
+
+        return { context: BindContext, token: String ->
+            try {
+                factoryMethod.invoke(null, token)
+            } catch (exception: InvocationTargetException) {
+                context.addViolation(Violation.INVALID_ENUM_LITERAL, token)
+                null
+            }
+        }
     }
 
 

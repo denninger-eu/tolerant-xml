@@ -18,6 +18,9 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 
 class DomWriter : TolerantWriter {
+    override fun createEnumSupplier(initContext: InitContext, enumName: QName): (BindContext, String) -> Any {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     private val utils = ReflectionUtils()
     private val simpleTypeAdapter = HashMap<QName, (Any) -> String>()
@@ -120,7 +123,7 @@ class DomWriter : TolerantWriter {
             (it as IdRefType).id
         }
 
-        simpleTypeAdapter.put(xsId){
+        simpleTypeAdapter.put(xsId) {
             it.toString()
         }
     }
@@ -137,7 +140,7 @@ class DomWriter : TolerantWriter {
     }
 
     override fun createElementAssigner(initContext: InitContext, base: QName, element: QName, target: QName, parameter: ElementParameters): Assigner {
-        if (parameter.attribute){
+        if (parameter.attribute) {
             return DomAttributeAssigner(element)
         }
         if (simpleTypeAdapter.containsKey(target)) {
@@ -148,7 +151,7 @@ class DomWriter : TolerantWriter {
         }
     }
 
-    override fun createSupplier(typeName: QName): (elementName: QName) -> Any {
+    override fun createSupplier(initContext: InitContext, typeName: QName): (elementName: QName) -> Any {
         return { DomValue(it, typeName) }
     }
 

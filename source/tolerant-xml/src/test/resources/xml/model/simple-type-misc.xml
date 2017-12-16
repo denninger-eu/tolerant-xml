@@ -1,7 +1,7 @@
 <MiscTypes>
 
-    <anyUri>http//www.k5.eu</anyUri>
-    <base64Binary>aaaaa</base64Binary>
+    <anyUri>http://www.k5.eu</anyUri>
+    <base64Binary>dGVzdA==</base64Binary>
     <boolean>true</boolean>
     <hexBinary>DEAD</hexBinary>
 

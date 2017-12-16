@@ -2,6 +2,7 @@
         targetNamespace="http://k5.eu/tr/model">
 
     <import namespace="http://k5.eu/tr/model" schemaLocation="simple-type-list.xsd"/>
+    <import namespace="http://k5.eu/tr/model" schemaLocation="simple-type-enumeration.xsd"/>
 
     <import namespace="http://k5.eu/tr/model" schemaLocation="simple-type-nillable.xsd"/>
 

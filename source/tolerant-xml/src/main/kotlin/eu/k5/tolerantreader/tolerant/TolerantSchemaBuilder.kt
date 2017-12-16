@@ -103,15 +103,25 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
     private fun initSimpleTypes() {
         for (simpleType in xsRegistry.getAllSimpleTypes()) {
+
             val base = simpleType.restriction?.base
 
-            if (xsString.equals(base)) {
+            if (simpleType.isEnum()) {
 
-                val type = TolerantStringType(simpleType.getQualifiedName())
+                val enumSupplier = writer.createEnumSupplier(initContext, simpleType.getQualifiedName())
+                simpleTypes.put(simpleType.getQualifiedName(), TolerantEnumType(simpleType.getQualifiedName(), enumSupplier))
 
-                simpleTypes.put(type.getQualifiedName(), type)
+
             } else {
-                TODO("not implement yet")
+
+                if (xsString.equals(base)) {
+
+                    val type = TolerantStringType(simpleType.getQualifiedName())
+
+                    simpleTypes.put(type.getQualifiedName(), type)
+                } else {
+                    TODO("not implement yet")
+                }
             }
 
 
@@ -132,7 +142,7 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
     private fun prepareComplexType(xsComplexType: XsComplexType) {
         val qname = xsComplexType.getQualifiedName()
-        val createSupplier = writer.createSupplier(qname)
+        val createSupplier = writer.createSupplier(initContext, qname)
         var builder = ComplexTypeBuilder(qname, createSupplier, xsComplexType, TolerantComplexProxy(qname))
         complexTypeBuilders[xsComplexType.getQualifiedName()] = builder
     }
@@ -197,10 +207,6 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
     }
 
 
-    private fun createTolerantElement() {
-
-    }
-
     private fun initElements() {
         for (element in xsRegistry.getAllElements()) {
 
@@ -228,7 +234,7 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
 private class ComplexTypeBuilder(val name: QName, val konstructor: (QName) -> Any, val xsComplexType: XsComplexType, val proxy: TolerantComplexProxy) {
 
-    val elements = ImmutableMap.builder<String, TolerantElement>()
+    val elements = ImmutableMap.builder<String, TolerantElement>()!!
     val concreteSubtypes = TolerantMapBuilder<QName>()
     var tolerantComplexType: TolerantComplexType? = null
 
@@ -246,7 +252,7 @@ private class ComplexTypeBuilder(val name: QName, val konstructor: (QName) -> An
     }
 
     fun build(): TolerantComplexType {
-        var complexType = tolerantComplexType;
+        var complexType = tolerantComplexType
         if (complexType != null) {
             return complexType
         }
