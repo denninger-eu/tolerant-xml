@@ -1,0 +1,24 @@
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:tr="http://k5.eu/tr/model/idref"
+        targetNamespace="http://k5.eu/tr/model/idref">
+
+
+    <xs:complexType name="Referenced">
+        <xs:sequence>
+            <xs:element name="firstname" type="xs:string"/>
+            <xs:element name="lastname" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID"/>
+    </xs:complexType>
+
+
+    <xs:element name="Reference">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="idref" type="xs:IDREF"/>
+                <xs:element name="referenced" type="tr:Referenced"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

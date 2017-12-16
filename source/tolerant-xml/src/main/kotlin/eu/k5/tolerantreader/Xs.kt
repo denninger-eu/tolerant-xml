@@ -39,6 +39,8 @@ val xsUnsignedByte = QName(XSD_NAMESPACE, "unsignedByte")
 val xsDouble = QName(XSD_NAMESPACE, "double")
 val xsFloat = QName(XSD_NAMESPACE, "float")
 
+val xsId = QName(XSD_NAMESPACE, "ID")
+val xsIdRef = QName(XSD_NAMESPACE, "IDREF")
 
 abstract class XsNamed {
 

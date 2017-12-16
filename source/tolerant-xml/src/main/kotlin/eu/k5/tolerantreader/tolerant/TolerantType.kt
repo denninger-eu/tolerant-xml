@@ -9,7 +9,7 @@ abstract class TolerantType() {
 
     abstract fun getQualifiedName(): QName
 
-    abstract fun readValue(context: BindContext, elementName: TolerantElement, stream: XMLStreamReader): Any
+    abstract fun readValue(context: BindContext, elementName: TolerantElement, stream: XMLStreamReader): Any?
 
     abstract fun pushedOnStack(): Boolean
 

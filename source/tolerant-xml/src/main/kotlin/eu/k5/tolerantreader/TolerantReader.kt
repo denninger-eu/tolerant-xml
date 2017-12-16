@@ -8,7 +8,9 @@ import javax.xml.stream.XMLStreamReader
 import javax.xml.stream.events.XMLEvent
 
 enum class Violation {
-    TYPE_MISMATCH
+    TYPE_MISMATCH,
+
+    UNKNOWN_CONTENT
 }
 
 class BindContext(private val schema: TolerantSchema, private val root: RootElement) {
@@ -101,20 +103,22 @@ class TolerantReader(val schema: TolerantSchema) {
 
                 if (element == null) {
                     // balance stream
-                    break
+                    context.addViolation(Violation.UNKNOWN_CONTENT, "Element: " + qname)
+                    skipToEndElement(stream)
+                    continue
                 }
 
 
                 val type = element.type.asSubtype(context, stream)
                 val readValue = type.readValue(context, element, stream)
+                if (readValue != null) {
 
+                    element.assigner.assign(context, context.getCurrentInstance(), readValue)
 
-                element.assigner.assign(context, context.getCurrentInstance(), readValue)
-
-                if (type.pushedOnStack()) {
-                    context.push(element, readValue, type)
+                    if (type.pushedOnStack()) {
+                        context.push(element, readValue, type)
+                    }
                 }
-
 
             } else if (XMLEvent.END_ELEMENT == event) {
                 context.pop()
@@ -130,5 +134,23 @@ class TolerantReader(val schema: TolerantSchema) {
 
     }
 
+    private fun skipToEndElement(stream: XMLStreamReader) {
+        var balance = 1
+        while (stream.hasNext()) {
+            val event = stream.next()
 
+            if (XMLEvent.START_ELEMENT == event) {
+
+                balance++
+            } else if (XMLEvent.END_ELEMENT == event) {
+                balance--
+                if (balance == 0) {
+                    return
+                }
+            } else if (XMLEvent.END_DOCUMENT == event) {
+                return
+            }
+        }
+
+    }
 }

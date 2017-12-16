@@ -7,5 +7,6 @@
 
     <import namespace="http://k5.eu/tr/model" schemaLocation="simple-type-misc.xsd"/>
 
+    <import namespace="http://k5.eu/tr/model/idref" schemaLocation="complex-type-idref.xsd" />
 
 </schema>

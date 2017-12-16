@@ -10,7 +10,7 @@ class TolerantSchema(private val elements: Map<String, TolerantElement>, private
     fun createContext(): BindContext = writer.createContext(this)
 
     fun getElement(namespaceURI: String?, localName: String): TolerantElement? {
-        return elements[localName]!!
+        return elements[localName]
     }
 
     fun getComplexType(name: QName): TolerantType {

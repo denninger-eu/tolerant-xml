@@ -1,0 +1,11 @@
+<Reference>
+
+    <idref>ID_1</idref>
+
+
+    <Referenced id="ID_1" attribute="abc">
+        <Firstname>firstname</Firstname>
+        <Lastname>lastname</Lastname>
+    </Referenced>
+
+</Reference>

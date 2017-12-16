@@ -94,6 +94,9 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
         simpleTypes.put(xsUnsignedByte, unsignedByteType)
         simpleTypes.put(xsDouble, doubleType)
         simpleTypes.put(xsFloat, floatType)
+
+        simpleTypes.put(xsId, TolerantIdType())
+        simpleTypes.put(xsIdRef, TolerantIdRefType())
     }
 
 

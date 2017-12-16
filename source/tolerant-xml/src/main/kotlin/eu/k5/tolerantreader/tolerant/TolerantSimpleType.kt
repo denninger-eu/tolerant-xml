@@ -19,18 +19,24 @@ abstract class TolerantSimpleType(val name: QName, val baseName: QName) : Tolera
         return false
     }
 
-    override fun readValue(context: BindContext, element: TolerantElement, stream: XMLStreamReader): Any {
+    override fun readValue(context: BindContext, element: TolerantElement, stream: XMLStreamReader): Any? {
         var text = ""
+        var balance = 1
         while (stream.hasNext()) {
 
             val event = stream.next()
             if (event == XMLEvent.CHARACTERS) {
                 text += stream.text
             } else if (event == XMLEvent.END_ELEMENT) {
-                return parse(text)
+                balance--
+                if (balance == 0) {
+                    return parse(text)
+                }
+            } else if (event == XMLEvent.START_ELEMENT) {
+                balance++
             }
         }
-        return stream.text
+        return null
     }
 
 

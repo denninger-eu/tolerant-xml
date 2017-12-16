@@ -4,7 +4,10 @@ import eu.k5.tolerantreader.binding.model.Binder
 import eu.k5.tolerantreader.binding.model.PackageMapping
 import eu.k5.tolerantreader.binding.model.PackageMappingBuilder
 import eu.k5.tr.model.DateTypes
+import eu.k5.tr.model.MiscTypes
 import eu.k5.tr.model.NumericTypes
+import eu.k5.tr.model.idref.Reference
+import eu.k5.tr.model.idref.Referenced
 import model.complex.ComplexRoot
 import model.complex.SubType
 import model.minimal.Root
@@ -58,6 +61,24 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         val obj = readMinimalType("minimal-attributes")
                 as? Root ?: fail<Nothing>("Invalid root type")
         assertEquals("Hello", obj.attribute)
+    }
+
+
+    @Test
+    @DisplayName("Read minimal xml, with unknown content")
+    fun readMinimalUnknownContent() {
+        val obj = readMinimalType("minimal-unknown-content")
+                as? Root ?: fail<Nothing>("Invalid root type")
+        assertEquals("Hallo", obj.test)
+    }
+
+
+    @Test
+    @DisplayName("Read minimal xml, with unknown content")
+    fun readMinimalComplexContentInSimpleType() {
+        val obj = readMinimalType("minimal-complex-content-in-simple")
+                as? Root ?: fail<Nothing>("Invalid root type")
+        assertEquals("after invalid simpletype", obj.test2)
     }
 
 
@@ -133,6 +154,15 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
 
 
     @Test
+    @DisplayName("Read simple type. Misc Types")
+    fun readSimpleTypeMisc() {
+        val obj = readModelType("simple-type-misc")
+                as? MiscTypes ?: fail<Nothing>("Invalid root type")
+
+        assertEquals("http://www.k5.eu", obj.anyUri)
+    }
+
+    @Test
     @DisplayName("Read simple type. Numeric Types")
     fun readSimpleTypeTemporal() {
         val obj = readModelType("simple-type-temporal")
@@ -141,6 +171,20 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertEquals(13, obj.date.day)
         assertEquals(12, obj.date.month)
         assertEquals(2017, obj.date.year)
+    }
+
+    @Test
+    @DisplayName("Read model type. idref")
+    fun readModelIdref() {
+        val obj = readModelType("complex-type-idref")
+                as? Reference ?: fail<Nothing>("Invalid root type")
+
+        val idref = obj.idref
+        val referenced = obj.referenced
+
+
+        assertEquals("firstname", referenced.firstname)
+        assertEquals("lastname", referenced.lastname)
     }
 
 
@@ -155,6 +199,7 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
             builder.add("http://k5.eu/tr/complex", "model.complex")
 
             builder.add("http://k5.eu/tr/model", NumericTypes::class.java.`package`.name)
+            builder.add("http://k5.eu/tr/model/idref", Referenced::class.java.`package`.name)
             return builder.build()
         }
     }
