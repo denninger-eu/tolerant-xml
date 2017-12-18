@@ -194,6 +194,21 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
     }
 
 
+    private fun assertIdref(reference: Reference) {
+        val idref = reference.idref
+        val referenced = reference.referenced
+
+
+        assertEquals("firstname", referenced.firstname)
+        assertEquals("lastname", referenced.lastname)
+        if (idref is Referenced) {
+            assertEquals("firstname", idref.firstname)
+            assertEquals("lastname", idref.lastname)
+        } else {
+            fail("Invalid type in idref: " + idref)
+        }
+    }
+
     @Test
     @DisplayName("Read model type. nillable type")
     fun readModelNillable() {
@@ -245,19 +260,16 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertNull(obj.sizeAttribute)
     }
 
-    private fun assertIdref(reference: Reference) {
-        val idref = reference.idref
-        val referenced = reference.referenced
 
+    @Test
+    @DisplayName("Read model type. complex-type simpleontent")
+    fun readModelComplextTypeSimpleContent() {
+        val obj = readModelType("complex-type-simplecontent")
+                as? Shoe ?: fail<Nothing>("Invalid root type")
 
-        assertEquals("firstname", referenced.firstname)
-        assertEquals("lastname", referenced.lastname)
-        if (idref is Referenced) {
-            assertEquals("firstname", idref.firstname)
-            assertEquals("lastname", idref.lastname)
-        } else {
-            fail("Invalid type in idref: " + idref)
-        }
+        assertNotNull(obj.size)
+        assertEquals("abc", obj.size.value)
+        assertEquals("edf", obj.size.country)
     }
 
 

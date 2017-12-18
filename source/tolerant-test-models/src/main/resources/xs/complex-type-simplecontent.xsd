@@ -6,10 +6,18 @@
 
     <xs:complexType name="shoesizeSimpleContent">
         <xs:simpleContent>
-            <xs:extension base="xs:integer">
+            <xs:extension base="xs:string">
                 <xs:attribute name="country" type="xs:string"/>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
 
+    <xs:element name="Shoe">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="size" type="tr:shoesizeSimpleContent"/>
+            </xs:sequence>
+        </xs:complexType>
+
+    </xs:element>
 </schema>

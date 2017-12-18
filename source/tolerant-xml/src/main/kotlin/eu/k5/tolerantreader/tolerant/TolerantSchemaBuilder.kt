@@ -145,6 +145,23 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
         val createSupplier = writer.createSupplier(initContext, qname)
         var builder = ComplexTypeBuilder(qname, createSupplier, xsComplexType, TolerantComplexProxy(qname))
         complexTypeBuilders[xsComplexType.getQualifiedName()] = builder
+
+        val simpleContent = xsComplexType.simpleContent
+        if (simpleContent != null) {
+            val baseName = simpleContent.extension?.base
+
+            val baseType = simpleTypes.get(baseName)
+
+            val parameters = ElementParameters(false, 0, false)
+
+            val elementName = QName(XSD_NAMESPACE, "value")
+
+            val assigner = writer.createElementAssigner(initContext, qname, elementName, baseType!!.getTypeName(), parameters)
+
+            builder.simpleContenxt = TolerantSimpleContent(baseType!!, assigner)
+
+
+        }
     }
 
     private fun finishComplexTypes() {
@@ -232,11 +249,18 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 }
 
 
-private class ComplexTypeBuilder(val name: QName, val konstructor: (QName) -> Any, val xsComplexType: XsComplexType, val proxy: TolerantComplexProxy) {
+private class ComplexTypeBuilder(
+        val name: QName,
+        val konstructor: (QName) -> Any,
+        val xsComplexType: XsComplexType,
+        val proxy: TolerantComplexProxy
+) {
 
     val elements = ImmutableMap.builder<String, TolerantElement>()!!
     val concreteSubtypes = TolerantMapBuilder<QName>()
     var tolerantComplexType: TolerantComplexType? = null
+
+    var simpleContenxt: TolerantSimpleContent? = null
 
 
     fun addElement(name: String, bindElement: TolerantElement) {
@@ -257,7 +281,7 @@ private class ComplexTypeBuilder(val name: QName, val konstructor: (QName) -> An
             return complexType
         }
 
-        complexType = TolerantComplexType(name!!, konstructor, elements.build(), concreteSubtypes.build())
+        complexType = TolerantComplexType(name!!, konstructor, elements.build(), concreteSubtypes.build(), simpleContenxt)
         proxy.delegate = complexType
         tolerantComplexType = complexType
         return complexType
