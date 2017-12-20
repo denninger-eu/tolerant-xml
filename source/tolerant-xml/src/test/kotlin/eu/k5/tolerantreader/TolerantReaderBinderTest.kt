@@ -109,7 +109,7 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
     @Test
     @DisplayName("Read model type. Inheritance")
     fun readComplexTypesInheritance() {
-        val obj = readModelType("complex-types-inherited")
+        val obj = readModelType("complex-type-inheritance")
                 as? ComplexInheritance ?: fail<Nothing>("Invalid root type")
 
         val inherited = obj.type as SubType

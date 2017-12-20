@@ -176,11 +176,7 @@ class DomAttribute(val attributeName: QName, val value: String?, val weight: Int
 
 }
 
-<<<<<<< HEAD
-class DomElement(private val elementName: QName, private val typeName: QName, weight: Int) : DomNode(weight) {
-=======
 class DomElement(val elementName: QName, val expectedTypeName: QName, val actualType: QName, weight: Int) : DomNode(weight) {
->>>>>>> a56fd5910afbe35e9f8b113fdd3907f9d87a064b
 
     val elements: MutableList<DomNode> = ArrayList()
 

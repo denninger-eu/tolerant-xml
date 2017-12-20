@@ -82,19 +82,18 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testModel("simple-type-enum")
     }
 
-<<<<<<< HEAD
+
     @Test
     @DisplayName("Read model type. enum invalid")
     fun readModelEnumInvalid() {
         testModel("simple-type-enum-invalid")
-=======
+    }
 
     @Test
     @Disabled("refout noch unvollständig")
     @DisplayName("Read model type. Inheritance")
     fun readComplexTypesInheritance() {
         testModel("complex-type-inheritance")
->>>>>>> a56fd5910afbe35e9f8b113fdd3907f9d87a064b
     }
 
     private fun testMinimal(testCase: String) {

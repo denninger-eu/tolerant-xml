@@ -70,13 +70,12 @@ class XjcRegistry(seed: List<Class<*>>) {
         var qname: QName? = null
         if (annotation != null) {
             qname = QName(annotation.namespace, annotation.name)
-            val xjcType = XjcType(annotation != null, type, registry)
+            val xjcType = XjcType(annotation != null, type, registry, qname)
 
             types.put(qname!!, xjcType)
 
 
         }
-
 
 
         val isRoot: Boolean
@@ -101,10 +100,11 @@ class XjcRegistry(seed: List<Class<*>>) {
 
     }
 
-<<<<<<< HEAD
+
     fun getTypes(): Map<QName, XjcType> {
         return types
-=======
+    }
+
     fun getElements(): List<XjcType> {
         return ArrayList(types.values)
     }
@@ -118,7 +118,6 @@ class XjcRegistry(seed: List<Class<*>>) {
             byType.size == 1 -> byType[0]
             else -> throw IllegalStateException("Not unique")
         }
->>>>>>> a56fd5910afbe35e9f8b113fdd3907f9d87a064b
     }
 
 

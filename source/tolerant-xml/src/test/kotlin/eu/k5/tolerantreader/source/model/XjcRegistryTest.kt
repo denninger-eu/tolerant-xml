@@ -1,15 +1,12 @@
 package eu.k5.tolerantreader.source.model
 
-<<<<<<< HEAD
+import eu.k5.tr.model.Shoe
+import eu.k5.tr.model.ShoesizeSimpleContent
 import eu.k5.tr.model.idref.Reference
 import eu.k5.tr.strict.StrictRoot
 import junit.framework.Assert.assertEquals
-=======
-import eu.k5.tr.model.Shoe
-import eu.k5.tr.model.ShoesizeSimpleContent
-import eu.k5.tr.strict.StrictRoot
-import org.junit.jupiter.api.Assertions.*
->>>>>>> a56fd5910afbe35e9f8b113fdd3907f9d87a064b
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import java.util.*
 import javax.xml.namespace.QName
@@ -49,7 +46,6 @@ class XjcRegistryTest {
     }
 
 
-<<<<<<< HEAD
     @Test
     fun test2() {
         val xjcRegistry = XjcRegistry(Arrays.asList(Reference::class.java))
@@ -59,6 +55,4 @@ class XjcRegistryTest {
 
         assertEquals(2, elements.size)
     }
-=======
->>>>>>> a56fd5910afbe35e9f8b113fdd3907f9d87a064b
 }
