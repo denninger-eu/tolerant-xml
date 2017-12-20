@@ -1,10 +1,13 @@
 package eu.k5.tolerantreader
+
 import  eu.k5.tr.strict.StrictRoot
 import eu.k5.tolerantreader.source.model.XjcRegistry
 import eu.k5.tolerantreader.strict.StrictSchemaBuilder
-import eu.k5.tolerantreader.xs.ClasspathStreamSource
 import eu.k5.tolerantreader.xs.Schema
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.xmlunit.builder.DiffBuilder
+import org.xmlunit.builder.Input
 import java.io.StringWriter
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -17,26 +20,20 @@ class StrictWriterTest {
 
 
     @Test
-    fun test() {
-
+    fun minimal() {
         val root = StrictRoot()
         root.status = "world"
         root.hello = "echo"
 
-
-
         val writer = Writer()
-
         initStrictWriter().write(root, writer.xmlWriter)
-
-        print(writer.getOutput())
+        assertSimilar("minimal", writer)
     }
 
 
     private fun getBasePath(): Path {
         return Paths.get("src", "test", "resources", "/xs")
     }
-
 
 
     fun initStrictWriter(): StrictWriter {
@@ -47,7 +44,19 @@ class StrictWriterTest {
         val strictSchemaBuilder = StrictSchemaBuilder(xjcRegistry, xsRegistry)
 
         return StrictWriter(strictSchemaBuilder.build())
+    }
 
+
+    private fun assertSimilar(testCase: String, writer: Writer) {
+
+        val output = writer.getOutput()
+        print(output)
+        val myDiff = DiffBuilder.compare(Input.fromString(output))
+                .withTest(Input.fromFile("src/test/resources/refout/strict/" + testCase + ".xml"))
+                .checkForSimilar().ignoreWhitespace()
+                .build()
+
+        Assertions.assertFalse(myDiff.hasDifferences(), myDiff.toString())
     }
 }
 

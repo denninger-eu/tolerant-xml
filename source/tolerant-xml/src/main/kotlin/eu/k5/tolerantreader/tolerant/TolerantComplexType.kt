@@ -1,6 +1,7 @@
 package eu.k5.tolerantreader.tolerant
 
 import eu.k5.tolerantreader.BindContext
+import eu.k5.tolerantreader.binding.Assigner
 import eu.k5.tolerantreader.xs.XsComplexType
 import javax.xml.namespace.QName
 import javax.xml.stream.XMLStreamReader
@@ -8,7 +9,8 @@ import javax.xml.stream.XMLStreamReader
 class TolerantComplexType(private val name: QName,
                           private val konstructor: (elemantName: QName) -> Any,
                           private val elements: Map<String, TolerantElement>,
-                          private val concreteSubtypes: TolerantMap<QName>) : TolerantType() {
+                          private val concreteSubtypes: TolerantMap<QName>,
+                          private val simpleContent: TolerantSimpleContent?) : TolerantType() {
 
     override fun asSubtype(context: BindContext, stream: XMLStreamReader): TolerantType {
         if (concreteSubtypes.isEmpty()) {
@@ -18,15 +20,15 @@ class TolerantComplexType(private val name: QName,
         if (xsiValue.isEmpty()) {
             return this
         }
-        val subtypeName: QName?
-        if (!xsiValue.contains(NAMESPACE_SEPARATOR)) {
-            subtypeName = concreteSubtypes.getByLocalName(xsiValue)
+        val subtypeName =
+                if (!xsiValue.contains(NAMESPACE_SEPARATOR)) {
+                    concreteSubtypes.getByLocalName(xsiValue)
+                } else {
+                    val valueParts = xsiValue.split(NAMESPACE_SEPARATOR)
+                    val namespaceURI = stream.getNamespaceURI(valueParts[0])
+                    concreteSubtypes.get(QName(namespaceURI, valueParts[1]))
+                }
 
-        } else {
-            val valueParts = xsiValue.split(NAMESPACE_SEPARATOR)
-            val namespaceURI = stream.getNamespaceURI(valueParts[0])
-            subtypeName = concreteSubtypes.get(QName(namespaceURI, valueParts[1]))
-        }
         if (subtypeName != null) {
             val complexType = context.getComplexType(subtypeName)
             if (complexType != null) {
@@ -50,6 +52,8 @@ class TolerantComplexType(private val name: QName,
     override fun readValue(context: BindContext, element: TolerantElement, stream: XMLStreamReader): Any {
         val newInstance = konstructor(element.qname)
         handleAttributes(context, stream, newInstance)
+
+        simpleContent?.handle(context, element, stream, newInstance)
         return newInstance
     }
 
@@ -66,17 +70,16 @@ class TolerantComplexType(private val name: QName,
     }
 
 
-    override fun pushedOnStack(): Boolean = true
+    override fun pushedOnStack(): Boolean = simpleContent == null
 
     fun getElement(namespaceURI: String?, localName: String?): TolerantElement? {
         return elements.get(localName)
     }
-
-
 }
 
+
 /**
- * Mutable delegate
+ * Mutable delegate to break object graph cycles
  */
 class TolerantComplexProxy(val name: QName) : TolerantType() {
     var delegate: TolerantComplexType? = null
@@ -91,4 +94,12 @@ class TolerantComplexProxy(val name: QName) : TolerantType() {
 
     fun getElement(namespaceURI: String?, localName: String?): TolerantElement? = delegate?.getElement(namespaceURI, localName)
 
+}
+
+class TolerantSimpleContent(val base: TolerantSimpleType, val baseAssigner: Assigner) {
+
+    fun handle(context: BindContext, element: TolerantElement, stream: XMLStreamReader, instance: Any) {
+        val baseValue = base.readValue(context, element, stream)
+        baseAssigner.assign(context, instance, baseValue)
+    }
 }

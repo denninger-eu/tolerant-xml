@@ -7,19 +7,20 @@ import eu.k5.tolerantreader.binding.ElementParameters
 import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.binding.model.ReflectionUtils
 import eu.k5.tolerantreader.tolerant.IdRefType
+import eu.k5.tolerantreader.tolerant.XSI_NAMESPACE
+import eu.k5.tolerantreader.tolerant.XSI_TYPE
 import org.w3c.dom.Node
-import java.math.BigDecimal
-import java.math.BigInteger
 import java.util.*
-import javax.xml.datatype.Duration
-import javax.xml.datatype.XMLGregorianCalendar
 import javax.xml.namespace.QName
 import javax.xml.parsers.DocumentBuilderFactory
 
 
 class DomWriter : TolerantWriter {
     override fun createEnumSupplier(initContext: InitContext, enumName: QName): (BindContext, String) -> Any {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+// FIXME check range of value
+        return { content: BindContext, value: String -> value }
+
     }
 
     private val utils = ReflectionUtils()
@@ -147,7 +148,7 @@ class DomWriter : TolerantWriter {
             return DomTextContentAssigner(element, parameter.weight, simpleTypeAdapter.get(target)!!)
         } else {
 
-            return DomElementAssigner(element, parameter.weight)
+            return DomElementAssigner(element, parameter.weight, target)
         }
     }
 
@@ -175,7 +176,11 @@ class DomAttribute(val attributeName: QName, val value: String?, val weight: Int
 
 }
 
+<<<<<<< HEAD
 class DomElement(private val elementName: QName, private val typeName: QName, weight: Int) : DomNode(weight) {
+=======
+class DomElement(val elementName: QName, val expectedTypeName: QName, val actualType: QName, weight: Int) : DomNode(weight) {
+>>>>>>> a56fd5910afbe35e9f8b113fdd3907f9d87a064b
 
     val elements: MutableList<DomNode> = ArrayList()
 
@@ -191,6 +196,10 @@ class DomElement(private val elementName: QName, private val typeName: QName, we
 
         attributes.sortBy { it.weight }
 
+        if (actualType != expectedTypeName) {
+            element.setAttributeNS(XSI_NAMESPACE, "type", actualType.localPart)
+        }
+
         for (attribute in attributes) {
             element.setAttributeNS(attribute.attributeName.namespaceURI, attribute.attributeName.localPart, attribute.value)
         }
@@ -198,7 +207,6 @@ class DomElement(private val elementName: QName, private val typeName: QName, we
         nodes.forEach {
             element.appendChild(it)
         }
-
         return element
     }
 }
@@ -217,7 +225,7 @@ class DomRootAssigner(private val elementName: QName) : Assigner {
     override fun assign(context: BindContext, instance: Any, value: Any?) {
         if (instance is DomRoot) {
             if (value is DomValue) {
-                val domElement = DomElement(elementName, value.typeName, 0)
+                val domElement = DomElement(elementName, value.typeName, value.typeName, 0)
                 domElement.attributes.addAll(value.attributes)
                 instance.addRootElement(domElement)
                 value.element = domElement
@@ -240,20 +248,21 @@ class DomTextContentAssigner(private var elementName: QName, val weight: Int, pr
 
 }
 
-class DomElementAssigner(val element: QName, val weight: Int) : Assigner {
+class DomElementAssigner(val element: QName, val weight: Int, private val target: QName) : Assigner {
 
     override fun assign(context: BindContext, instance: Any, value: Any?) {
         if (instance is DomValue) {
             if (value is DomValue) {
 
-                val domElement = DomElement(element, value.typeName, weight)
+                val domElement = DomElement(element, target, value.typeName, weight)
                 domElement.attributes.addAll(value.attributes)
 
                 instance.element!!.elements.add(domElement)
                 value.element = domElement
+                return
             }
-
         }
+        TODO("Different types")
     }
 
 }

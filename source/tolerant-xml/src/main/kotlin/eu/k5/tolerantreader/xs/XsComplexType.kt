@@ -23,6 +23,9 @@ class XsComplexType : XsNamed() {
     var complexContent: XsComplexContent? = null
 
 
+    @XmlElement(name = "simpleContent", namespace = XSD_NAMESPACE)
+    var simpleContent: XsSimpleContent? = null
+
     @XmlTransient
     var owningElement: XsElement? = null
 
@@ -58,6 +61,9 @@ class XsComplexType : XsNamed() {
 
     fun getDeclaredAttributes(): List<XsAttribute> {
         if (attributes.isEmpty()) {
+            if (complexContent?.extension?.attributes.orEmpty().isEmpty()) {
+                return simpleContent?.extension?.attributes.orEmpty()
+            }
             return complexContent?.extension?.attributes.orEmpty()
         }
         return attributes
@@ -74,6 +80,7 @@ class XsComplexType : XsNamed() {
             e.postSchemaMarshall(xsSchema)
         })
         complexContent?.postSchemaMarshall(xsSchema)
+        simpleContent?.postSchemaMarshall(xsSchema)
         attributes?.forEach { a -> a.postSchemaMarshall(xsSchema) }
     }
 
@@ -173,7 +180,16 @@ class XsComplexContent {
 @XmlAccessorType(XmlAccessType.NONE)
 class XsSimpleContent {
 
+    @XmlElement(name = "extension", namespace = XSD_NAMESPACE)
     var extension: XsComplexExtension? = null
+
+    @XmlTransient
+    var owningSchema: XsSchema? = null
+
+    fun postSchemaMarshall(xsSchema: XsSchema) {
+        owningSchema = xsSchema
+        extension?.postSchemaMarshall(xsSchema)
+    }
 
 }
 

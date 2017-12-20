@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ComplexInheritance xmlns="http://k5.eu/tr/model/inheritance">
+    <type xmlns:ns0="http://k5.eu/tr/model/inheritance" ns0:baseAttribute="baseAttrValue"
+          xmlns:ns1="http://k5.eu/tr/model/inheritance" ns1:subAttribute="subAttrValue"
+          xmlns:ns2="http://www.w3.org/2001/XMLSchema-instance" ns2:type="SubType">
+        <baseElement>baseValue</baseElement>
+        <subElement>subValue</subElement>
+    </type>
+</ComplexInheritance>

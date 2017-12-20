@@ -6,10 +6,10 @@ import eu.k5.tolerantreader.binding.model.PackageMappingBuilder
 import eu.k5.tr.model.*
 import eu.k5.tr.model.idref.Reference
 import eu.k5.tr.model.idref.Referenced
+import eu.k5.tr.model.inheritance.ComplexInheritance
+import eu.k5.tr.model.inheritance.SubType
 import model.complex.ComplexRoot
-import model.complex.SubType
 import model.minimal.Root
-import org.junit.Ignore
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
@@ -107,12 +107,12 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
 
 
     @Test
-    @DisplayName("Read complex type. Inheritance")
+    @DisplayName("Read model type. Inheritance")
     fun readComplexTypesInheritance() {
-        val obj = readComplexType("complex-types-inherited")
-                as? ComplexRoot ?: fail<Nothing>("Invalid root type")
+        val obj = readModelType("complex-types-inherited")
+                as? ComplexInheritance ?: fail<Nothing>("Invalid root type")
 
-        val inherited = obj.inherited as SubType
+        val inherited = obj.type as SubType
         assertEquals("baseAttrValue", inherited.baseAttribute)
         assertEquals("subAttrValue", inherited.subAttribute)
         assertEquals("baseValue", inherited.baseElement)
@@ -151,7 +151,7 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
 
 
     @Test
-    @DisplayName("Read simple type. Misc Types")
+    @DisplayName("Read model type. Misc Types")
     fun readSimpleTypeMisc() {
         val obj = readModelType("simple-type-misc")
                 as? MiscTypes ?: fail<Nothing>("Invalid root type")
@@ -159,7 +159,6 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertEquals("http://www.k5.eu", obj.anyUri)
 
         assertArrayEquals("test".toByteArray(StandardCharsets.UTF_8), obj.base64Binary)
-
     }
 
     @Test
@@ -193,6 +192,21 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertIdref(obj)
     }
 
+
+    private fun assertIdref(reference: Reference) {
+        val idref = reference.idref
+        val referenced = reference.referenced
+
+
+        assertEquals("firstname", referenced.firstname)
+        assertEquals("lastname", referenced.lastname)
+        if (idref is Referenced) {
+            assertEquals("firstname", idref.firstname)
+            assertEquals("lastname", idref.lastname)
+        } else {
+            fail("Invalid type in idref: " + idref)
+        }
+    }
 
     @Test
     @DisplayName("Read model type. nillable type")
@@ -245,19 +259,16 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertNull(obj.sizeAttribute)
     }
 
-    private fun assertIdref(reference: Reference) {
-        val idref = reference.idref
-        val referenced = reference.referenced
 
+    @Test
+    @DisplayName("Read model type. complex-type simpleontent")
+    fun readModelComplextTypeSimpleContent() {
+        val obj = readModelType("complex-type-simplecontent")
+                as? Shoe ?: fail<Nothing>("Invalid root type")
 
-        assertEquals("firstname", referenced.firstname)
-        assertEquals("lastname", referenced.lastname)
-        if (idref is Referenced) {
-            assertEquals("firstname", idref.firstname)
-            assertEquals("lastname", idref.lastname)
-        } else {
-            fail("Invalid type in idref: " + idref)
-        }
+        assertNotNull(obj.size)
+        assertEquals("abc", obj.size.value)
+        assertEquals("edf", obj.size.country)
     }
 
 
@@ -273,6 +284,7 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
 
             builder.add("http://k5.eu/tr/model", NumericTypes::class.java.`package`.name)
             builder.add("http://k5.eu/tr/model/idref", Referenced::class.java.`package`.name)
+            builder.add("http://k5.eu/tr/model/inheritance", ComplexInheritance::class.java.`package`.name)
             return builder.build()
         }
     }
