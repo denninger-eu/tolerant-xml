@@ -8,8 +8,10 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="size" type="tr:sizeEnum"/>
+                <!--             <xs:element name="dist" type="tr:distance"/> -->
             </xs:sequence>
             <xs:attribute name="sizeAttribute" type="tr:sizeEnum"/>
+            <!--<xs:attribute name="distance" type="tr:distance"/>-->
         </xs:complexType>
 
     </xs:element>
@@ -23,5 +25,17 @@
             <xs:enumeration value="XL"/>
         </xs:restriction>
     </xs:simpleType>
+
+    <!--
+        <xs:simpleType name="distance">
+            <xs:restriction base="xs:int">
+                <xs:enumeration value="1"/>
+                <xs:enumeration value="2"/>
+                <xs:enumeration value="3"/>
+                <xs:enumeration value="4"/>
+                <xs:enumeration value="5"/>
+            </xs:restriction>
+        </xs:simpleType>
+    -->
 
 </xs:schema>

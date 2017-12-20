@@ -2,6 +2,7 @@ package eu.k5.tolerantreader.xs
 
 import eu.k5.tolerantreader.XSD_NAMESPACE
 import eu.k5.tolerantreader.XsNamed
+import eu.k5.tolerantreader.xsString
 import javax.xml.bind.annotation.*
 import javax.xml.namespace.QName
 
@@ -26,7 +27,7 @@ class XsSimpleType : XsNamed() {
     }
 
     fun isEnum(): Boolean {
-        return restriction?.isEnum() ?: false
+        return name?.equals(xsString) ?: false && restriction?.isEnum() ?: false
     }
 }
 

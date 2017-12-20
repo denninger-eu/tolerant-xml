@@ -6,6 +6,7 @@ import java.lang.UnsupportedOperationException
 import java.lang.reflect.ParameterizedType
 import java.util.*
 import javax.xml.bind.JAXBElement
+import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.bind.annotation.XmlSchema
 import javax.xml.namespace.QName
 import kotlin.collections.ArrayList
@@ -64,11 +65,22 @@ class XjcRegistry(seed: List<Class<*>>) {
     }
 
     fun handleType(registry: XjcXmlRegistry, type: Class<*>) {
+        val annotation: XmlRootElement? = type.getAnnotation(XmlRootElement::class.java)
+        var qname: QName? = null
+        if (annotation != null) {
+            qname = QName(annotation.namespace, annotation.name)
+            val xjcType = XjcType(annotation != null, type, registry)
+
+            types.put(qname!!, xjcType)
+
+
+        }
+
 
     }
 
-    fun getElements(): List<XjcType> {
-        return ArrayList()
+    fun getTypes(): Map<QName, XjcType> {
+        return types
     }
 
 

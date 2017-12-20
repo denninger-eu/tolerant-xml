@@ -120,7 +120,7 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
                     simpleTypes.put(type.getQualifiedName(), type)
                 } else {
-                    TODO("not implement yet")
+                    initContext.addFinding(Type.UNSUPPORTED_BASE_TYPE, base.toString())
                 }
             }
 

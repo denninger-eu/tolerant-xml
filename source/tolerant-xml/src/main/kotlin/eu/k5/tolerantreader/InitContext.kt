@@ -3,7 +3,9 @@ package eu.k5.tolerantreader
 import org.slf4j.LoggerFactory
 
 enum class Type {
-    MISSING_SETTER
+    MISSING_SETTER,
+
+    UNSUPPORTED_BASE_TYPE
 }
 
 class InitContext {

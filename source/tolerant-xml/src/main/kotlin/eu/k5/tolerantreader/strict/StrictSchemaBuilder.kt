@@ -56,7 +56,7 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
     }
 
     private fun initElements() {
-        for (element in xjcRegistry.getElements()) {
+        for (element in xjcRegistry.getTypes().values) {
 
 
             val annotation = element.type.getAnnotation(XmlRootElement::class.java)

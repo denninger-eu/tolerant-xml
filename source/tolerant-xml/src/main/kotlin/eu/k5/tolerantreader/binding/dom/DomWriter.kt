@@ -175,7 +175,7 @@ class DomAttribute(val attributeName: QName, val value: String?, val weight: Int
 
 }
 
-class DomElement(val elementName: QName, val typeName: QName, weight: Int) : DomNode(weight) {
+class DomElement(private val elementName: QName, private val typeName: QName, weight: Int) : DomNode(weight) {
 
     val elements: MutableList<DomNode> = ArrayList()
 
@@ -193,9 +193,7 @@ class DomElement(val elementName: QName, val typeName: QName, weight: Int) : Dom
 
         for (attribute in attributes) {
             element.setAttributeNS(attribute.attributeName.namespaceURI, attribute.attributeName.localPart, attribute.value)
-
         }
-
 
         nodes.forEach {
             element.appendChild(it)
@@ -205,7 +203,7 @@ class DomElement(val elementName: QName, val typeName: QName, weight: Int) : Dom
     }
 }
 
-class DomTextContent(val elementName: QName, val value: String, weight: Int) : DomNode(weight) {
+class DomTextContent(private val elementName: QName, private val value: String, weight: Int) : DomNode(weight) {
     override fun asNode(context: DomContext): Node {
         val textNode = context.document.createTextNode(value)
         val element = context.document.createElementNS(elementName.namespaceURI, elementName.localPart)
@@ -215,7 +213,7 @@ class DomTextContent(val elementName: QName, val value: String, weight: Int) : D
 
 }
 
-class DomRootAssigner(val elementName: QName) : Assigner {
+class DomRootAssigner(private val elementName: QName) : Assigner {
     override fun assign(context: BindContext, instance: Any, value: Any?) {
         if (instance is DomRoot) {
             if (value is DomValue) {
@@ -228,7 +226,7 @@ class DomRootAssigner(val elementName: QName) : Assigner {
     }
 }
 
-class DomTextContentAssigner(var elementName: QName, val weight: Int, private val toString: (Any) -> String) : Assigner {
+class DomTextContentAssigner(private var elementName: QName, val weight: Int, private val toString: (Any) -> String) : Assigner {
     override fun assign(context: BindContext, instance: Any, value: Any?) {
         if (instance is DomValue) {
             if (value != null) {
