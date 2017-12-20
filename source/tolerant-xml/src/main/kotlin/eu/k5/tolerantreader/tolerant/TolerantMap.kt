@@ -18,7 +18,11 @@ enum class TolerantMapStrategy {
 private fun padding(length: Int): String = ":".repeat(length)
 
 
-class TolerantMap<T>(private val internal: ImmutableMap<String, T>, private val prefixLength: ImmutableMap<String, Int>) {
+class TolerantMap<T>(
+        private val internal: ImmutableMap<String, T>,
+        private val prefixLength: ImmutableMap<String, Int>,
+        private val caseSensitive: Boolean
+) {
 
     fun getByLocalName(localPart: String): T? {
         if (prefixLength.containsKey(localPart)) {
@@ -31,12 +35,29 @@ class TolerantMap<T>(private val internal: ImmutableMap<String, T>, private val 
         val prefix = prefixLength[localPart]
         if (prefix != null) {
             if (namespaceURI.length >= prefix) {
-                return internal[namespaceURI.substring(0, prefix) + localPart]
+                val key: String
+                if (!caseSensitive) {
+                    key = namespaceURI.substring(0, prefix) + localPart
+                } else {
+                    key = namespaceURI.substring(0, prefix).toLowerCase() + localPart.toLowerCase()
+                }
+                return internal[key]
             } else {
-                return internal[namespaceURI + padding(prefix - namespaceURI.length) + localPart]
+                val key: String
+                if (!caseSensitive) {
+                    key = namespaceURI.toLowerCase() + padding(prefix - namespaceURI.length) + localPart.toLowerCase()
+                } else {
+                    key = namespaceURI + padding(prefix - namespaceURI.length) + localPart
+                }
+
+                return internal[key]
             }
         }
-        return internal[localPart]
+        if (internal.containsKey(localPart)) {
+            return internal[localPart]
+        } else {
+            return internal[localPart.toLowerCase()]
+        }
     }
 
     fun get(name: QName): T? = get(name.namespaceURI, name.localPart)
@@ -44,7 +65,7 @@ class TolerantMap<T>(private val internal: ImmutableMap<String, T>, private val 
     fun isEmpty(): Boolean = internal.isEmpty()
 }
 
-class TolerantMapBuilder<T> {
+class TolerantMapBuilder<T>(val caseSensitive: Boolean = true) {
 
     private var internal: MutableMap<QName, T> = HashMap()
 
@@ -54,7 +75,7 @@ class TolerantMapBuilder<T> {
     fun append(name: QName, element: T) {
         internal.put(name, element)
         namespacesByLocalPart.computeIfAbsent(name.localPart) {
-            NamespaceCollection()
+            NamespaceCollection(caseSensitive)
         }.namespaces.add(name.namespaceURI)
     }
 
@@ -67,22 +88,26 @@ class TolerantMapBuilder<T> {
             if (collection.prefixRequired()) {
                 if (collection.seal()) {
                     elementPrefixLength.put(name.localPart, collection.prefix)
+
                 }
 
                 val prefix = collection.prefixMap[name.namespaceURI]
                 tolerantBuilder.put(prefix + name.localPart, element)
             } else {
                 tolerantBuilder.put(name.localPart, element)
+                if (!caseSensitive && name.localPart != name.localPart.toLowerCase()) {
+                    tolerantBuilder.put(name.localPart.toLowerCase(), element)
+                }
             }
         }
 
-        return TolerantMap(tolerantBuilder.build(), elementPrefixLength.build())
+        return TolerantMap(tolerantBuilder.build(), elementPrefixLength.build(), caseSensitive)
     }
 
 
 }
 
-class NamespaceCollection {
+class NamespaceCollection(val caseSensitive: Boolean) {
     val namespaces: MutableSet<String> = HashSet()
 
     val prefixMap: MutableMap<String, String> = HashMap()

@@ -6,7 +6,9 @@ import java.lang.UnsupportedOperationException
 import java.lang.reflect.ParameterizedType
 import java.util.*
 import javax.xml.bind.JAXBElement
+import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.bind.annotation.XmlSchema
+import javax.xml.bind.annotation.XmlType
 import javax.xml.namespace.QName
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -65,10 +67,42 @@ class XjcRegistry(seed: List<Class<*>>) {
 
     fun handleType(registry: XjcXmlRegistry, type: Class<*>) {
 
+
+        val isRoot: Boolean
+        val qName: QName
+        if (type.getAnnotation(XmlRootElement::class.java) != null) {
+            qName = QName(registry.namespace, type.getAnnotation(XmlRootElement::class.java).name)
+            isRoot = true
+        } else if (type.getAnnotation(XmlType::class.java) != null) {
+            val typeAnnotation = type.getAnnotation(XmlType::class.java)
+
+            qName = QName(registry.namespace, typeAnnotation.name)
+            isRoot = false
+        } else {
+            qName = QName(registry.namespace, "xxx")
+            isRoot = false
+        }
+
+        val xjcType = XjcType(isRoot, type, registry, qName)
+        registry.types.add(xjcType)
+
+        types.put(qName, xjcType)
+
     }
 
     fun getElements(): List<XjcType> {
-        return ArrayList()
+        return ArrayList(types.values)
+    }
+
+    fun getElementByClass(type: Class<*>): XjcType? {
+
+        val byType = types.values.filter { it.type.equals(type) }
+
+        return when {
+            byType.isEmpty() -> null
+            byType.size == 1 -> byType[0]
+            else -> throw IllegalStateException("Not unique")
+        }
     }
 
 

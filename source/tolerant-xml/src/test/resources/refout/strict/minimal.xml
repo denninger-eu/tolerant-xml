@@ -1,0 +1,4 @@
+<?xml version="1.0" ?>
+<StrictRoot status="world">
+    <hello>echo</hello>
+</StrictRoot>

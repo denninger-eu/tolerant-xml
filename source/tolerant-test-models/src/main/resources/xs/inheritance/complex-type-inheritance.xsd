@@ -1,0 +1,35 @@
+<xs:schema xmlns="http://k5.eu/tr/model/inheritance"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tr="http://k5.eu/tr/model/inheritance"
+           targetNamespace="http://k5.eu/tr/model/inheritance">
+
+
+    <xs:complexType name="BaseType">
+        <xs:sequence>
+            <xs:element name="baseElement" type="xs:string"/>
+
+        </xs:sequence>
+        <xs:attribute name="baseAttribute" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="SubType">
+        <xs:complexContent>
+            <xs:extension base="tr:BaseType">
+                <xs:sequence>
+                    <xs:element name="subElement" type="xs:string"/>
+                </xs:sequence>
+                <xs:attribute name="subAttribute" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:element name="ComplexInheritance">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="type" type="tr:BaseType"/>
+            </xs:sequence>
+        </xs:complexType>
+
+    </xs:element>
+</xs:schema>

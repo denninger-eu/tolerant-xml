@@ -3,7 +3,10 @@ package eu.k5.tolerantreader
 import eu.k5.tolerantreader.binding.dom.DomWriter
 import eu.k5.tr.model.ListType
 import eu.k5.tr.model.idref.Reference
+import eu.k5.tr.model.inheritance.ComplexInheritance
+import eu.k5.tr.model.inheritance.SubType
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.w3c.dom.Document
@@ -42,12 +45,6 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testComplex("complex-types")
     }
 
-    @Test
-    @DisplayName("Read complex type inherited")
-    fun readComplexTypesInherited() {
-        testComplex("complex-types-inherited")
-    }
-
 
     @Test
     @DisplayName("Read complex type cyclic types")
@@ -83,6 +80,14 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
     @DisplayName("Read model type. enum")
     fun readModelEnum() {
         testModel("simple-type-enum")
+    }
+
+
+    @Test
+    @Disabled("refout noch unvollständig")
+    @DisplayName("Read model type. Inheritance")
+    fun readComplexTypesInheritance() {
+        testModel("complex-type-inheritance")
     }
 
     private fun testMinimal(testCase: String) {

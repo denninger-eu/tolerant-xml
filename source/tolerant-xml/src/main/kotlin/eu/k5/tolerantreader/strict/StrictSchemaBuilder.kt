@@ -27,7 +27,7 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
     private val elements: TolerantMap<XsElement>
 
     init {
-        val mapBuilder = TolerantMapBuilder<XsElement>();
+        val mapBuilder = TolerantMapBuilder<XsElement>(false)
         for (element in xsRegistry.getAllElements()) {
             mapBuilder.append(element.getQualifiedName(), element);
         }
@@ -60,10 +60,13 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
 
             val annotation = element.type.getAnnotation(XmlRootElement::class.java)
-            val xsElement = elements.get(annotation.namespace, annotation.name)
+            val xsElement = elements.get(element.qName)
 
             val xsComplexType = xsElement?.complexType
 
+            if (xsComplexType == null){
+                continue
+            }
             val strictType = createComplexType(element.type, xsComplexType!!)
 
 
