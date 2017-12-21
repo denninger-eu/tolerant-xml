@@ -16,10 +16,20 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 
 class DomWriter : TolerantWriter {
-    override fun createEnumSupplier(initContext: InitContext, enumName: QName): (BindContext, String) -> Any {
+    override fun createEnumSupplier(initContext: InitContext,
+                                    enumName: QName,
+                                    literals: Collection<String>):
+            (BindContext, String) -> Any? {
 
-// FIXME check range of value
-        return { content: BindContext, value: String -> value }
+        return { content: BindContext, value: String
+            ->
+            if (literals.contains(value)) {
+                value
+            } else {
+                content.addViolation(Violation.INVALID_ENUM_LITERAL, value)
+                null
+            }
+        }
 
     }
 

@@ -81,7 +81,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
         return { constructor.newInstance() }
     }
 
-    override fun createEnumSupplier(initContext: InitContext, enumName: QName): (BindContext, String) -> Any? {
+    override fun createEnumSupplier(initContext: InitContext, enumName: QName, literals: Collection<String>): (BindContext, String) -> Any? {
         val enumClass = resolveJavaClass(enumName)
         val factoryMethod = enumClass.getMethod("fromValue", String::class.java)
 

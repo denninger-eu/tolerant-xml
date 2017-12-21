@@ -64,7 +64,7 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
             val xsComplexType = xsElement?.complexType
 
-            if (xsComplexType == null){
+            if (xsComplexType == null) {
                 continue
             }
             val strictType = createComplexType(element.type, xsComplexType!!)
@@ -155,7 +155,6 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
     fun build(): StrictSchema {
         init()
         return StrictSchema(strictElements.build())
-
     }
 
 }

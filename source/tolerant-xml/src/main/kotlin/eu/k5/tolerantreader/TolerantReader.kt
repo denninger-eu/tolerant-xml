@@ -17,7 +17,8 @@ enum class Violation {
 
     MISSING_ENTITY,
 
-    INVALID_ENUM_LITERAL
+    INVALID_ENUM_LITERAL,
+
 }
 
 class BindContext(private val schema: TolerantSchema, private val root: RootElement) {

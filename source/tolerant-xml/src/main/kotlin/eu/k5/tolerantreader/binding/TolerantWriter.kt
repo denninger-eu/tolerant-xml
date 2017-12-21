@@ -10,7 +10,7 @@ interface TolerantWriter {
 
     fun createSupplier(initContext: InitContext, typeName: QName): (elementName: QName) -> Any
 
-    fun createEnumSupplier(initContext: InitContext, enumName: QName): (BindContext, String) -> Any?
+    fun createEnumSupplier(initContext: InitContext, enumName: QName, literals: Collection<String>): (BindContext, String) -> Any?
 
     fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner
 

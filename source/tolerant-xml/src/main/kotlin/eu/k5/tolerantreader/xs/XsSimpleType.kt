@@ -27,9 +27,17 @@ class XsSimpleType : XsNamed() {
     }
 
     fun isEnum(): Boolean {
-        return name?.equals(xsString) ?: false && restriction?.isEnum() ?: false
+        return restriction?.base?.equals(xsString) ?: false && restriction?.isEnum() ?: false
+    }
+
+
+    fun enumLiterals(): List<String> {
+        return restriction?.enumeration.orEmpty()
+                .filter { it != null }
+                .map { it.value!! }
     }
 }
+
 
 @XmlAccessorType(XmlAccessType.NONE)
 class XsSimpleTypeRestriction {

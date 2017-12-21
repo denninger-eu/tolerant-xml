@@ -1,2 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<EnumType xmlns:ns0="http://k5.eu/tr/model" ns0:sizeAttribute="S" xmlns="http://k5.eu/tr/model"/>
+<EnumType xmlns:ns0="http://k5.eu/tr/model" ns0:sizeAttribute="S" xmlns="http://k5.eu/tr/model">
+    <size>XL</size>
+</EnumType>

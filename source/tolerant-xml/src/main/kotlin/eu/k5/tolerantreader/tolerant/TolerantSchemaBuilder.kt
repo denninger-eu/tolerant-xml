@@ -108,7 +108,9 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
             if (simpleType.isEnum()) {
 
-                val enumSupplier = writer.createEnumSupplier(initContext, simpleType.getQualifiedName())
+                val literals = simpleType.enumLiterals()
+
+                val enumSupplier = writer.createEnumSupplier(initContext, simpleType.getQualifiedName(), literals)
                 simpleTypes.put(simpleType.getQualifiedName(), TolerantEnumType(simpleType.getQualifiedName(), enumSupplier))
 
 
