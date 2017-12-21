@@ -66,16 +66,6 @@ class XjcRegistry(seed: List<Class<*>>) {
     }
 
     fun handleType(registry: XjcXmlRegistry, type: Class<*>) {
-        val annotation: XmlRootElement? = type.getAnnotation(XmlRootElement::class.java)
-        var qname: QName? = null
-        if (annotation != null) {
-            qname = QName(annotation.namespace, annotation.name)
-            val xjcType = XjcType(annotation != null, type, registry, qname)
-
-            types.put(qname!!, xjcType)
-
-
-        }
 
 
         val isRoot: Boolean
