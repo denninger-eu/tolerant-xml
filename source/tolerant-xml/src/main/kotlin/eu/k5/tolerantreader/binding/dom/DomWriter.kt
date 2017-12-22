@@ -195,20 +195,25 @@ class DomElement(val elementName: QName, val expectedTypeName: QName, val actual
 
     override fun asNode(context: DomContext): Node {
 
+        val elementPrefix = context.getPrefix(elementName.namespaceURI)
+        val element = context.document.createElement(elementPrefix + ":" + elementName.localPart)
+
         elements.sortBy { it.weight }
         val nodes = ArrayList<Node>()
         elements.mapTo(nodes) { it.asNode(context) }
 
-        val element = context.document.createElementNS(elementName.namespaceURI, elementName.localPart)
 
         attributes.sortBy { it.weight }
 
         if (actualType != expectedTypeName) {
-            element.setAttributeNS(XSI_NAMESPACE, "type", actualType.localPart)
+            val typePrefix = context.getPrefix(actualType.namespaceURI)
+            val xsiPrefix = context.getPrefix(XSI_NAMESPACE)
+            element.setAttribute(xsiPrefix + ":type", typePrefix + ":" + actualType.localPart)
         }
 
         for (attribute in attributes) {
-            element.setAttributeNS(attribute.attributeName.namespaceURI, attribute.attributeName.localPart, attribute.value)
+            val attributePrefix = context.getPrefix(attribute.attributeName.namespaceURI)
+            element.setAttribute(attributePrefix + ":" + attribute.attributeName.localPart, attribute.value)
         }
 
         nodes.forEach {
@@ -221,7 +226,10 @@ class DomElement(val elementName: QName, val expectedTypeName: QName, val actual
 class DomTextContent(private val elementName: QName, private val value: String, weight: Int) : DomNode(weight) {
     override fun asNode(context: DomContext): Node {
         val textNode = context.document.createTextNode(value)
-        val element = context.document.createElementNS(elementName.namespaceURI, elementName.localPart)
+
+        val prefix = context.getPrefix(elementName.namespaceURI)
+
+        val element = context.document.createElement(prefix + ":" + elementName.localPart)
         element.appendChild(textNode)
         return element
     }

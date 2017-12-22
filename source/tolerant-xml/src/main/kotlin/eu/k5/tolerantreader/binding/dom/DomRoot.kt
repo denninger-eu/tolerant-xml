@@ -2,6 +2,7 @@ package eu.k5.tolerantreader.binding.dom
 
 import eu.k5.tolerantreader.RootElement
 import org.w3c.dom.Document
+import org.w3c.dom.Element
 
 class DomRoot(val document: Document) : RootElement {
 
@@ -16,9 +17,14 @@ class DomRoot(val document: Document) : RootElement {
 
         val context = DomContext(document)
 
-        val node = rootElement!!.asNode(context)
+        val root = rootElement!!.asNode(context) as Element
 
-        document.appendChild(node)
+        for ((namespace, prefix) in context.getUsedNamespaces()) {
+            root.setAttribute("xmlns:" + prefix, namespace)
+        }
+
+
+        document.appendChild(root)
 
 
         return document
