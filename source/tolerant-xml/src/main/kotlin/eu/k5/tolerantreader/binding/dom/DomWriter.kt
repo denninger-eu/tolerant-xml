@@ -4,6 +4,7 @@ import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.Assigner
 import eu.k5.tolerantreader.binding.ElementParameters
+import eu.k5.tolerantreader.binding.EnumSupplier
 import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.binding.model.ReflectionUtils
 import eu.k5.tolerantreader.tolerant.IdRefType
@@ -19,9 +20,9 @@ class DomWriter : TolerantWriter {
     override fun createEnumSupplier(initContext: InitContext,
                                     enumName: QName,
                                     literals: Collection<String>):
-            (BindContext, String) -> Any? {
+            EnumSupplier {
 
-        return { content: BindContext, value: String
+        return EnumSupplier(xsString) { content: BindContext, value: String
             ->
             if (literals.contains(value)) {
                 value

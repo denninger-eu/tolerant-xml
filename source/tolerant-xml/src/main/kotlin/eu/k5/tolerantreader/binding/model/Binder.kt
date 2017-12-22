@@ -5,6 +5,7 @@ import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.Assigner
 import eu.k5.tolerantreader.binding.ElementParameters
+import eu.k5.tolerantreader.binding.EnumSupplier
 import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.tolerant.IdRefType
 import org.slf4j.LoggerFactory
@@ -81,12 +82,12 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
         return { constructor.newInstance() }
     }
 
-    override fun createEnumSupplier(initContext: InitContext, enumName: QName, literals: Collection<String>): (BindContext, String) -> Any? {
+    override fun createEnumSupplier(initContext: InitContext, enumName: QName, literals: Collection<String>): EnumSupplier {
         val enumClass = resolveJavaClass(enumName)
         val factoryMethod = enumClass.getMethod("fromValue", String::class.java)
 
 
-        return { context: BindContext, token: String ->
+        return EnumSupplier(enumName) { context: BindContext, token: String ->
             try {
                 factoryMethod.invoke(null, token)
             } catch (exception: InvocationTargetException) {

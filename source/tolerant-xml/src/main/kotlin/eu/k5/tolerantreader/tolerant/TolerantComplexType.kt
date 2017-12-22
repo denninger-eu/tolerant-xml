@@ -64,7 +64,9 @@ class TolerantComplexType(private val name: QName,
             val type = attributeElement?.type
             if (type is TolerantSimpleType) {
                 val value = type.parse(context, stream.getAttributeValue(index))
-                attributeElement?.assigner?.assign(context, instance, value)
+                if (value != null) {
+                    attributeElement?.assigner?.assign(context, instance, value)
+                }
             }
         }
     }

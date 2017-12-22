@@ -10,7 +10,7 @@ interface TolerantWriter {
 
     fun createSupplier(initContext: InitContext, typeName: QName): (elementName: QName) -> Any
 
-    fun createEnumSupplier(initContext: InitContext, enumName: QName, literals: Collection<String>): (BindContext, String) -> Any?
+    fun createEnumSupplier(initContext: InitContext, enumName: QName, literals: Collection<String>): EnumSupplier
 
     fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner
 
@@ -18,6 +18,11 @@ interface TolerantWriter {
 
     fun createContext(schema: TolerantSchema): BindContext
 }
+
+class EnumSupplier(
+        val targetType: QName,
+        val parser: (BindContext, String) -> Any?
+)
 
 class ElementParameters(val list: Boolean, val weight: Int, val attribute: Boolean) {
 
