@@ -33,7 +33,7 @@ class XsSimpleType : XsNamed() {
 
     fun enumLiterals(): List<String> {
         return restriction?.enumeration.orEmpty()
-                .filter { it != null }
+                .filter { it.value != null }
                 .map { it.value!! }
     }
 }

@@ -3,12 +3,19 @@ package eu.k5.tolerantreader.xs
 import com.google.common.base.Joiner
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.io.InputStream
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 import javax.xml.bind.JAXBContext
+import kotlin.collections.HashMap
 
 object Schema {
     val context = JAXBContext.newInstance(XsSchema::class.java)
@@ -99,19 +106,76 @@ class PathStream(absolutPath: String, private val path: Path) : Stream(absolutPa
     }
 }
 
-class ClasspathStreamSource(private val classloader: ClassLoader) : StreamSource {
-    override fun resolveRelative(parentLocation: String, location: String): Stream {
-        val resolved = ArrayDeque(parentLocation.split('/').reversed())
-        resolved.pop() // remove filename from stack
-        for (part in location.split(':')) {
-            when (part) {
-                "." -> {
-                }
-                ".." -> resolved.pop()
-                else -> resolved.push(part)
+class ZipStreamSource(private val inputStream: InputStream) : StreamSource {
+
+    private val content: Map<String, ByteArray>
+
+    init {
+        content = HashMap()
+        val zis = ZipInputStream(inputStream)
+
+        while (true) {
+            var entry: ZipEntry = zis.nextEntry ?: break
+            if (!entry.isDirectory) {
+                LOGGER.info("Caching entry {} from zip", entry.name)
+                val content = readEntry(zis)
+                this.content.put(entry.name, content)
             }
         }
-        return ClasspathStream(classloader, Joiner.on('/').join(resolved.reversed()))
+
+    }
+
+    private fun readEntry(zis: ZipInputStream): ByteArray {
+        val buffer = ByteArray(8192)
+
+        val baos = ByteArrayOutputStream()
+        val gzip = GZIPOutputStream(baos)
+        while (true) {
+            var read = zis.read(buffer, 0, buffer.size)
+            if (read < 0)
+                break
+            gzip.write(buffer, 0, read)
+        }
+        gzip.close()
+        baos.close()
+        return baos.toByteArray()
+    }
+
+    override fun resolveAbsolute(location: String): Stream {
+        return ZipStream(location, content[location])
+    }
+
+    override fun resolveRelative(parentLocation: String, location: String): Stream {
+
+        val relative = resolveRelative(parentLocation, location, '/')
+        return resolveAbsolute(relative)
+    }
+
+    companion object {
+        private val LOGGER: Logger = LoggerFactory.getLogger(ZipStreamSource::class.java)
+    }
+}
+
+class ZipStream(absolutePath: String, private val content: ByteArray?) : Stream(absolutePath) {
+
+    override fun openStream(): InputStream? {
+
+        LOGGER.debug("Opening stream to {}", absolutPath)
+        return if (content != null)
+            GZIPInputStream(ByteArrayInputStream(content))
+        else
+            null
+    }
+
+    companion object {
+        private val LOGGER: Logger = LoggerFactory.getLogger(ZipStream::class.java)
+    }
+}
+
+class ClasspathStreamSource(private val classloader: ClassLoader) : StreamSource {
+    override fun resolveRelative(parentLocation: String, location: String): Stream {
+        val res = resolveRelative(parentLocation, location, '/')
+        return ClasspathStream(classloader, res)
     }
 
     override fun resolveAbsolute(location: String): Stream {
@@ -129,4 +193,18 @@ class ClasspathStream(private val classloader: ClassLoader, absolutPath: String)
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(ClasspathStream::class.java)
     }
+}
+
+private fun resolveRelative(parent: String, location: String, delimiter: Char): String {
+    val resolved = ArrayDeque(parent.split(delimiter).reversed())
+    resolved.pop() // remove filename from stack
+    for (part in location.split(':')) {
+        when (part) {
+            "." -> {
+            }
+            ".." -> resolved.pop()
+            else -> resolved.push(part)
+        }
+    }
+    return Joiner.on(delimiter).join(resolved.reversed())
 }

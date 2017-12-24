@@ -31,6 +31,11 @@ class StrictWriterTest {
     }
 
 
+    @Test
+    fun test(){
+
+    }
+
     private fun getBasePath(): Path {
         return Paths.get("src", "test", "resources", "/xs")
     }

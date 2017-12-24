@@ -90,7 +90,6 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
     }
 
     @Test
-    @Disabled("refout noch unvollständig")
     @DisplayName("Read model type. Inheritance")
     fun readComplexTypesInheritance() {
         testModel("complex-type-inheritance")

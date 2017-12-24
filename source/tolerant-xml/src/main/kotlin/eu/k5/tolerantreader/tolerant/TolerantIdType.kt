@@ -4,27 +4,24 @@ import eu.k5.tolerantreader.*
 
 class TolerantIdType : TolerantSimpleType(xsId, xsId) {
 
-
-    override fun parse(context: BindContext, text: String): Any {
-        return text.trim()
-    }
+    override fun parse(context: BindContext, text: String): Any = text.trim()
 
 }
 
 class TolerantIdRefType : TolerantSimpleType(xsIdRef, xsIdRef) {
     override fun parse(context: BindContext, text: String): IdRefType {
-        val entity = context.getEntityById(text)
+        val entity = context.getEntityById(text.trim())
         if (entity != null) {
-            return IdRefType(entity, text)
+            return IdRefType(entity, text.trim())
         }
-        return IdRefType(null,text)
+        return IdRefType(null, text.trim())
     }
 
 }
 
 
-class IdRefType(val entity: Any?, val id: String) {
-
-
-}
+class IdRefType(
+        val entity: Any?,
+        val id: String
+)
 

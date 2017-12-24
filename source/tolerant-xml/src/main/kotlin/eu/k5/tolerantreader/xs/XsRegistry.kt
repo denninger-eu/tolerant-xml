@@ -62,7 +62,7 @@ class XsRegistry(val initSchema: XsSchema, private val allSchemas: Map<String, X
     }
 
     fun getElement(s: String): XsElement {
-        return allSchemas.values.first().elements.first { e -> s.equals(e.localName) }
+        return elements.values.first { s.equals(it.localName) }
     }
 
     fun getAllSimpleTypes(): Collection<XsSimpleType> {

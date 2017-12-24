@@ -24,7 +24,9 @@ class EnumSupplier(
         val parser: (BindContext, String) -> Any?
 )
 
-class ElementParameters(val list: Boolean, val weight: Int, val attribute: Boolean) {
-
-}
+class ElementParameters(
+        val list: Boolean,
+        val weight: Int,
+        val attribute: Boolean
+)
 

@@ -67,7 +67,7 @@ class XsTest {
 
         Assertions.assertNotNull(complexType.sequence)
         Assertions.assertEquals(2, complexType.sequence!!.elements.size)
-        Assertions.assertEquals("http://k5.eu/tr", complexType.getQualifiedName().namespaceURI)
+        Assertions.assertEquals("http://k5.eu/tr/model", complexType.getQualifiedName().namespaceURI)
         Assertions.assertEquals("personinfo", complexType.getQualifiedName().localPart)
 
         Assertions.assertEquals(1, complexType.attributes.size)
@@ -141,11 +141,14 @@ class XsTest {
     }
 
     private fun resolve(fileName: String): XsRegistry {
-        val file = Paths.get("src", "test", "resources", "tolerant-test-models/src/test/resources/xs", fileName + ".xsd")
 
-        val source = ClasspathStreamSource(XsTest::class.java.classLoader)
+        val zip = XsTest::class.java.classLoader.getResourceAsStream("xs.zip")
 
-        return Schema.parse("xs/" + fileName + ".xsd", source)
+        //val source = ClasspathStreamSource(XsTest::class.java.classLoader)
+
+        val source = ZipStreamSource(zip)
+
+        return Schema.parse("xs/$fileName.xsd", source)
     }
 
 

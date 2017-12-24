@@ -8,7 +8,3 @@ interface Assigner {
 
 }
 
-object NoopAssigner : Assigner {
-    override fun assign(bindContext: BindContext, instance: Any, value: Any?) {
-    }
-}
