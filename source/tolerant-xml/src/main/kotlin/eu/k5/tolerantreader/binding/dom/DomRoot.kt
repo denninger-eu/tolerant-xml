@@ -4,8 +4,7 @@ import eu.k5.tolerantreader.RootElement
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 
-class DomRoot(val document: Document) : RootElement {
-
+class DomRoot(private val document: Document) : RootElement {
 
     private var rootElement: DomElement? = null
 
@@ -14,19 +13,14 @@ class DomRoot(val document: Document) : RootElement {
     }
 
     override fun seal(): Any {
-
         val context = DomContext(document)
-
         val root = rootElement!!.asNode(context) as Element
 
         for ((namespace, prefix) in context.getUsedNamespaces()) {
             root.setAttribute("xmlns:" + prefix, namespace)
         }
 
-
         document.appendChild(root)
-
-
         return document
     }
 
