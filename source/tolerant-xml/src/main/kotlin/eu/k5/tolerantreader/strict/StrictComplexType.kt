@@ -4,7 +4,7 @@ import eu.k5.tolerantreader.Reader
 import javax.xml.stream.XMLStreamWriter
 
 
-class StrictComplexType(private val attributes: List<StrictAttribute>, private val elements: List<StrictComplexElement>) : StrictType() {
+class StrictComplexType(val type: Class<*>, private val attributes: List<StrictAttribute>, private val elements: List<StrictComplexElement>) : StrictType() {
 
 
     override fun write(instance: Any, xmlStreamWriter: XMLStreamWriter) {
@@ -16,6 +16,15 @@ class StrictComplexType(private val attributes: List<StrictAttribute>, private v
             element.write(instance, xmlStreamWriter)
         }
 
+    }
+}
+
+class StrictComplexProxy() : StrictType() {
+
+    var delegate: StrictComplexType? = null
+
+    override fun write(instance: Any, xmlStreamWriter: XMLStreamWriter) {
+        delegate?.write(instance, xmlStreamWriter)
     }
 }
 
@@ -40,3 +49,4 @@ class StrictComplexElement(val name: String, val reader: Reader, val type: Stric
         }
     }
 }
+

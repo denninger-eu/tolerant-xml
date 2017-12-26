@@ -2,8 +2,14 @@ package eu.k5.tolerantreader
 
 import eu.k5.tolerantreader.tolerant.TolerantSchemaBuilder
 import eu.k5.tolerantreader.binding.TolerantWriter
+import eu.k5.tolerantreader.binding.model.Binder
+import eu.k5.tolerantreader.binding.model.PackageMapping
+import eu.k5.tolerantreader.binding.model.PackageMappingBuilder
 import eu.k5.tolerantreader.xs.ClasspathStreamSource
 import eu.k5.tolerantreader.xs.Schema
+import eu.k5.tr.model.NumericTypes
+import eu.k5.tr.model.idref.Referenced
+import eu.k5.tr.model.inheritance.ComplexInheritance
 import java.io.StringReader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -41,6 +47,19 @@ abstract class AbstractTolerantReaderTest {
         const val COMPLEX_TYPES = "complex-types"
         const val SIMPLE_TYPES = "simple-types"
         const val MODEL = "model"
+
+        val reader = ReaderCache(Binder(packageMapping()))
+
+        private fun packageMapping(): PackageMapping {
+            val builder = PackageMappingBuilder()
+            builder.add("http://k5.eu/tr/minimal", "model.minimal")
+            builder.add("http://k5.eu/tr/complex", "model.complex")
+
+            builder.add("http://k5.eu/tr/model", NumericTypes::class.java.`package`.name)
+            builder.add("http://k5.eu/tr/model/idref", Referenced::class.java.`package`.name)
+            builder.add("http://k5.eu/tr/model/inheritance", ComplexInheritance::class.java.`package`.name)
+            return builder.build()
+        }
     }
 
     private fun getBasePath(): Path {

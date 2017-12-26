@@ -100,6 +100,18 @@ class XsComplexType : XsNamed() {
         return allElements!!
     }
 
+    private var allElementsMap: Map<String, XsComplexElement>? = null
+    private fun getAllElementsMap(): Map<String, XsComplexElement> {
+        if (allElementsMap == null) {
+            val map = HashMap<String, XsComplexElement>()
+            for (element in getAllElememts()) {
+                map.put(element.name!!, element)
+            }
+            allElementsMap = map
+        }
+        return allElementsMap!!
+    }
+
     private var allAttributes: List<XsAttribute>? = null
 
     fun getAllAttributes(): List<XsAttribute> {
@@ -112,6 +124,20 @@ class XsComplexType : XsNamed() {
         return allAttributes!!
     }
 
+    private var allAttributesMap: Map<String, XsAttribute>? = null
+    private fun getAllAttributesMap(): Map<String, XsAttribute> {
+        if (allAttributesMap == null) {
+            val map = HashMap<String, XsAttribute>()
+            for (attribute in getAllAttributes()) {
+                map.put(attribute.name!!, attribute)
+            }
+            allAttributesMap = map
+        }
+        return allAttributesMap!!
+    }
+
+    fun getAttributeByName(name: String): XsAttribute? = getAllAttributesMap()[name]
+
     fun addConcreteSubtype(name: QName) {
         concreteSubtypes.add(name)
     }
@@ -119,6 +145,8 @@ class XsComplexType : XsNamed() {
     fun getAllConcreteSubtypes(): List<QName> {
         return concreteSubtypes
     }
+
+    fun getElementByName(name: String): XsComplexElement? = getAllElementsMap()[name]
 
 }
 

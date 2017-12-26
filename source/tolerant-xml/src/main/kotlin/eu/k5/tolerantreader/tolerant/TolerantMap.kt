@@ -35,28 +35,29 @@ class TolerantMap<T>(
         val prefix = prefixLength[localPart]
         if (prefix != null) {
             if (namespaceURI.length >= prefix) {
-                val key: String
-                if (!caseSensitive) {
-                    key = namespaceURI.substring(0, prefix) + localPart
-                } else {
-                    key = namespaceURI.substring(0, prefix).toLowerCase() + localPart.toLowerCase()
-                }
+                val key: String =
+                        if (!caseSensitive) {
+                            namespaceURI.substring(0, prefix) + localPart
+                        } else {
+                            namespaceURI.substring(0, prefix).toLowerCase() + localPart.toLowerCase()
+                        }
                 return internal[key]
             } else {
-                val key: String
-                if (!caseSensitive) {
-                    key = namespaceURI.toLowerCase() + padding(prefix - namespaceURI.length) + localPart.toLowerCase()
-                } else {
-                    key = namespaceURI + padding(prefix - namespaceURI.length) + localPart
-                }
+                val key: String =
+                        if (!caseSensitive) {
+                            namespaceURI.toLowerCase() + padding(prefix - namespaceURI.length) + localPart.toLowerCase()
+                        } else {
+                            namespaceURI + padding(prefix - namespaceURI.length) + localPart
+                        }
 
                 return internal[key]
             }
         }
-        if (internal.containsKey(localPart)) {
-            return internal[localPart]
+
+        return if (internal.containsKey(localPart)) {
+            internal[localPart]
         } else {
-            return internal[localPart.toLowerCase()]
+            internal[localPart.toLowerCase()]
         }
     }
 

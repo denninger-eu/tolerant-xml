@@ -7,31 +7,40 @@ import eu.k5.tolerantreader.source.model.XjcRegistry
 import eu.k5.tolerantreader.tolerant.TolerantMap
 import eu.k5.tolerantreader.tolerant.TolerantMapBuilder
 import eu.k5.tolerantreader.XSD_NAMESPACE
+import eu.k5.tolerantreader.source.model.XjcType
 import eu.k5.tolerantreader.xs.XsComplexType
 import eu.k5.tolerantreader.xs.XsElement
 import eu.k5.tolerantreader.xs.XsRegistry
 import java.lang.reflect.Method
-import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.namespace.QName
 
 class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRegistry: XsRegistry) {
 
     private val simpleAdapters: MutableMap<QName, StrictTypeAdapter> = HashMap()
-    private val simpleTypes: MutableMap<QName, StrictType> = HashMap()
 
-    private val complexTypeBuilders = HashMap<QName, StrictComplexTypeBuilder>()
 
-    private val strictComplexTypes = ImmutableMap.builder<Class<*>, StrictComplexTypeBuilder>()
+    private val strictComplexTypes = HashMap<Class<*>, StrictComplexTypeBuilder>()
     private val strictElements = ImmutableMap.builder<Class<*>, StrictElement>()
 
-    private val elements: TolerantMap<XsElement>
+    private val xsElements: TolerantMap<XsElement>
+
+    private val xsComplexTypes: TolerantMap<XsComplexType>
 
     init {
+
         val mapBuilder = TolerantMapBuilder<XsElement>(false)
         for (element in xsRegistry.getAllElements()) {
             mapBuilder.append(element.getQualifiedName(), element);
         }
-        this.elements = mapBuilder.build()
+        this.xsElements = mapBuilder.build()
+
+
+        val ctMapBuilder = TolerantMapBuilder<XsComplexType>(false)
+        for (element in xsRegistry.getAllComplexTypes()) {
+            ctMapBuilder.append(element.getQualifiedName(), element);
+        }
+        this.xsComplexTypes = ctMapBuilder.build()
+
     }
 
     private fun initBaseTypes() {
@@ -59,34 +68,17 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
         for (element in xjcRegistry.getTypes().values) {
 
 
-            val annotation = element.type.getAnnotation(XmlRootElement::class.java)
-            val xsElement = elements.get(element.qName)
+            val xsElement = xsElements.get(element.qName)
 
             val xsComplexType = xsElement?.complexType
 
             if (xsComplexType == null) {
                 continue
             }
-            val strictType = createComplexType(element.type, xsComplexType!!)
 
+            val strictComplexType = createComplexType(element, xsComplexType!!)
 
-            val strictElement = StrictElement(xsElement!!.getQualifiedName(), strictType)
-            strictElements.put(element.type, strictElement)
-        }
-
-    }
-
-    private fun initComplexType(clazz: Class<*>, xsComplexType: XsComplexType) {
-
-        strictComplexTypes
-        val qname = xsComplexType.getQualifiedName()
-
-
-        for (attribute in xsComplexType.getAllAttributes()) {
-
-        }
-
-        for (element in xsComplexType.getAllElememts()) {
+            strictElements.put(strictComplexType.type, StrictElement(xsElement.getQualifiedName(), strictComplexType))
 
         }
 
@@ -103,43 +95,63 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
 
     private fun initComplexTypes() {
+        for (type in xjcRegistry.getTypes().values) {
 
 
-    }
+            val xsComplexType = xsComplexTypes.get(type.qName)
 
-    private fun createComplexType(clazz: Class<*>, xsComplexType: XsComplexType): StrictComplexType {
-
-        val strictType = StrictComplexTypeBuilder(xsComplexType.getQualifiedName(), clazz)
-
-
-        for (attribute in xsComplexType.getDeclaredAttributes()) {
-
-            val adapter = simpleAdapters.get(attribute.type)!!
-
-            val reader = createReader(clazz, attribute.name!!)
-            val strictAttribute = StrictAttribute(attribute.name!!, reader, adapter)
-            strictType.attributes.add(strictAttribute)
-        }
-
-        for (element in xsComplexType.getDeclaredElements()) {
-            val reader = createReader(clazz, element.name!!)
-
-            val get = simpleAdapters.get(element.type)
-            if (get != null) {
-                val strictElement = StrictSimpleElementType(element.getQualifiedName(), get)
-                val strictComplexElement = StrictComplexElement(element.name!!, reader, strictElement)
-                strictType.elements.add(strictComplexElement)
-            } else {
-
+            if (xsComplexType == null) {
+                continue
             }
 
 
+            createComplexType(type, xsComplexType)
         }
 
+    }
 
+    private fun createComplexType(type: XjcType, xsComplexType: XsComplexType): StrictComplexType {
+        val clazz = type.type
+        val strictType = StrictComplexTypeBuilder(xsComplexType.getQualifiedName(), type)
+
+        strictComplexTypes.put(type.type, strictType)
+
+        for (field in type.type.declaredFields) {
+
+            val attribute = xsComplexType.getAttributeByName(field.name)
+
+            if (attribute != null) {
+                val adapter = simpleAdapters.get(attribute.type)!!
+
+                val reader = createReader(clazz, attribute.name!!)
+                val strictAttribute = StrictAttribute(attribute.name!!, reader, adapter)
+                strictType.attributes.add(strictAttribute)
+                continue
+            }
+
+            val element = xsComplexType.getElementByName(field.name)
+
+            if (element != null) {
+                val reader = createReader(clazz, element.name!!)
+
+                val get = simpleAdapters.get(element.type)
+                if (get != null) {
+                    val strictElement = StrictSimpleElementType(element.getQualifiedName(), get)
+                    val strictComplexElement = StrictComplexElement(element.name!!, reader, strictElement)
+                    strictType.elements.add(strictComplexElement)
+                } else {
+                    val get1 = strictComplexTypes.get(field.type)
+                    if (get1 != null) {
+                        val strictComplexElement = StrictComplexElement(element.name!!, reader, get1.proxy)
+                        strictType.elements.add(strictComplexElement)
+                    }
+
+
+                }
+            }
+        }
 
         return strictType.build()
-
     }
 
 
@@ -168,11 +180,19 @@ class GetterReader(val getter: Method) : Reader {
 
 }
 
-class StrictComplexTypeBuilder(val name: QName, val clazz: Class<*>) {
+class StrictComplexTypeBuilder(val name: QName, val type: XjcType) {
+    val proxy = StrictComplexProxy()
     val attributes = ImmutableList.builder<StrictAttribute>()
     val elements = ImmutableList.builder<StrictComplexElement>()
 
+    var build: StrictComplexType? = null
+
     fun build(): StrictComplexType {
-        return StrictComplexType(attributes.build(), elements.build())
+        if (build != null) {
+
+        }
+        val build = StrictComplexType(type.type, attributes.build(), elements.build())
+        proxy.delegate = build
+        return build
     }
 }

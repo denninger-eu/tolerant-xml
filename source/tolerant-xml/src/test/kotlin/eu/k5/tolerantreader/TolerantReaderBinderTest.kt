@@ -274,19 +274,6 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
 
     override fun getReader(path: String): TolerantReader = reader.getReader(path)
 
-    companion object {
-        val reader = ReaderCache(Binder(packageMapping()))
 
-        private fun packageMapping(): PackageMapping {
-            val builder = PackageMappingBuilder()
-            builder.add("http://k5.eu/tr/minimal", "model.minimal")
-            builder.add("http://k5.eu/tr/complex", "model.complex")
-
-            builder.add("http://k5.eu/tr/model", NumericTypes::class.java.`package`.name)
-            builder.add("http://k5.eu/tr/model/idref", Referenced::class.java.`package`.name)
-            builder.add("http://k5.eu/tr/model/inheritance", ComplexInheritance::class.java.`package`.name)
-            return builder.build()
-        }
-    }
 }
 

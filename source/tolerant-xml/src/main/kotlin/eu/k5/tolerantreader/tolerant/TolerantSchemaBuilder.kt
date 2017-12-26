@@ -160,7 +160,7 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
             val assigner = writer.createElementAssigner(initContext, qname, elementName, baseType!!.getTypeName(), parameters)
 
-            builder.simpleContenxt = TolerantSimpleContent(baseType!!, assigner)
+            builder.simpleContext = TolerantSimpleContent(baseType!!, assigner)
 
 
         }
@@ -262,7 +262,7 @@ private class ComplexTypeBuilder(
     val concreteSubtypes = TolerantMapBuilder<QName>()
     var tolerantComplexType: TolerantComplexType? = null
 
-    var simpleContenxt: TolerantSimpleContent? = null
+    var simpleContext: TolerantSimpleContent? = null
 
 
     fun addElement(name: String, bindElement: TolerantElement) {
@@ -283,7 +283,7 @@ private class ComplexTypeBuilder(
             return complexType
         }
 
-        complexType = TolerantComplexType(name!!, konstructor, elements.build(), concreteSubtypes.build(), simpleContenxt)
+        complexType = TolerantComplexType(name!!, konstructor, elements.build(), concreteSubtypes.build(), simpleContext)
         proxy.delegate = complexType
         tolerantComplexType = complexType
         return complexType
