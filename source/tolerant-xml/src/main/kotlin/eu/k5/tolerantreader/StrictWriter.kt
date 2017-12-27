@@ -9,11 +9,14 @@ class StrictWriter(private val schema: StrictSchema) {
 
     fun write(instance: Any, writer: XMLStreamWriter) {
 
+        val context = schema.createContext()
+
         val type = schema.get(instance.javaClass)
 
-        type.write(instance, writer)
+        type.write(context, instance, writer)
 
 
     }
+
 
 }
