@@ -8,7 +8,8 @@ class StrictElement(val name: QName, val complexType: StrictComplexType) : Stric
 
 
     override fun write(context: StrictContext, instance: Any, xmlStream: XMLStreamWriter) {
-        xmlStream.writeStartElement(name.localPart)
+
+        xmlStream.writeStartElement(context.getNamespacePrefix(name.namespaceURI), name.localPart, name.namespaceURI)
 
         for ((namespace, prefix) in context.getAllNamespaces()) {
             xmlStream.writeNamespace(prefix, namespace)

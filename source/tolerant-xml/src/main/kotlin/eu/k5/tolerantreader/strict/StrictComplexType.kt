@@ -71,22 +71,25 @@ class StrictComplexProxy(private val qName: QName) : StrictType() {
     }
 }
 
-class StrictAttribute(val name: String, private val reader: Reader, private val adapter: StrictTypeAdapter) {
+class StrictAttribute(private val qName: QName, private val reader: Reader, private val adapter: StrictTypeAdapter) {
 
     fun write(context: StrictContext, instance: Any, xmlStreamWriter: XMLStreamWriter) {
         val attributeValue = reader.read(instance)
         if (attributeValue != null) {
             val stringValue = adapter.convert(attributeValue)
-            xmlStreamWriter.writeAttribute(name, stringValue)
+
+            xmlStreamWriter.writeAttribute(context.getNamespacePrefix(qName.namespaceURI), qName.namespaceURI, qName.localPart, stringValue)
         }
     }
 }
 
-class StrictComplexElement(val name: String, val reader: Reader, val type: StrictType, val expectedType: Class<*>) {
+class StrictComplexElement(val qName: QName, val reader: Reader, val type: StrictType, val expectedType: Class<*>) {
     fun write(context: StrictContext, instance: Any, xmlStreamWriter: XMLStreamWriter) {
         val elementValue = reader.read(instance)
         if (elementValue != null) {
-            xmlStreamWriter.writeStartElement(name)
+
+
+            xmlStreamWriter.writeStartElement(context.getNamespacePrefix(qName.namespaceURI), qName.localPart, qName.namespaceURI)
             type.write(context, elementValue, xmlStreamWriter)
             xmlStreamWriter.writeEndElement()
         }

@@ -171,6 +171,10 @@ class XsAttribute {
         }
     }
 
+    fun getQualifiedName(): QName {
+        return QName(owningSchema?.targetNamespace, name)
+    }
+
 }
 
 @XmlAccessorType(XmlAccessType.NONE)
