@@ -19,4 +19,6 @@
     <import namespace="http://k5.eu/tr/model/inheritance" schemaLocation="inheritance/complex-type-inheritance.xsd"/>
 
     <import namespace="http://k5.eu/tr/model" schemaLocation="complex-type.xsd"/>
+
+    <import namespace="http://k5.eu/tr/strict" schemaLocation="strict/strict-minimal.xsd"/>
 </schema>
