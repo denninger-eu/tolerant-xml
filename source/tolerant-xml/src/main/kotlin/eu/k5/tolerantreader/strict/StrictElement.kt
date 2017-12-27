@@ -4,14 +4,18 @@ import javax.xml.namespace.QName
 import javax.xml.stream.XMLStreamWriter
 
 class StrictElement(val name: QName, val complexType: StrictComplexType) : StrictType() {
+    override fun getQualifiedName(): QName = name
 
 
-    override fun write(instance: Any, xmlStramWriter: XMLStreamWriter) {
-        xmlStramWriter.writeStartElement(name.localPart)
+    override fun write(context: StrictContext, instance: Any, xmlStream: XMLStreamWriter) {
+        xmlStream.writeStartElement(name.localPart)
 
-        complexType.write(instance, xmlStramWriter)
+        for ((namespace, prefix) in context.getAllNamespaces()) {
+            xmlStream.writeNamespace(prefix, namespace)
+        }
+        complexType.write(context, instance, xmlStream)
 
-        xmlStramWriter.writeEndElement()
+        xmlStream.writeEndElement()
 
     }
 

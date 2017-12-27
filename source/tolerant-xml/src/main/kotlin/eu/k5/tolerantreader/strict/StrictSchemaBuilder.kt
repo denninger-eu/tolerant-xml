@@ -8,6 +8,7 @@ import eu.k5.tolerantreader.tolerant.TolerantMap
 import eu.k5.tolerantreader.tolerant.TolerantMapBuilder
 import eu.k5.tolerantreader.XSD_NAMESPACE
 import eu.k5.tolerantreader.source.model.XjcType
+import eu.k5.tolerantreader.tolerant.XSI_NAMESPACE
 import eu.k5.tolerantreader.xs.XsComplexType
 import eu.k5.tolerantreader.xs.XsElement
 import eu.k5.tolerantreader.xs.XsRegistry
@@ -18,6 +19,7 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
     private val simpleAdapters: MutableMap<QName, StrictTypeAdapter> = HashMap()
 
+    private val namespaces: MutableSet<String> = HashSet()
 
     private val strictComplexTypes = HashMap<Class<*>, StrictComplexTypeBuilder>()
     private val strictElements = ImmutableMap.builder<Class<*>, StrictElement>()
@@ -53,6 +55,7 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
         for (xsSimpleType in xsRegistry.getAllSimpleTypes()) {
             val qname = xsSimpleType.getQualifiedName()
             simpleAdapters.put(qname, ToStringAdapter)
+            namespaces.add(qname.namespaceURI)
         }
     }
 
@@ -80,6 +83,7 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
             strictElements.put(strictComplexType.type, StrictElement(xsElement.getQualifiedName(), strictComplexType))
 
+            namespaces.add(xsElement.getQualifiedName().namespaceURI)
         }
 
     }
@@ -137,12 +141,12 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
                 val get = simpleAdapters.get(element.type)
                 if (get != null) {
                     val strictElement = StrictSimpleElementType(element.getQualifiedName(), get)
-                    val strictComplexElement = StrictComplexElement(element.name!!, reader, strictElement)
+                    val strictComplexElement = StrictComplexElement(element.name!!, reader, strictElement, field.type)
                     strictType.elements.add(strictComplexElement)
                 } else {
                     val get1 = strictComplexTypes.get(field.type)
                     if (get1 != null) {
-                        val strictComplexElement = StrictComplexElement(element.name!!, reader, get1.proxy)
+                        val strictComplexElement = StrictComplexElement(element.name!!, reader, get1.proxy, field.type)
                         strictType.elements.add(strictComplexElement)
                     }
 
@@ -150,7 +154,7 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
                 }
             }
         }
-
+        namespaces.add(strictType.name.namespaceURI)
         return strictType.build()
     }
 
@@ -166,7 +170,21 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
     fun build(): StrictSchema {
         init()
-        return StrictSchema(strictElements.build())
+
+        val typesBuilder = ImmutableMap.builder<Class<*>, StrictComplexType>()
+        for ((key, type) in strictComplexTypes) {
+            typesBuilder.put(key, type.build())
+        }
+        val namespacePrefixes = ImmutableMap.builder<String, String>()
+        var index = 0
+        for (namespace in namespaces) {
+            namespacePrefixes.put(namespace, "xs" + index++)
+        }
+        namespacePrefixes.put(XSI_NAMESPACE, "xsi")
+
+
+
+        return StrictSchema(strictElements.build(), typesBuilder.build(), namespacePrefixes.build())
     }
 
 }
@@ -181,7 +199,7 @@ class GetterReader(val getter: Method) : Reader {
 }
 
 class StrictComplexTypeBuilder(val name: QName, val type: XjcType) {
-    val proxy = StrictComplexProxy()
+    val proxy = StrictComplexProxy(name)
     val attributes = ImmutableList.builder<StrictAttribute>()
     val elements = ImmutableList.builder<StrictComplexElement>()
 
@@ -191,7 +209,7 @@ class StrictComplexTypeBuilder(val name: QName, val type: XjcType) {
         if (build != null) {
 
         }
-        val build = StrictComplexType(type.type, attributes.build(), elements.build())
+        val build = StrictComplexType(type.type, name, attributes.build(), elements.build())
         proxy.delegate = build
         return build
     }
