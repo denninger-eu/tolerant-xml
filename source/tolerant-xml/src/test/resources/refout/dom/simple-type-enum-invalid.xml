@@ -1,3 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<EnumType xmlns:ns0="http://k5.eu/tr/model" xmlns="http://k5.eu/tr/model">
-</EnumType>
+<ns:EnumType xmlns:ns="http://k5.eu/tr/model"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<root xmlns="http://k5.eu/tr/complex">
-    <here>
-        <be>dragons</be>
-    </here>
-</root>
+<ns:root xmlns:ns="http://k5.eu/tr/complex">
+    <ns:here>
+        <ns:be>dragons</ns:be>
+    </ns:here>
+</ns:root>

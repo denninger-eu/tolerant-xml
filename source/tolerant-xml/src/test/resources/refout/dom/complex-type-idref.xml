@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Reference xmlns="http://k5.eu/tr/model/idref">
-    <idref>ID_1</idref>
-    <referenced xmlns:ns0="http://k5.eu/tr/model/idref" ns0:id="ID_1">
-        <firstname>firstname</firstname>
-        <lastname>lastname</lastname>
-    </referenced>
-</Reference>
+<ns:Reference xmlns:ns="http://k5.eu/tr/model/idref">
+    <ns:idref>ID_1</ns:idref>
+    <ns:referenced ns:id="ID_1">
+        <ns:firstname>firstname</ns:firstname>
+        <ns:lastname>lastname</ns:lastname>
+    </ns:referenced>
+</ns:Reference>

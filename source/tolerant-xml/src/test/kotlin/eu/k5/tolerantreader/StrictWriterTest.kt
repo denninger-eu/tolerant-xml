@@ -60,13 +60,13 @@ class StrictWriterTest : AbstractTolerantReaderTest() {
     }
 
 
-    fun writeModel(obj: Any, request: String) {
+    private fun writeModel(obj: Any, request: String) {
         val writer = Writer()
         initStrictWriter().write(obj, writer.xmlWriter)
         assertSimilar(request, writer)
     }
 
-    fun initStrictWriter(): StrictWriter {
+    private fun initStrictWriter(): StrictWriter {
         val xsRegistry = Schema.parse("classpath:xs/import.xsd")
         xsRegistry.init()
         val xjcRegistry = XjcRegistry(Arrays.asList(StrictRoot::class.java, ComplexInheritance::class.java, ListType::class.java))
