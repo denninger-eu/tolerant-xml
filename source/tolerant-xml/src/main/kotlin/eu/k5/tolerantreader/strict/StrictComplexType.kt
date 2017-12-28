@@ -83,7 +83,13 @@ class StrictAttribute(private val qName: QName, private val reader: Reader, priv
     }
 }
 
-class StrictComplexElement(val qName: QName, val reader: Reader, val type: StrictType, val expectedType: Class<*>) {
+class StrictComplexElement(
+        val qName: QName,
+        val reader: Reader,
+        val type: StrictType,
+        val expectedType: Class<*>,
+        val weight: Int
+) {
     fun write(context: StrictContext, instance: Any, xmlStreamWriter: XMLStreamWriter) {
         val elementValue = reader.read(instance)
         if (elementValue != null) {

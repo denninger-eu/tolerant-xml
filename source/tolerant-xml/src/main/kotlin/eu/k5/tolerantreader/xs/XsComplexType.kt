@@ -35,6 +35,7 @@ class XsComplexType : XsNamed() {
 
     fun isAbstract(): Boolean = abstract == true
 
+
     fun getDeclaredElements(): List<XsComplexElement> {
         val s = sequence
         if (s != null) {
@@ -76,9 +77,7 @@ class XsComplexType : XsNamed() {
     override fun postSchemaMarshall(xsSchema: XsSchema) {
         super.postSchemaMarshall(xsSchema)
 
-        sequence?.elements?.forEach({ e ->
-            e.postSchemaMarshall(xsSchema)
-        })
+        sequence?.postSchemaMarshall(xsSchema)
         complexContent?.postSchemaMarshall(xsSchema)
         simpleContent?.postSchemaMarshall(xsSchema)
         attributes?.forEach { a -> a.postSchemaMarshall(xsSchema) }
@@ -93,8 +92,16 @@ class XsComplexType : XsNamed() {
     fun getAllElememts(): List<XsComplexElement> {
         if (allElements == null) {
             var elements = ArrayList<XsComplexElement>()
-            getBaseComplexType()?.getAllElememts()?.forEach { elements.add(it) }
-            elements.addAll(getDeclaredElements())
+
+            var weight = 0
+            for (baseElement in getBaseComplexType()?.getAllElememts().orEmpty()) {
+                baseElement.globalWeight = weight++
+                elements.add(baseElement)
+            }
+            for (element in getDeclaredElements()) {
+                element.globalWeight = weight++
+                elements.add(element)
+            }
             allElements = elements
         }
         return allElements!!
@@ -180,9 +187,16 @@ class XsAttribute {
 @XmlAccessorType(XmlAccessType.NONE)
 class XsSequence {
 
-
     @XmlElement(name = "element", namespace = XSD_NAMESPACE)
     var elements: List<XsComplexElement> = ArrayList()
+
+    fun postSchemaMarshall(xsSchema: XsSchema) {
+
+        for (element in elements) {
+            element.postSchemaMarshall(xsSchema)
+        }
+    }
+
 
 }
 
@@ -276,6 +290,12 @@ class XsComplexElement : XsNamed() {
 
     @XmlAttribute(name = "maxOccurs")
     var maxOccurs: String? = "1"
+
+
+    @XmlTransient
+    var globalWeight: Int = -1
+// TODO make sure global weight is only updated once
+
 
     fun getTypeName(): QName {
         if (type != null) {

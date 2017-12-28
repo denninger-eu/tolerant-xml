@@ -34,7 +34,7 @@ class StrictWriterTest : AbstractTolerantReaderTest() {
 
 
     @Test
-    fun test() {
+    fun complexTypeInheritance() {
 
         val obj = readModelType("complex-type-inheritance")
                 as? ComplexInheritance ?: Assertions.fail<Nothing>("Invalid root type")
@@ -57,7 +57,7 @@ class StrictWriterTest : AbstractTolerantReaderTest() {
     fun initStrictWriter(): StrictWriter {
         val xsRegistry = Schema.parse("classpath:xs/import.xsd")
         xsRegistry.init()
-        val xjcRegistry = XjcRegistry(Arrays.asList(StrictRoot::class.java,ComplexInheritance::class.java))
+        val xjcRegistry = XjcRegistry(Arrays.asList(StrictRoot::class.java, ComplexInheritance::class.java))
         xjcRegistry.init()
         val strictSchemaBuilder = StrictSchemaBuilder(xjcRegistry, xsRegistry)
 

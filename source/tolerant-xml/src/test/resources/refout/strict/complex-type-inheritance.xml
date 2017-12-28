@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<xs1:ComplexInheritance xmlns:xs0="http://k5.eu/tr/strict" xmlns:xs1="http://k5.eu/tr/model/inheritance"
+                        xmlns:xs2="http://k5.eu/tr/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <xs1:type xsi:type="xs1:SubType" subAttribute="subAttrValue" xs1:baseAttribute="baseAttrValue">
+        <xs1:baseElement>baseValue</xs1:baseElement>
+        <xs1:subElement>subValue</xs1:subElement>
+    </xs1:type>
+</xs1:ComplexInheritance>

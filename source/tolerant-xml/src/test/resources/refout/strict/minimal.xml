@@ -1,4 +1,6 @@
 <?xml version="1.0" ?>
-<StrictRoot status="world">
-    <hello>echo</hello>
-</StrictRoot>
+<xs0:StrictRoot xmlns:xs0="http://k5.eu/tr/strict" xmlns:xs1="http://k5.eu/tr/model/inheritance"
+                xmlns:xs2="http://k5.eu/tr/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xs0:status="world">
+    <xs0:hello>echo</xs0:hello>
+</xs0:StrictRoot>

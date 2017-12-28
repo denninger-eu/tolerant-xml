@@ -144,12 +144,12 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
                     val get = simpleAdapters.get(element.type)
                     if (get != null) {
                         val strictElement = StrictSimpleElementType(element.getQualifiedName(), get)
-                        val strictComplexElement = StrictComplexElement(element.getQualifiedName(), reader, strictElement, field.type)
+                        val strictComplexElement = StrictComplexElement(element.getQualifiedName(), reader, strictElement, field.type, element.globalWeight)
                         strictType.elements.add(strictComplexElement)
                     } else {
                         val get1 = strictComplexTypes.get(field.type)
                         if (get1 != null) {
-                            val strictComplexElement = StrictComplexElement(element.getQualifiedName(), reader, get1.proxy, field.type)
+                            val strictComplexElement = StrictComplexElement(element.getQualifiedName(), reader, get1.proxy, field.type, element.globalWeight)
                             strictType.elements.add(strictComplexElement)
                         }
 
@@ -181,13 +181,11 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
             typesBuilder.put(key, type.build())
         }
         val namespacePrefixes = ImmutableMap.builder<String, String>()
-        var index = 0
-        for (namespace in namespaces) {
-            namespacePrefixes.put(namespace, "xs" + index++)
+
+        for ((index, namespace) in namespaces.withIndex()) {
+            namespacePrefixes.put(namespace, "xs" + index)
         }
         namespacePrefixes.put(XSI_NAMESPACE, "xsi")
-
-
 
         return StrictSchema(strictElements.build(), typesBuilder.build(), namespacePrefixes.build())
     }
@@ -206,7 +204,7 @@ class GetterReader(val getter: Method) : Reader {
 class StrictComplexTypeBuilder(val name: QName, val type: XjcType) {
     val proxy = StrictComplexProxy(name)
     val attributes = ImmutableList.builder<StrictAttribute>()
-    val elements = ImmutableList.builder<StrictComplexElement>()
+    val elements = ArrayList<StrictComplexElement>()
 
     var build: StrictComplexType? = null
 
@@ -214,7 +212,11 @@ class StrictComplexTypeBuilder(val name: QName, val type: XjcType) {
         if (build != null) {
 
         }
-        val build = StrictComplexType(type.type, name, attributes.build(), elements.build())
+
+        elements.sortBy { it.weight }
+
+
+        val build = StrictComplexType(type.type, name, attributes.build(), ImmutableList.copyOf(elements))
         proxy.delegate = build
         return build
     }
