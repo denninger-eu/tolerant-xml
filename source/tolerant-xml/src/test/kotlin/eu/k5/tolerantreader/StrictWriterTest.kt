@@ -4,6 +4,7 @@ import  eu.k5.tr.strict.StrictRoot
 import eu.k5.tolerantreader.source.model.XjcRegistry
 import eu.k5.tolerantreader.strict.StrictSchemaBuilder
 import eu.k5.tolerantreader.xs.Schema
+import eu.k5.tr.model.ListType
 import eu.k5.tr.model.inheritance.ComplexInheritance
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -35,12 +36,23 @@ class StrictWriterTest : AbstractTolerantReaderTest() {
 
     @Test
     fun complexTypeInheritance() {
+        testModel("complex-type-inheritance")
+    }
 
-        val obj = readModelType("complex-type-inheritance")
-                as? ComplexInheritance ?: Assertions.fail<Nothing>("Invalid root type")
+
+    @Test
+    fun simpleTypeList() {
+        testModel("simple-type-list")
+    }
+
+    private fun testModel(request: String) {
+
+        val obj = readModelType(request)
+                as? Any ?: Assertions.fail<Nothing>("Invalid root type")
 
 
-        writeModel(obj, "complex-type-inheritance")
+        writeModel(obj, request)
+
     }
 
     private fun getBasePath(): Path {
@@ -57,7 +69,7 @@ class StrictWriterTest : AbstractTolerantReaderTest() {
     fun initStrictWriter(): StrictWriter {
         val xsRegistry = Schema.parse("classpath:xs/import.xsd")
         xsRegistry.init()
-        val xjcRegistry = XjcRegistry(Arrays.asList(StrictRoot::class.java, ComplexInheritance::class.java))
+        val xjcRegistry = XjcRegistry(Arrays.asList(StrictRoot::class.java, ComplexInheritance::class.java, ListType::class.java))
         xjcRegistry.init()
         val strictSchemaBuilder = StrictSchemaBuilder(xjcRegistry, xsRegistry)
 

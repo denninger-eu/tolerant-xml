@@ -13,22 +13,8 @@ class StrictComplexType(
         private val attributes: List<StrictAttribute>,
         private val elements: List<StrictComplexElement>
 ) : StrictType() {
+
     override fun getQualifiedName(): QName = qName
-
-    val concreteSubtypes: Map<Class<*>, StrictComplexType> = HashMap()
-
-    fun writeAsSubtype(context: StrictContext, instance: Any, xmlStreamWriter: XMLStreamWriter) {
-
-        xmlStreamWriter.writeAttribute(XSI_NAMESPACE, "type", qName.localPart)
-
-        for (attribute in attributes) {
-            attribute.write(context, instance, xmlStreamWriter)
-        }
-
-        for (element in elements) {
-            element.write(context, instance, xmlStreamWriter)
-        }
-    }
 
     override fun write(context: StrictContext, instance: Any, xmlStreamWriter: XMLStreamWriter) {
         if (type != instance?.javaClass) {
@@ -71,7 +57,11 @@ class StrictComplexProxy(private val qName: QName) : StrictType() {
     }
 }
 
-class StrictAttribute(private val qName: QName, private val reader: Reader, private val adapter: StrictTypeAdapter) {
+class StrictAttribute(
+        private val qName: QName,
+        private val reader: Reader,
+        private val adapter: StrictTypeAdapter
+) {
 
     fun write(context: StrictContext, instance: Any, xmlStreamWriter: XMLStreamWriter) {
         val attributeValue = reader.read(instance)
@@ -84,21 +74,37 @@ class StrictAttribute(private val qName: QName, private val reader: Reader, priv
 }
 
 class StrictComplexElement(
-        val qName: QName,
-        val reader: Reader,
+        private val qName: QName,
+        private val reader: Reader,
         val type: StrictType,
-        val expectedType: Class<*>,
-        val weight: Int
+        private val expectedType: Class<*>,
+        val weight: Int,
+        private val listAllowed: Boolean
 ) {
     fun write(context: StrictContext, instance: Any, xmlStreamWriter: XMLStreamWriter) {
         val elementValue = reader.read(instance)
         if (elementValue != null) {
+            if (elementValue is List<*>) {
 
+                if (listAllowed) {
+                    for (value in elementValue) {
+                        writeOne(context, value!!, xmlStreamWriter)
+                    }
+                } else if (!elementValue.isEmpty()){
+                    writeOne(context, elementValue[0]!!, xmlStreamWriter)
+                }
 
-            xmlStreamWriter.writeStartElement(context.getNamespacePrefix(qName.namespaceURI), qName.localPart, qName.namespaceURI)
-            type.write(context, elementValue, xmlStreamWriter)
-            xmlStreamWriter.writeEndElement()
+            } else {
+                writeOne(context, elementValue, xmlStreamWriter)
+            }
+
         }
+    }
+
+    private fun writeOne(context: StrictContext, elementValue: Any, xmlStreamWriter: XMLStreamWriter) {
+        xmlStreamWriter.writeStartElement(context.getNamespacePrefix(qName.namespaceURI), qName.localPart, qName.namespaceURI)
+        type.write(context, elementValue, xmlStreamWriter)
+        xmlStreamWriter.writeEndElement()
     }
 }
 

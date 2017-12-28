@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<xs2:ListType xmlns:xs0="http://k5.eu/tr/strict" xmlns:xs1="http://k5.eu/tr/model/inheritance"
+              xmlns:xs2="http://k5.eu/tr/model" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <xs2:list>abc</xs2:list>
+    <xs2:list>edf</xs2:list>
+</xs2:ListType>

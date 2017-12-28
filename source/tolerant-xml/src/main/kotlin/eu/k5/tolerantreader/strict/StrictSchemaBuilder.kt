@@ -3,16 +3,18 @@ package eu.k5.tolerantreader.strict
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 import eu.k5.tolerantreader.Reader
+import eu.k5.tolerantreader.XSD_NAMESPACE
 import eu.k5.tolerantreader.source.model.XjcRegistry
+import eu.k5.tolerantreader.source.model.XjcType
 import eu.k5.tolerantreader.tolerant.TolerantMap
 import eu.k5.tolerantreader.tolerant.TolerantMapBuilder
-import eu.k5.tolerantreader.XSD_NAMESPACE
-import eu.k5.tolerantreader.source.model.XjcType
 import eu.k5.tolerantreader.tolerant.XSI_NAMESPACE
 import eu.k5.tolerantreader.xs.XsComplexType
 import eu.k5.tolerantreader.xs.XsElement
 import eu.k5.tolerantreader.xs.XsRegistry
+import java.lang.reflect.Field
 import java.lang.reflect.Method
+import java.lang.reflect.ParameterizedType
 import javax.xml.namespace.QName
 
 class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRegistry: XsRegistry) {
@@ -127,6 +129,8 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
                 val attribute = xsComplexType.getAttributeByName(field.name)
 
+                val fieldType = getActualType(field)
+
                 if (attribute != null) {
                     val adapter = simpleAdapters.get(attribute.type)!!
 
@@ -144,12 +148,12 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
                     val get = simpleAdapters.get(element.type)
                     if (get != null) {
                         val strictElement = StrictSimpleElementType(element.getQualifiedName(), get)
-                        val strictComplexElement = StrictComplexElement(element.getQualifiedName(), reader, strictElement, field.type, element.globalWeight)
+                        val strictComplexElement = StrictComplexElement(element.getQualifiedName(), reader, strictElement, field.type, element.globalWeight, element.isList())
                         strictType.elements.add(strictComplexElement)
                     } else {
-                        val get1 = strictComplexTypes.get(field.type)
+                        val get1 = strictComplexTypes.get(fieldType)
                         if (get1 != null) {
-                            val strictComplexElement = StrictComplexElement(element.getQualifiedName(), reader, get1.proxy, field.type, element.globalWeight)
+                            val strictComplexElement = StrictComplexElement(element.getQualifiedName(), reader, get1.proxy, field.type, element.globalWeight, element.isList())
                             strictType.elements.add(strictComplexElement)
                         }
 
@@ -161,6 +165,14 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
         }
         namespaces.add(strictType.name.namespaceURI)
         return strictType.build()
+    }
+
+    private fun getActualType(field: Field): Class<*> {
+        val type = field.type
+        if (type is ParameterizedType) {
+            return type.actualTypeArguments[0] as Class<*>
+        }
+        return type
     }
 
 
