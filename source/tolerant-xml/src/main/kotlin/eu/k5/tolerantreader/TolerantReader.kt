@@ -45,9 +45,9 @@ class BindContext(private val schema: TolerantSchema, private val root: RootElem
         }
     }
 
-    fun isEmpty(): Boolean {
-        return elements.isEmpty()
-    }
+    fun isEmpty(): Boolean
+            = elements.isEmpty()
+
 
     fun getElement(namespaceURI: String?, localName: String?): TolerantElement? {
         val current = types.peek()
@@ -71,18 +71,14 @@ class BindContext(private val schema: TolerantSchema, private val root: RootElem
         types.pop()
     }
 
-    fun getCurrent(): TolerantElement? {
-        if (elements.isEmpty()) {
-            return null
-        }
-        return elements.peek()
-    }
 
-    fun getCurrentInstance(): Any {
-        return instances.peek()
-    }
+    fun getCurrentInstance(): Any?
+            = instances.peek()
 
-    fun sealedRoot(): Any = root.seal()
+
+    fun sealedRoot(): Any
+            = root.seal()
+
     fun getComplexType(name: QName): TolerantType {
         return schema.getComplexType(name)
     }
@@ -92,14 +88,14 @@ class BindContext(private val schema: TolerantSchema, private val root: RootElem
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(BindContext.javaClass)
+        val logger = LoggerFactory.getLogger(BindContext::class.java)
     }
 
     private val entities: MutableMap<String, Any> = HashMap()
 
-    fun getEntityById(id: String): Any? {
-        return entities[id]
-    }
+    fun getEntityById(id: String): Any?
+            = entities[id]
+
 
     fun addOpenIdRef(id: String, instance: Any, delegate: Assigner) {
         openReferences.add(OpenReference(id, instance, delegate))
@@ -110,9 +106,11 @@ class BindContext(private val schema: TolerantSchema, private val root: RootElem
     }
 }
 
-class OpenReference(val id: String, val instance: Any, val assigner: Assigner) {
-
-}
+class OpenReference(
+        val id: String,
+        val instance: Any,
+        val assigner: Assigner
+)
 
 
 class TolerantReader(val schema: TolerantSchema) {
@@ -150,7 +148,7 @@ class TolerantReader(val schema: TolerantSchema) {
                 val readValue = type.readValue(context, element, stream)
                 if (readValue != null) {
 
-                    element.assigner.assign(context, context.getCurrentInstance(), readValue)
+                    element.assigner.assign(context, context.getCurrentInstance()!!, readValue)
 
                     if (type.pushedOnStack()) {
                         context.push(element, readValue, type)
@@ -161,14 +159,8 @@ class TolerantReader(val schema: TolerantSchema) {
                 context.pop()
             }
         }
-
-
         context.postProcess()
-
-
-
         return context.sealedRoot()
-
     }
 
     private fun skipToEndElement(stream: XMLStreamReader) {

@@ -17,7 +17,7 @@ class StrictComplexType(
     override fun getQualifiedName(): QName = qName
 
     override fun write(context: StrictContext, instance: Any, xmlStreamWriter: XMLStreamWriter) {
-        if (type != instance?.javaClass) {
+        if (type != instance.javaClass) {
 
             val subtype = context.resolveType(instance.javaClass)
 

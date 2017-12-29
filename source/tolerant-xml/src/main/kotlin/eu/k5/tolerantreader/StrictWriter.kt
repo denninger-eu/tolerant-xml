@@ -11,7 +11,7 @@ class StrictWriter(private val schema: StrictSchema) {
 
         val context = schema.createContext()
 
-        val type = schema.get(instance.javaClass)
+        val type = schema.getElement(instance.javaClass)!!
 
         type.write(context, instance, writer)
 

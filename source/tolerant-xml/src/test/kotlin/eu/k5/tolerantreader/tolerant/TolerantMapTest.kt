@@ -40,7 +40,7 @@ class TolerantMapTest {
 
     @DisplayName("Add three elements, two are equal for each char, retrieve by prefix name")
     @Test
-    fun sameLocalNamePrefix__retrieveByPrefixEactName() {
+    fun sameLocalNamePrefix__retrieveByPrefixExactName() {
 
         builder?.append(QName("xxy", "a"), "a1")
         builder?.append(QName("xyx", "a"), "a2")
@@ -55,7 +55,7 @@ class TolerantMapTest {
 
     @DisplayName("Add two elements, namespace difference in length, retrieve by prefix name")
     @Test
-    fun sameLocalNamespaceDifferentByLength__retrieveByPrefixEactName() {
+    fun sameLocalNamespaceDifferentByLength__retrieveByPrefixExactName() {
 
         builder?.append(QName("x", "a"), "a1")
         builder?.append(QName("xx", "a"), "a2")

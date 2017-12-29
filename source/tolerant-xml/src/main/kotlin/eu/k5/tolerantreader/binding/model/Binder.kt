@@ -1,6 +1,5 @@
 package eu.k5.tolerantreader.binding.model
 
-import com.sun.deploy.security.ValidationState
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.Assigner
@@ -77,8 +76,8 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     }
 
 
-    override fun createSupplier(initContext: InitContext, base: QName): (QName) -> Any {
-        val constructor = resolveJavaClass(base).getConstructor()
+    override fun createSupplier(initContext: InitContext, typeName: QName): (QName) -> Any {
+        val constructor = resolveJavaClass(typeName).getConstructor()
         return { constructor.newInstance() }
     }
 
@@ -98,9 +97,9 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     }
 
 
-    override fun createElementAssigner(initContext: InitContext, entityName: QName, element: QName, target: QName, parameters: ElementParameters): Assigner {
+    override fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner {
 
-        val baseClass = resolveJavaClass(entityName)
+        val baseClass = resolveJavaClass(entityType)
         val propertyClass = resolveJavaClass(target)
 
 
@@ -130,6 +129,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
             // TODO: validate getter return type
             return ListAppendAssigner(getter)
         } catch (exception: Exception) {
+            initContext.addFinding(Type.MISSING_GETTER, exception.message ?: "")
             return NoOpAssigner
         }
     }
@@ -159,7 +159,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     private fun createJaxbElementSetterAssigner(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: QName): Assigner {
         val setter = baseClass.getMethod(utils.getSetterName(element.localPart), JAXBElement::class.java)
 
-        return JaxbElementSetterAssigner(setter) { JAXBElement(element, propertyClass as Class<Any?>, propertyClass.cast(it)) }
+        return JaxbElementSetterAssigner(setter) { JAXBElement(element, propertyClass as Class<Axny?>, propertyClass.cast(it)) }
     }
 
     private fun hasBasicSetter(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: String): Boolean {
@@ -172,13 +172,11 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     }
 
     private fun hasJaxbElementSetter(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: QName): Boolean {
-        return try {
+        try {
             val method = baseClass.getMethod(utils.getSetterName(element.localPart), JAXBElement::class.java)
             val parameter = method.genericParameterTypes[0]
+                    as? ParameterizedType ?: return false
 
-            if (parameter !is ParameterizedType) {
-                return false
-            }
             return (parameter.actualTypeArguments[0] as Class<*>).isAssignableFrom(propertyClass)
         } catch (exception: NoSuchMethodException) {
             return false

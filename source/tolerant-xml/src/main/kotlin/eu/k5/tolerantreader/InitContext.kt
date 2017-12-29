@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory
 enum class Type {
     MISSING_SETTER,
 
-    UNSUPPORTED_BASE_TYPE
+    UNSUPPORTED_BASE_TYPE,
+
+    MISSING_GETTER
 }
 
 class InitContext {

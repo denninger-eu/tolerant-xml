@@ -6,19 +6,16 @@ class StrictSchema(private val elements: ImmutableMap<Class<*>, StrictElement>,
                    private val types: ImmutableMap<Class<*>, StrictComplexType>,
                    val namespaces: ImmutableMap<String, String>) {
 
-    fun get(type: Class<*>): StrictElement {
+    fun getElement(type: Class<*>): StrictElement?
+            = elements[type]
 
-        return elements.get(type)!! as StrictElement
-    }
 
-    fun getType(type: Class<*>): StrictType? {
-        return types.get(type)
-    }
+    fun getType(type: Class<*>): StrictType?
+            = types[type]
 
-    fun createContext(): StrictContext {
-        return StrictContext(this)
 
-    }
+    fun createContext(): StrictContext
+            = StrictContext(this)
 
 
 }

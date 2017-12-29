@@ -9,7 +9,6 @@ import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.binding.model.ReflectionUtils
 import eu.k5.tolerantreader.tolerant.IdRefType
 import eu.k5.tolerantreader.tolerant.XSI_NAMESPACE
-import eu.k5.tolerantreader.tolerant.XSI_TYPE
 import org.w3c.dom.Node
 import java.util.*
 import javax.xml.namespace.QName
@@ -151,15 +150,15 @@ class DomWriter : TolerantWriter {
         return BindContext(schema, DomRoot(documentBuilder.newDocument()))
     }
 
-    override fun createElementAssigner(initContext: InitContext, base: QName, element: QName, target: QName, parameter: ElementParameters): Assigner {
-        if (parameter.attribute) {
+    override fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner {
+        if (parameters.attribute) {
             return DomAttributeAssigner(element)
         }
         if (simpleTypeAdapter.containsKey(target)) {
-            return DomTextContentAssigner(element, parameter.weight, simpleTypeAdapter.get(target)!!)
+            return DomTextContentAssigner(element, parameters.weight, simpleTypeAdapter.get(target)!!)
         } else {
 
-            return DomElementAssigner(element, parameter.weight, target)
+            return DomElementAssigner(element, parameters.weight, target)
         }
     }
 
