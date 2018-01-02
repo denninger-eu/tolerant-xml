@@ -12,6 +12,7 @@
     <modules>
         <module>tolerant-test-models</module>
         <module>tolerant-xml</module>
+        <module>tolerant-converter</module>
     </modules>
 
     <build>

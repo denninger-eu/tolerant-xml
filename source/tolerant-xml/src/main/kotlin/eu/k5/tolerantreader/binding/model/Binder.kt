@@ -159,7 +159,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     private fun createJaxbElementSetterAssigner(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: QName): Assigner {
         val setter = baseClass.getMethod(utils.getSetterName(element.localPart), JAXBElement::class.java)
 
-        return JaxbElementSetterAssigner(setter) { JAXBElement(element, propertyClass as Class<Axny?>, propertyClass.cast(it)) }
+        return JaxbElementSetterAssigner(setter) { JAXBElement(element, propertyClass as Class<Any?>, propertyClass.cast(it)) }
     }
 
     private fun hasBasicSetter(initContext: InitContext, baseClass: Class<*>, propertyClass: Class<*>, element: String): Boolean {
