@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="8483aef7-1e32-4f26-915a-fc15242a0d53" activeEnvironment="Default" name="ex" resourceRoot="" soapui-version="5.4.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="d5b7d82c-c411-43c5-84fb-2bfebf62dd91" wsaVersion="NONE" name="StockQuoteSoapBinding" type="wsdl" bindingName="{http://example.com/stockquote.wsdl}StockQuoteSoapBinding" soapVersion="1_1" anonymous="optional" definition="file:/D:/repositories/ex.txt" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:\D:\repositories\ex.txt"><con:part><con:url>file:\D:\repositories\ex.txt</con:url><con:content><![CDATA[<definitions name="StockQuote" targetNamespace="http://example.com/stockquote.wsdl" xmlns:tns="http://example.com/stockquote.wsdl" xmlns:xsd1="http://example.com/stockquote.xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <schema targetNamespace="http://example.com/stockquote.xsd" xmlns="http://www.w3.org/2001/XMLSchema">
+      <element name="TradePriceRequest">
+        <complexType>
+          <all>
+            <element name="tickerSymbol" type="string"/>
+          </all>
+        </complexType>
+      </element>
+      <element name="TradePrice">
+        <complexType>
+          <all>
+            <element name="price" type="float"/>
+          </all>
+        </complexType>
+      </element>
+    </schema>
+  </types>
+  <message name="GetLastTradePriceInput">
+    <part name="body" element="xsd1:TradePriceRequest"/>
+  </message>
+  <message name="GetLastTradePriceOutput">
+    <part name="body" element="xsd1:TradePrice"/>
+  </message>
+  <portType name="StockQuotePortType">
+    <operation name="GetLastTradePrice">
+      <input message="tns:GetLastTradePriceInput"/>
+      <output message="tns:GetLastTradePriceOutput"/>
+    </operation>
+  </portType>
+  <binding name="StockQuoteSoapBinding" type="tns:StockQuotePortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="GetLastTradePrice">
+      <soap:operation soapAction="http://example.com/GetLastTradePrice"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="StockQuoteService">
+    <documentation>My first service</documentation>
+    <port name="StockQuotePort" binding="tns:StockQuoteSoapBinding">
+      <soap:address location="http://example.com/stockquote"/>
+    </port>
+  </service>
+</definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://example.com/stockquote</con:endpoint></con:endpoints><con:operation id="41072638-cea9-4c76-83bd-7b25527838c6" isOneWay="false" action="http://example.com/GetLastTradePrice" name="GetLastTradePrice" bindingOperationName="GetLastTradePrice" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="a7082d07-adba-4b5f-a592-01943fd05891" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://example.com/stockquote</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stoc="http://example.com/stockquote.xsd">\r
+   <soapenv:Header/>\r
+   <soapenv:Body>\r
+      <stoc:TradePriceRequest>\r
+         <tickerSymbol>?</tickerSymbol>\r
+      </stoc:TradePriceRequest>\r
+   </soapenv:Body>\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://example.com/GetLastTradePrice"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>
