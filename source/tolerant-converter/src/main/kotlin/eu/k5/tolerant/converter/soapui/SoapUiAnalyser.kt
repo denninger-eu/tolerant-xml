@@ -11,8 +11,12 @@ class SoapUiAnalyser(inputStream: InputStream) {
     val description = SoapUiDescription()
 
     fun analyse() {
-        for ((key, interfaze) in sourceProject.interfaces) {
+        for (interfaze in sourceProject.interfaceList) {
+            for(operation in  interfaze.operationList){
+                for(request in operation.requestList){
 
+                }
+            }
         }
         analyseTestSuites()
     }
