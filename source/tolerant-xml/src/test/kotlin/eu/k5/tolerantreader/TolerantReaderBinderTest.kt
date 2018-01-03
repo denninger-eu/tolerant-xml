@@ -272,6 +272,18 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
     }
 
 
+    @Test
+    @DisplayName("Read model type. complex-type simpleontent")
+    fun readModelRestrictionBases() {
+        val obj = readModelType("simple-type-restrictionbases")
+                as? BaseType ?: fail<Nothing>("Invalid root type")
+
+        assertEquals("test", obj.myid)
+        assertEquals(10, obj.myinteger)
+        assertEquals(1.0, obj.mydecimal)
+    }
+
+
     override fun getReader(path: String): TolerantReader = reader.getReader(path)
 
 

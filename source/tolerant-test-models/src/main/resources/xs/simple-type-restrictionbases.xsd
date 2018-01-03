@@ -1,0 +1,35 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:tr="http://k5.eu/tr/model"
+
+        targetNamespace="http://k5.eu/tr/model">
+
+
+    <xs:simpleType name="MyId">
+        <xs:restriction base="xs:ID"></xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:simpleType name="MyInteger">
+        <xs:restriction base="xs:integer"></xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:simpleType name="MyDecimal">
+        <xs:restriction base="xs:decimal"></xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:element name="BaseType">
+        <xs:complexType>
+
+            <xs:sequence>
+                <xs:element name="myid" type="tr:MyId" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="myinteger" type="tr:MyInteger" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="mydecimal" type="tr:MyDecimal" minOccurs="0" maxOccurs="1"/>
+
+            </xs:sequence>
+
+        </xs:complexType>
+    </xs:element>
+</schema>

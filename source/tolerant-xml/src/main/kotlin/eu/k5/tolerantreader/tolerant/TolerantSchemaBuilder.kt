@@ -116,12 +116,19 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
             } else {
 
-                if (xsString.equals(base)) {
+                val baseType = simpleTypes[simpleType.restriction!!.base!!]
+
+                if (baseType != null) {
+                    val type = TolerantSimpleRestriction(simpleType.getQualifiedName(), baseType)
+                    simpleTypes.put(type.getQualifiedName(), type)
+                }
+
+/*                if (xsString.equals(base)) {
 
                     val type = TolerantStringType(simpleType.getQualifiedName())
 
-                    simpleTypes.put(type.getQualifiedName(), type)
-                } else {
+                }*/
+                else {
                     initContext.addFinding(Type.UNSUPPORTED_BASE_TYPE, base.toString())
                 }
             }

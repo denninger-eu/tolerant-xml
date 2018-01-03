@@ -12,6 +12,8 @@
 
     <import namespace="http://k5.eu/tr/model" schemaLocation="simple-type-misc.xsd"/>
 
+    <import namespace="http://k5.eu/tr/model" schemaLocation="simple-type-restrictionbases.xsd"/>
+
 
     <import namespace="http://k5.eu/tr/model/idref" schemaLocation="complex-type-idref.xsd"/>
     <import namespace="http://k5.eu/tr/model" schemaLocation="complex-type-simplecontent.xsd"/>
