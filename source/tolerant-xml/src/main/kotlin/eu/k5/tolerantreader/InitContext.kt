@@ -7,7 +7,9 @@ enum class Type {
 
     UNSUPPORTED_BASE_TYPE,
 
-    MISSING_GETTER
+    MISSING_GETTER,
+
+    UNKNOWN_SCHEMA
 }
 
 class InitContext {

@@ -3,19 +3,22 @@ package eu.k5.tolerant.converter.soapui
 data class SoapUiDescription(
         var name: String? = null,
 
-        var interfaces: List<SoapUiInterface>? = ArrayList(),
+        var interfaces: MutableList<SoapUiInterface>? = ArrayList(),
 
-        var requests: List<SoapUiRequest>? = ArrayList(),
-
-        var suites: List<SoapUiTestSuite>? = ArrayList()
+        var suites: MutableList<SoapUiTestSuite>? = ArrayList()
 )
 
 data class SoapUiInterface(
-        var name: String? = null
+        var name: String? = null,
+        var wsdl: String? = null,
+
+        var requests: MutableList<SoapUiRequest>? = ArrayList()
+
 )
 
 data class SoapUiRequest(
-        var name: String? = null
+        var name: String? = null,
+        var operation: String? = null
 )
 
 data class SoapUiTestSuite(
@@ -23,13 +26,15 @@ data class SoapUiTestSuite(
 
         var supported: Boolean? = null,
 
-        var cases: List<SoapUiTestCase>? = ArrayList()
+        var cases: MutableList<SoapUiTestCase>? = ArrayList()
 )
 
 data class SoapUiTestCase(
         var name: String? = null,
 
-        var steps: List<SoapUiTestStep>? = ArrayList()
+        var steps: MutableList<SoapUiTestStep>? = ArrayList(),
+
+        var supported: Boolean? = null
 )
 
 data class SoapUiTestStep(

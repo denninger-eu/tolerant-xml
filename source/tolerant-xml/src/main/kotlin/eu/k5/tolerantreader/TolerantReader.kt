@@ -126,7 +126,7 @@ class TolerantReader(val schema: TolerantSchema) {
             if (XMLEvent.START_ELEMENT == event) {
 
                 val localName = stream.localName
-                val namespaceURI: String? = stream.namespaceURI
+                val namespaceURI: String = stream.namespaceURI
                 val qname = QName(namespaceURI, localName)
 
                 val element =

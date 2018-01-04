@@ -37,9 +37,9 @@ class TolerantMap<T>(
             if (namespaceURI.length >= prefix) {
                 val key: String =
                         if (!caseSensitive) {
-                            namespaceURI.substring(0, prefix) + localPart
-                        } else {
                             namespaceURI.substring(0, prefix).toLowerCase() + localPart.toLowerCase()
+                        } else {
+                            namespaceURI.substring(0, prefix) + localPart
                         }
                 return internal[key]
             } else {
@@ -64,6 +64,26 @@ class TolerantMap<T>(
     fun get(name: QName): T? = get(name.namespaceURI, name.localPart)
 
     fun isEmpty(): Boolean = internal.isEmpty()
+
+    companion object {
+
+        fun <T> of(elements: Map<QName, T>): TolerantMap<T> {
+            val builder = TolerantMapBuilder<T>()
+            for ((key, value) in elements) {
+                builder.append(key, value)
+            }
+            return builder.build()
+        }
+
+        fun <T> of(elements: Collection<T>, getQName: (T) -> QName): TolerantMap<T> {
+            val builder = TolerantMapBuilder<T>()
+            for (element in elements) {
+                builder.append(getQName(element), element)
+            }
+            return builder.build()
+
+        }
+    }
 }
 
 class TolerantMapBuilder<T>(val caseSensitive: Boolean = true) {

@@ -57,7 +57,8 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
         initElements()
 
 
-        return TolerantSchema(elements!!, tolerantComplexTypes!!, writer)
+
+        return TolerantSchema(TolerantMap.of(elements.values) { it.qname }, tolerantComplexTypes!!, writer)
     }
 
     private fun initBaseTypes() {
@@ -194,14 +195,18 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
 
         for (attribute in typeBuilder.xsComplexType.getAllAttributes()) {
-            val type = attribute.type!!
-            val simpleType = resolveType(type)
-            val parameters = ElementParameters(false, 0, true)
-            val assigner = writer.createElementAssigner(initContext, qualifiedName, QName(qualifiedName.namespaceURI, attribute.name!!), simpleType.getTypeName(), parameters)
+            if (attribute.type != null) {
+                val type = attribute.type!!
+                val simpleType = resolveType(type)
+                val parameters = ElementParameters(false, 0, true)
+                val assigner = writer.createElementAssigner(initContext, qualifiedName, QName(qualifiedName.namespaceURI, attribute.name!!), simpleType.getTypeName(), parameters)
 
-            val qname = QName(qualifiedName.namespaceURI, attribute.name)
+                val qname = QName(qualifiedName.namespaceURI, attribute.name)
 
-            typeBuilder.addElement(attribute.name!!, TolerantElement(qname, simpleType, assigner, true))
+                typeBuilder.addElement(attribute.name!!, TolerantElement(qname, simpleType, assigner, true))
+            } else {
+                initContext.addFinding(Type.UNKNOWN_SCHEMA, "Attribute without type")
+            }
         }
         var elementWeight = 0
         for (element in typeBuilder.xsComplexType.getAllElememts()) {
