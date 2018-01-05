@@ -3,11 +3,14 @@ package eu.k5.tolerant.converter.soapui
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.impl.wsdl.WsdlTestSuite
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 
 class SoapUiAnalyser(inputStream: InputStream) {
 
     val description = SoapUiDescription()
+
+    constructor(bytes: ByteArray) : this(ByteArrayInputStream(bytes))
 
 
     init {
@@ -16,10 +19,11 @@ class SoapUiAnalyser(inputStream: InputStream) {
         try {
 
             description.name = sourceProject.name
+            description.description = sourceProject.description
 
             for (interfaze in sourceProject.interfaceList) {
 
-                val intf = SoapUiInterface(name = interfaze.name)
+                val intf = SoapUiInterface(name = interfaze.name, supported = true)
 
 
                 for (operation in interfaze.operationList) {
@@ -76,5 +80,6 @@ class SoapUiAnalyser(inputStream: InputStream) {
         }
         return caze
     }
+
 
 }
