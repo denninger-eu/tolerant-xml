@@ -63,6 +63,12 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testModel("complex-type-idref")
     }
 
+    @Test
+    @DisplayName("Read model type. idref attribute")
+    fun readModelIdrefAttribute() {
+        testModel("complex-type-idref-attribute")
+    }
+
 
     @Test
     @DisplayName("Read model type. idref forward")
@@ -95,13 +101,20 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testModel("complex-type-inheritance")
     }
 
+    @Test
+    @DisplayName("Read simple type. comments")
+    fun readSimpleComments() {
+        testMinimal("simple-types-comments")
+    }
+
     private fun testMinimal(testCase: String) {
         val obj = readMinimalType(testCase)
                 as? Document ?: Assertions.fail<Nothing>("Invalid root type")
 
-        toString(obj)
+        val xmlString = toString(obj)
+        println(xmlString)
 
-        assertSimilar(testCase, obj)
+        assertSimilar(testCase, xmlString)
     }
 
 
@@ -109,31 +122,34 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         val obj = readComplexType(testCase)
                 as? Document ?: Assertions.fail<Nothing>("Invalid root type")
 
-        toString(obj)
+        val xmlString = toString(obj)
+        println(xmlString)
 
-        assertSimilar(testCase, obj)
+        assertSimilar(testCase, xmlString)
     }
 
     private fun testModel(testCase: String) {
         val obj = readModelType(testCase)
                 as? Document ?: Assertions.fail<Nothing>("Invalid root type")
 
-        toString(obj)
+        val xmlString = toString(obj)
 
-        assertSimilar(testCase, obj)
+        println(xmlString)
+
+        assertSimilar(testCase, xmlString)
     }
 
-    private fun assertSimilar(testCase: String, document: Document) {
+    private fun assertSimilar(testCase: String, document: String) {
 
-        val myDiff = DiffBuilder.compare(Input.fromDocument(document))
-                .withTest(Input.fromFile("src/test/resources/refout/dom/" + testCase + ".xml"))
+        val myDiff = DiffBuilder.compare(Input.fromString(document))
+                .withTest(Input.fromFile("src/test/resources/refout/dom/$testCase.xml"))
                 .checkForSimilar().ignoreWhitespace()
                 .build()
 
         Assertions.assertFalse(myDiff.hasDifferences(), myDiff.toString())
     }
 
-    private fun toString(document: Document) {
+    private fun toString(document: Document): String {
 
         val transformerFactory = TransformerFactory.newInstance()
         val transformer = transformerFactory.newTransformer()
@@ -147,7 +163,7 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
 
         transformer.transform(source, result)
 
-        print(resultWriter.toString())
+        return resultWriter.toString()
     }
 
 

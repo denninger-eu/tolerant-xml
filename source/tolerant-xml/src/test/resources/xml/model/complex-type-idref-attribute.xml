@@ -1,0 +1,10 @@
+<Reference attrid="ID_1">
+
+
+    <referenced id="ID_1" attribute="abc">
+        <firstname>firstname</firstname>
+        <lastname>lastname</lastname>
+    </referenced>
+
+    <idref>ID_1</idref>
+</Reference>

@@ -23,11 +23,16 @@ enum class Violation {
 
 class BindContext(private val schema: TolerantSchema, private val root: RootElement) {
 
+    private val trackComments: Boolean = true
+
+
     private val elements: Deque<TolerantElement> = ArrayDeque()
     private val types: Deque<TolerantType> = ArrayDeque()
     private val instances: Deque<Any> = ArrayDeque()
 
     private val openReferences: MutableList<OpenReference> = ArrayList()
+
+    private val comments: MutableList<String> = ArrayList()
 
     init {
         instances.push(root)
@@ -104,6 +109,14 @@ class BindContext(private val schema: TolerantSchema, private val root: RootElem
     fun registerEntity(value: String, instance: Any) {
         entities.put(value, instance)
     }
+
+    fun addComment(comment: String) {
+        if (trackComments) {
+            comments.add(comment)
+        }
+    }
+
+    fun getComments(): List<String> = comments
 }
 
 class OpenReference(
@@ -126,7 +139,7 @@ class TolerantReader(val schema: TolerantSchema) {
             if (XMLEvent.START_ELEMENT == event) {
 
                 val localName = stream.localName
-                val namespaceURI: String = stream.namespaceURI
+                val namespaceURI: String = stream.namespaceURI ?: ""
                 val qname = QName(namespaceURI, localName)
 
                 val element =
@@ -139,7 +152,7 @@ class TolerantReader(val schema: TolerantSchema) {
                 if (element == null) {
                     // balance stream
                     context.addViolation(Violation.UNKNOWN_CONTENT, "Element: " + qname)
-                    skipToEndElement(stream)
+                    skipToEndElement(context, stream)
                     continue
                 }
 
@@ -157,13 +170,18 @@ class TolerantReader(val schema: TolerantSchema) {
 
             } else if (XMLEvent.END_ELEMENT == event) {
                 context.pop()
+            } else if (XMLEvent.COMMENT == event) {
+                val elementText = stream.text
+                context.addComment(stream.text)
+
+
             }
         }
         context.postProcess()
         return context.sealedRoot()
     }
 
-    private fun skipToEndElement(stream: XMLStreamReader) {
+    private fun skipToEndElement(context: BindContext, stream: XMLStreamReader) {
         var balance = 1
         while (stream.hasNext()) {
             val event = stream.next()

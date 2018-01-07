@@ -20,9 +20,10 @@ class TolerantConverter(private val configuration: TolerantConverterConfiguratio
 
     private val name: String = configuration.name!!
     private val reader: TolerantReader
-    private val writer: TolerantWriter = DomWriter()
+
 
     init {
+        val writer: TolerantWriter = DomWriter()
         val xsRegistry = Schema.parse(configuration.xsd!!)
         xsRegistry.init()
         val tolerantSchema = TolerantSchemaBuilder(xsRegistry, writer).build()

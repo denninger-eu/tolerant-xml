@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns:Reference xmlns:ns="http://k5.eu/tr/model/idref" ns:attrid="ID_1">
+    <ns:idref>ID_1</ns:idref>
+    <ns:referenced ns:id="ID_1">
+        <ns:firstname>firstname</ns:firstname>
+        <ns:lastname>lastname</ns:lastname>
+    </ns:referenced>
+</ns:Reference>

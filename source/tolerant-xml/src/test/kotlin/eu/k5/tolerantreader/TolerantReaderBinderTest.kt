@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.math.BigInteger
 import java.nio.charset.StandardCharsets
 
@@ -279,8 +280,8 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
                 as? BaseType ?: fail<Nothing>("Invalid root type")
 
         assertEquals("test", obj.myid)
-        assertEquals(10, obj.myinteger)
-        assertEquals(1.0, obj.mydecimal)
+        assertEquals(BigInteger("10"), obj.myinteger)
+        assertEquals(BigDecimal("1.0"), obj.mydecimal)
     }
 
 

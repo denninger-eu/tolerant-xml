@@ -6,6 +6,7 @@ import eu.k5.tolerantreader.binding.Assigner
 import eu.k5.tolerantreader.binding.ElementParameters
 import eu.k5.tolerantreader.binding.EnumSupplier
 import eu.k5.tolerantreader.binding.TolerantWriter
+import eu.k5.tolerantreader.binding.model.NoOpAssigner
 import eu.k5.tolerantreader.binding.model.ReflectionUtils
 import eu.k5.tolerantreader.tolerant.IdRefType
 import eu.k5.tolerantreader.tolerant.XSI_NAMESPACE
@@ -152,10 +153,24 @@ class DomWriter : TolerantWriter {
 
     override fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner {
         if (parameters.attribute) {
-            return DomAttributeAssigner(element)
+            val toStringAdapter = simpleTypeAdapter[target]
+
+            return if (toStringAdapter == null) {
+                initContext.addFinding(Type.MISSING_TYPE_ADAPTER, target.toString())
+                NoOpAssigner
+            } else {
+                DomAttributeAssigner(element, toStringAdapter)
+            }
         }
         if (simpleTypeAdapter.containsKey(target)) {
-            return DomTextContentAssigner(element, parameters.weight, simpleTypeAdapter.get(target)!!)
+            val toStringAdapter = simpleTypeAdapter[target]
+
+            return if (toStringAdapter == null) {
+                initContext.addFinding(Type.MISSING_TYPE_ADAPTER, target.toString())
+                NoOpAssigner
+            } else {
+                DomTextContentAssigner(element, parameters.weight, toStringAdapter)
+            }
         } else {
 
             return DomElementAssigner(element, parameters.weight, target)
@@ -172,8 +187,15 @@ class DomWriter : TolerantWriter {
 
 abstract class DomNode(val weight: Int) {
 
-
     abstract fun asNode(context: DomContext): Node
+}
+
+class DomComment(private val comment: String, weight: Int) : DomNode(weight) {
+
+    override fun asNode(context: DomContext): Node {
+        return context.document.createComment(comment)
+    }
+
 }
 
 
@@ -186,7 +208,12 @@ class DomAttribute(val attributeName: QName, val value: String?, val weight: Int
 
 }
 
-class DomElement(val elementName: QName, val expectedTypeName: QName, val actualType: QName, weight: Int) : DomNode(weight) {
+class DomElement(
+        private val elementName: QName,
+        private val expectedTypeName: QName,
+        private val actualType: QName,
+        weight: Int
+) : DomNode(weight) {
 
     val elements: MutableList<DomNode> = ArrayList()
 
@@ -222,7 +249,12 @@ class DomElement(val elementName: QName, val expectedTypeName: QName, val actual
     }
 }
 
-class DomTextContent(private val elementName: QName, private val value: String, weight: Int) : DomNode(weight) {
+class DomTextContent(
+        private val elementName: QName,
+        private val value: String,
+        weight: Int
+) : DomNode(weight) {
+
     override fun asNode(context: DomContext): Node {
         val textNode = context.document.createTextNode(value)
 
@@ -235,7 +267,9 @@ class DomTextContent(private val elementName: QName, private val value: String, 
 
 }
 
-class DomRootAssigner(private val elementName: QName) : Assigner {
+class DomRootAssigner(
+        private val elementName: QName
+) : Assigner {
     override fun assign(context: BindContext, instance: Any, value: Any?) {
         if (instance is DomRoot) {
             if (value is DomValue) {
@@ -248,10 +282,20 @@ class DomRootAssigner(private val elementName: QName) : Assigner {
     }
 }
 
-class DomTextContentAssigner(private var elementName: QName, val weight: Int, private val toString: (Any) -> String) : Assigner {
+class DomTextContentAssigner(
+        private var elementName: QName,
+        private val weight: Int,
+        private val toString: (Any) -> String
+) : Assigner {
+
     override fun assign(context: BindContext, instance: Any, value: Any?) {
         if (instance is DomValue) {
             if (value != null) {
+
+                context.getComments().mapTo(instance.element!!.elements) {
+                    DomComment(it, weight)
+                }
+
                 val element = instance.element
                 element?.elements?.add(DomTextContent(elementName, toString(value), weight))
             }
@@ -262,15 +306,25 @@ class DomTextContentAssigner(private var elementName: QName, val weight: Int, pr
 
 }
 
-class DomElementAssigner(val element: QName, val weight: Int, private val target: QName) : Assigner {
+class DomElementAssigner(
+        private val element: QName,
+        private val weight: Int,
+        private val target: QName
+) : Assigner {
 
     override fun assign(context: BindContext, instance: Any, value: Any?) {
         if (instance is DomValue) {
             if (value is DomValue) {
 
+
+                val comments = context.getComments()
+
                 val domElement = DomElement(element, target, value.typeName, weight)
                 domElement.attributes.addAll(value.attributes)
 
+                comments.mapTo(instance.element!!.elements) {
+                    DomComment(it, weight)
+                }
                 instance.element!!.elements.add(domElement)
                 value.element = domElement
                 return
@@ -282,11 +336,15 @@ class DomElementAssigner(val element: QName, val weight: Int, private val target
 }
 
 
-class DomAttributeAssigner(private val element: QName) : Assigner {
+class DomAttributeAssigner(
+        private val element: QName,
+        private val toStringAdapter: (Any) -> String
+) : Assigner {
     override fun assign(context: BindContext, instance: Any, value: Any?) {
         if (instance is DomValue) {
-            instance.attributes.add(DomAttribute(element, value?.toString(), 0))
+            if (value != null) {
+                instance.attributes.add(DomAttribute(element, toStringAdapter(value), 0))
+            }
         }
     }
-
 }

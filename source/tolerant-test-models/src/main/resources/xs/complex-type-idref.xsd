@@ -19,6 +19,7 @@
                 <xs:element name="idref" type="xs:IDREF"/>
                 <xs:element name="referenced" type="tr:Referenced"/>
             </xs:sequence>
+            <xs:attribute name="attrid" type="xs:IDREF"/>
         </xs:complexType>
     </xs:element>
 </xs:schema>

@@ -9,7 +9,9 @@ enum class Type {
 
     MISSING_GETTER,
 
-    UNKNOWN_SCHEMA
+    UNKNOWN_SCHEMA,
+
+    MISSING_TYPE_ADAPTER
 }
 
 class InitContext {
