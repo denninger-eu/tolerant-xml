@@ -1,11 +1,10 @@
 package eu.k5.tolerant.converter
 
+import eu.k5.tolerant.converter.config.TolerantConverterConfiguration
 import eu.k5.tolerantreader.TolerantReader
 import eu.k5.tolerantreader.binding.TolerantWriter
-import eu.k5.tolerantreader.binding.dom.DomRoot
 import eu.k5.tolerantreader.binding.dom.DomWriter
 import eu.k5.tolerantreader.tolerant.TolerantSchemaBuilder
-import eu.k5.tolerantreader.xs.ClasspathStreamSource
 import eu.k5.tolerantreader.xs.Schema
 import org.w3c.dom.Document
 import java.io.StringReader
@@ -25,6 +24,7 @@ class TolerantConverter(private val configuration: TolerantConverterConfiguratio
 
     init {
         val writer: TolerantWriter = DomWriter()
+
         val xsRegistry = Schema.parse(configuration.xsd!!)
         xsRegistry.init()
         val tolerantSchema = TolerantSchemaBuilder(xsRegistry, writer).build()

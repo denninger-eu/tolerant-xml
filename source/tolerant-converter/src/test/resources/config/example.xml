@@ -1,4 +1,4 @@
-<config>
+<ConverterConfig>
 
 
     <reader key="abc">
@@ -11,18 +11,18 @@
     <writer key="edf">
 
 
+        <namespaceBeautifier>
+
+
+        </namespaceBeautifier>
+
     </writer>
 
-    <namespaceBeautifier>
 
-
-    </namespaceBeautifier>
-
-
-    <converter key="abcd" name="A b c d">
-        <reader ref="abc"/>
-        <writer ref="edf"/>
-
+    <converter key="conv">
+        <name>A b c d</name>
+        <readerRef>abc</readerRef>
+        <writerRef>edf</writerRef>
     </converter>
 
-</config>
+</ConverterConfig>

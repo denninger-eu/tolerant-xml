@@ -82,7 +82,7 @@ class BindContext(private val schema: TolerantSchema, private val root: RootElem
 
 
     fun sealedRoot(): Any
-            = root.seal()
+            = root.seal(this)
 
     fun getComplexType(name: QName): TolerantType {
         return schema.getComplexType(name)
@@ -117,6 +117,11 @@ class BindContext(private val schema: TolerantSchema, private val root: RootElem
     }
 
     fun getComments(): List<String> = comments
+
+    fun <C> queryConfiguration(java: Class<C>): C? {
+
+        return null
+    }
 }
 
 class OpenReference(
@@ -125,6 +130,9 @@ class OpenReference(
         val assigner: Assigner
 )
 
+class TolerantReaderConfiguration(){
+    private val <C> configs:Map<Class<C>,C> = HashMap()
+}
 
 class TolerantReader(val schema: TolerantSchema) {
 

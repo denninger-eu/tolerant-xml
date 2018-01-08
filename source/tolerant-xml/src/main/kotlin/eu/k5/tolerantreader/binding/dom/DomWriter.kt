@@ -17,25 +17,11 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 
 class DomWriter : TolerantWriter {
-    override fun createEnumSupplier(initContext: InitContext,
-                                    enumName: QName,
-                                    literals: Collection<String>):
-            EnumSupplier {
-
-        return EnumSupplier(xsString) { content: BindContext, value: String
-            ->
-            if (literals.contains(value)) {
-                value
-            } else {
-                content.addViolation(Violation.INVALID_ENUM_LITERAL, value)
-                null
-            }
-        }
-
-    }
 
     private val utils = ReflectionUtils()
     private val simpleTypeAdapter = HashMap<QName, (Any) -> String>()
+
+
 
     init {
         simpleTypeAdapter.put(xsString) {
@@ -138,6 +124,23 @@ class DomWriter : TolerantWriter {
         simpleTypeAdapter.put(xsId) {
             it.toString()
         }
+    }
+
+    override fun createEnumSupplier(initContext: InitContext,
+                                    enumName: QName,
+                                    literals: Collection<String>):
+            EnumSupplier {
+
+        return EnumSupplier(xsString) { content: BindContext, value: String
+            ->
+            if (literals.contains(value)) {
+                value
+            } else {
+                content.addViolation(Violation.INVALID_ENUM_LITERAL, value)
+                null
+            }
+        }
+
     }
 
 
