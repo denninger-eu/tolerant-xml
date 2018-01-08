@@ -1,0 +1,28 @@
+<config>
+
+
+    <reader key="abc">
+        <xsd>file://</xsd>
+        <numbers>US</numbers>
+        <enforceLengthRestriction>false</enforceLengthRestriction>
+    </reader>
+
+
+    <writer key="edf">
+
+
+    </writer>
+
+    <namespaceBeautifier>
+
+
+    </namespaceBeautifier>
+
+
+    <converter key="abcd" name="A b c d">
+        <reader ref="abc"/>
+        <writer ref="edf"/>
+
+    </converter>
+
+</config>

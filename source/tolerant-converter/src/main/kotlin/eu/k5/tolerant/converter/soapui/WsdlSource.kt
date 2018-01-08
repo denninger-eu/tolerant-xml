@@ -1,4 +1,4 @@
-package eu.k5.tolerant.converter
+package eu.k5.tolerant.converter.soapui
 
 interface WsdlSource {
 

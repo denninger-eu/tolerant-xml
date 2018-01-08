@@ -12,6 +12,7 @@ import java.io.StringReader
 import java.io.StringWriter
 import javax.xml.stream.XMLInputFactory
 import javax.xml.stream.XMLStreamReader
+import javax.xml.transform.OutputKeys
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
@@ -46,6 +47,9 @@ class TolerantConverter(private val configuration: TolerantConverterConfiguratio
     private fun toString(document: Document): String {
         val transformerFactory = TransformerFactory.newInstance()
         val transformer = transformerFactory.newTransformer()
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes")
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2")
+
         val source = DOMSource(document)
 
         val resultWriter = StringWriter()

@@ -16,6 +16,7 @@ import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 import org.xmlunit.builder.DiffBuilder
 import org.xmlunit.builder.Input
+import javax.xml.transform.OutputKeys
 
 
 class TolerantReaderDomTest : AbstractTolerantReaderTest() {
@@ -153,6 +154,10 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
 
         val transformerFactory = TransformerFactory.newInstance()
         val transformer = transformerFactory.newTransformer()
+
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes")
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2")
+
         val source = DOMSource(document)
 
         val resultWriter = StringWriter()

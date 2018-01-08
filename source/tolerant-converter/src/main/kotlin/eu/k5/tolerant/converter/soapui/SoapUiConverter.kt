@@ -5,11 +5,9 @@ import com.eviware.soapui.impl.wsdl.WsdlInterface
 import com.eviware.soapui.impl.wsdl.WsdlOperation
 import com.eviware.soapui.impl.wsdl.WsdlProject
 import com.eviware.soapui.impl.wsdl.WsdlTestSuite
-import com.eviware.soapui.impl.wsdl.support.wsdl.WsdlDefinitionLoader
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase
 import com.eviware.soapui.impl.wsdl.teststeps.PropertyTransfersTestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlTestRequestStep
-import eu.k5.tolerant.converter.WsdlSource
 import java.io.InputStream
 import java.nio.file.Files
 

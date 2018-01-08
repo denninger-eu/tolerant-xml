@@ -1,6 +1,5 @@
 package eu.k5.tolerant.converter.soapui
 
-import eu.k5.tolerant.converter.WsdlSource
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
