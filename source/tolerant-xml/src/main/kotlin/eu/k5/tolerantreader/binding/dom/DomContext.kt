@@ -1,12 +1,17 @@
 package eu.k5.tolerantreader.binding.dom
 
+import eu.k5.tolerantreader.TolerantReaderConfiguration
 import org.w3c.dom.Document
 
-class DomContext(val document: Document) {
+class DomContext(val document: Document, readerConfiguration: TolerantReaderConfiguration) {
 
     private val prefixes: MutableMap<String, String> = HashMap()
 
-    private val namespaceStrategy: NamespaceStrategy = DefaultNamespaceStrategy()
+    private val namespaceStrategy: NamespaceStrategy
+            = readerConfiguration.queryConfigOrDefault(NamespaceStrategy::class.java) {
+        DefaultNamespaceStrategy()
+    }
+
 
     fun getPrefix(namespace: String): String
             = prefixes.computeIfAbsent(namespace) { createUniquePrefix(it) }

@@ -3,7 +3,7 @@ package eu.k5.tolerantreader.binding.dom
 import java.util.regex.Pattern
 
 
-class ConfigurableNamespaceStrategy(configuration: Configuration) : NamespaceStrategy {
+class ConfigurableNamespaceStrategy(configuration: NamespaceStrategyConfiguration) : NamespaceStrategy {
 
     private val explicit: Map<String, String> = configuration.explicit
 
@@ -48,12 +48,15 @@ class ConfigurableNamespaceStrategy(configuration: Configuration) : NamespaceStr
     }
 }
 
-class Configuration {
+class NamespaceStrategyConfiguration(val fallback: String = "ns") {
     val explicit: MutableMap<String, String> = HashMap()
 
     val pattern: MutableList<Conditional> = ArrayList()
 
-    val fallback: String = "ns"
+
+    fun addPattern(use: String, extract: String) {
+        pattern.add(Conditional(use, extract))
+    }
 
 }
 

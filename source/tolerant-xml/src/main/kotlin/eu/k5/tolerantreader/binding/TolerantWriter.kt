@@ -2,8 +2,8 @@ package eu.k5.tolerantreader.binding
 
 import eu.k5.tolerantreader.BindContext
 import eu.k5.tolerantreader.InitContext
+import eu.k5.tolerantreader.TolerantReaderConfiguration
 import eu.k5.tolerantreader.tolerant.TolerantSchema
-import javafx.scene.text.FontWeight
 import javax.xml.namespace.QName
 
 interface TolerantWriter {
@@ -16,7 +16,7 @@ interface TolerantWriter {
 
     fun rootAssigner(elementName: QName): Assigner
 
-    fun createContext(schema: TolerantSchema): BindContext
+    fun createContext(schema: TolerantSchema, readerConfig: TolerantReaderConfiguration): BindContext
 }
 
 class EnumSupplier(

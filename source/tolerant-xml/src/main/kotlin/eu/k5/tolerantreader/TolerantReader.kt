@@ -21,7 +21,11 @@ enum class Violation {
 
 }
 
-class BindContext(private val schema: TolerantSchema, private val root: RootElement) {
+class BindContext(
+        private val schema: TolerantSchema,
+        private val root: RootElement,
+        val readerConfig: TolerantReaderConfiguration
+) {
 
     private val trackComments: Boolean = true
 
@@ -130,16 +134,30 @@ class OpenReference(
         val assigner: Assigner
 )
 
-class TolerantReaderConfiguration(){
-    private val <C> configs:Map<Class<C>,C> = HashMap()
+class TolerantReaderConfiguration(init: Map<Class<*>, Any>) {
+    private val configs: Map<Class<*>, Any> = Collections.unmodifiableMap(HashMap(init))
+
+    fun <T> queryConfigOrDefault(type: Class<T>, createDefault: () -> T): T {
+        val obj = configs[type]
+        if (type.isInstance(obj)) {
+            return type.cast(obj)
+        }
+        LOGGER.debug("Accessing not existing config: " + type)
+        return createDefault()
+    }
+
+    companion object {
+        private val LOGGER = LoggerFactory.getLogger(TolerantReader::class.java)
+    }
+
 }
 
 class TolerantReader(val schema: TolerantSchema) {
 
 
-    fun read(stream: XMLStreamReader): Any? {
+    fun read(stream: XMLStreamReader, readerConfig: TolerantReaderConfiguration): Any? {
 
-        val context = schema.createContext()
+        val context = schema.createContext(readerConfig)
 
         while (stream.hasNext()) {
             val event = stream.next()

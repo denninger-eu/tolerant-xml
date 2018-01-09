@@ -17,7 +17,7 @@ class DomRoot(private val document: Document) : RootElement {
 
         bindContext.queryConfiguration(NamespaceStrategy::class.java)
 
-        val context = DomContext(document)
+        val context = DomContext(document, bindContext.readerConfig)
         val root = rootElement!!.asNode(context) as Element
 
         for ((namespace, prefix) in context.getUsedNamespaces()) {

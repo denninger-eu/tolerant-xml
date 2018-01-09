@@ -148,10 +148,10 @@ class DomWriter : TolerantWriter {
         return DomRootAssigner(elementName)
     }
 
-    override fun createContext(schema: TolerantSchema): BindContext {
+    override fun createContext(schema: TolerantSchema, readerConfig: TolerantReaderConfiguration): BindContext {
         val documentBuilderFactory = DocumentBuilderFactory.newInstance()
         val documentBuilder = documentBuilderFactory.newDocumentBuilder()
-        return BindContext(schema, DomRoot(documentBuilder.newDocument()))
+        return BindContext(schema, DomRoot(documentBuilder.newDocument()), readerConfig)
     }
 
     override fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner {

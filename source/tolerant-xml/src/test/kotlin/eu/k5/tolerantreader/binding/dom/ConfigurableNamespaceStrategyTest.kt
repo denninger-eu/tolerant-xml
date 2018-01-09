@@ -20,8 +20,8 @@ class ConfigurableNamespaceStrategyTest {
         assertEquals("abcd", strategy.createNamespacePrefix("http://abcd"))
     }
 
-    private fun createConfiguration(): Configuration {
-        val configuration = Configuration()
+    private fun createConfiguration(): NamespaceStrategyConfiguration {
+        val configuration = NamespaceStrategyConfiguration()
         configuration.explicit.put("http://abc", "ab")
         configuration.pattern.add(Conditional("http://.*", "http://(?<prefix>.*)"))
         return configuration

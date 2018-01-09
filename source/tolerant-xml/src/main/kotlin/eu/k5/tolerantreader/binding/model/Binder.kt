@@ -119,7 +119,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
         return assigner
     }
 
-    override fun createContext(schema: TolerantSchema): BindContext = BindContext(schema, BindRoot())
+    override fun createContext(schema: TolerantSchema, readerConfig: TolerantReaderConfiguration): BindContext = BindContext(schema, BindRoot(), readerConfig)
 
     override fun rootAssigner(elementName: QName): Assigner = BindRootAssigner
 

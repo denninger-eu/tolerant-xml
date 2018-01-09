@@ -1,9 +1,9 @@
 package eu.k5.tolerant.converter.config
 
 
+import eu.k5.tolerantreader.binding.dom.NamespaceStrategy
 import java.io.FileInputStream
 import java.io.InputStream
-import java.io.Writer
 import java.nio.file.Path
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.annotation.*
@@ -28,8 +28,11 @@ class Configurations {
         val readerConfig = getReaderConfig(converterConfig.readerRef!!)
         val writerConfig = getWriterConfig(converterConfig.writerRef!!)
 
-        return TolerantConverterConfiguration(converterConfig, readerConfig, writerConfig)
+        val configs = HashMap<Class<*>, Any>()
+        configs.put(NamespaceStrategy::class.java, writerConfig.createNamespaceStrategy())
+        return TolerantConverterConfiguration(converterConfig, readerConfig, writerConfig, configs)
     }
+
 
     private fun getReaderConfig(key: String): ReaderConfig {
         readers.orEmpty()
@@ -77,13 +80,13 @@ class Configurations {
 class TolerantConverterConfiguration(
         val key: String,
         val name: String,
-        val xsd: String
-
+        val xsd: String,
+        val configs: Map<Class<*>, Any> = HashMap()
 
 ) {
-    constructor(converterConfig: ConverterConfig, readerConfig: ReaderConfig, writerConfig: WriterConfig)
-            : this(key = converterConfig.key!!, name = converterConfig.name!!, xsd = readerConfig.xsd!!)
 
+    constructor(converterConfig: ConverterConfig, readerConfig: ReaderConfig, writerConfig: WriterConfig, configs: Map<Class<*>, Any>)
+            : this(key = converterConfig.key!!, name = converterConfig.name!!, xsd = readerConfig.xsd!!, configs = HashMap(configs))
 }
 
 

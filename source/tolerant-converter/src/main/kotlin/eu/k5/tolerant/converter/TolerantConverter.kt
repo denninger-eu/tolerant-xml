@@ -2,6 +2,7 @@ package eu.k5.tolerant.converter
 
 import eu.k5.tolerant.converter.config.TolerantConverterConfiguration
 import eu.k5.tolerantreader.TolerantReader
+import eu.k5.tolerantreader.TolerantReaderConfiguration
 import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.binding.dom.DomWriter
 import eu.k5.tolerantreader.tolerant.TolerantSchemaBuilder
@@ -16,14 +17,16 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
-class TolerantConverter(private val configuration: TolerantConverterConfiguration) {
+class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
     private val name: String = configuration.name!!
     private val reader: TolerantReader
-
+    private val readerConfig: TolerantReaderConfiguration = TolerantReaderConfiguration(configuration.configs)
 
     init {
         val writer: TolerantWriter = DomWriter()
+
+        val initConfig = HashMap<Class<*>, Any>()
 
         val xsRegistry = Schema.parse(configuration.xsd!!)
         xsRegistry.init()
@@ -33,7 +36,7 @@ class TolerantConverter(private val configuration: TolerantConverterConfiguratio
 
     fun convert(request: TolerantConverterRequest): TolerantConverterResult {
 
-        val result = reader.read(createStream(request.content!!))
+        val result = reader.read(createStream(request.content!!), readerConfig)
         if (result is Document) {
 
             val xmlString = toString(result)

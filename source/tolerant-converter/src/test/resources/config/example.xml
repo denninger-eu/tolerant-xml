@@ -9,13 +9,8 @@
 
 
     <writer key="edf">
-
-
-        <namespaceBeautifier>
-
-
-        </namespaceBeautifier>
-
+        <explicitPrefix namespace="http://schemas.xmlsoap.org/wsdl/soap/" prefix="soap"/>
+        <patternPrefix use="http://(.*)/V" extract="http://(?&lt;prefix&gt;.*)/V"/>
     </writer>
 
 
