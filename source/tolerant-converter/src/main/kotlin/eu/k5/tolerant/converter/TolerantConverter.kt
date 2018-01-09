@@ -26,7 +26,6 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
     init {
         val writer: TolerantWriter = DomWriter()
 
-        val initConfig = HashMap<Class<*>, Any>()
 
         val xsRegistry = Schema.parse(configuration.xsd!!)
         xsRegistry.init()
