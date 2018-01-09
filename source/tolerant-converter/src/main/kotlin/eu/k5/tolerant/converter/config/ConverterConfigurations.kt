@@ -23,14 +23,24 @@ class Configurations {
     var converter: List<ConverterConfig>? = ArrayList()
 
     fun queryConverterConfiguration(key: String): TolerantConverterConfiguration {
-
         val converterConfig = getConverterConfig(key)
+        return initConfig(converterConfig)
+    }
+
+    private fun initConfig(converterConfig: ConverterConfig): TolerantConverterConfiguration {
         val readerConfig = getReaderConfig(converterConfig.readerRef!!)
         val writerConfig = getWriterConfig(converterConfig.writerRef!!)
 
         val configs = HashMap<Class<*>, Any>()
         configs.put(NamespaceStrategy::class.java, writerConfig.createNamespaceStrategy())
         return TolerantConverterConfiguration(converterConfig, readerConfig, writerConfig, configs)
+    }
+
+
+    fun getAll(): List<TolerantConverterConfiguration> {
+        return converter.orEmpty().map {
+            initConfig(it)
+        }.toCollection(ArrayList())
     }
 
 

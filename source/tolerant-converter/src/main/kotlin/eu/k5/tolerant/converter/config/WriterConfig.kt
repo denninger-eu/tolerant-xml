@@ -37,18 +37,6 @@ class WriterConfig {
 
 }
 
-@XmlAccessorType(XmlAccessType.NONE)
-class NamespacePrefixConfig {
-
-    @XmlAttribute(name = "fallback")
-    var fallback: String = "xs"
-
-    @XmlElement(name = "explicit")
-    var explicit: List<Explicit> = ArrayList()
-
-    @XmlElement(name = "pattern")
-    var pattern: List<Pattern> = ArrayList()
-}
 
 @XmlAccessorType(XmlAccessType.NONE)
 class Explicit {
