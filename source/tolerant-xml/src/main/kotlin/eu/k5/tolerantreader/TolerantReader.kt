@@ -75,9 +75,11 @@ class BindContext(
     }
 
     fun pop() {
-        elements.pop()
-        instances.pop()
-        types.pop()
+        val element = elements.pop()
+        val instance = instances.pop()
+        val type = types.pop()
+
+        type.closeType(this, instance)
     }
 
 
@@ -120,7 +122,14 @@ class BindContext(
         }
     }
 
-    fun getComments(): List<String> = comments
+    fun retrieveComments(): List<String> {
+        if (!trackComments) {
+            return comments
+        }
+        val retrieved = ArrayList(comments)
+        comments.clear()
+        return retrieved
+    }
 
     fun <C> queryConfiguration(java: Class<C>): C? {
 
@@ -193,14 +202,10 @@ class TolerantReader(val schema: TolerantSchema) {
                         context.push(element, readValue, type)
                     }
                 }
-
+            } else if (XMLEvent.COMMENT == event) {
+                context.addComment(stream.text)
             } else if (XMLEvent.END_ELEMENT == event) {
                 context.pop()
-            } else if (XMLEvent.COMMENT == event) {
-                val elementText = stream.text
-                context.addComment(stream.text)
-
-
             }
         }
         context.postProcess()

@@ -17,5 +17,9 @@ abstract class TolerantType() {
 
     open fun getTypeName(): QName = getQualifiedName()
 
+    open fun closeType(bindContext: BindContext, instance: Any) {
+
+    }
+
 }
 

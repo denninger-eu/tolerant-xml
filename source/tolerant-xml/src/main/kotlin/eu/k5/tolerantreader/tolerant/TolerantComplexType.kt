@@ -2,6 +2,7 @@ package eu.k5.tolerantreader.tolerant
 
 import eu.k5.tolerantreader.BindContext
 import eu.k5.tolerantreader.binding.Assigner
+import eu.k5.tolerantreader.binding.Closer
 import eu.k5.tolerantreader.xs.XsComplexType
 import javax.xml.namespace.QName
 import javax.xml.stream.XMLStreamReader
@@ -10,7 +11,15 @@ class TolerantComplexType(private val name: QName,
                           private val konstructor: (elemantName: QName) -> Any,
                           private val elements: Map<String, TolerantElement>,
                           private val concreteSubtypes: TolerantMap<QName>,
-                          private val simpleContent: TolerantSimpleContent?) : TolerantType() {
+                          private val simpleContent: TolerantSimpleContent?,
+                          private val closer: Closer) : TolerantType() {
+
+    override fun closeType(bindContext: BindContext, instance: Any) {
+
+        closer.close(bindContext, instance)
+
+    }
+
 
     override fun asSubtype(context: BindContext, stream: XMLStreamReader): TolerantType {
         if (concreteSubtypes.isEmpty()) {

@@ -2,6 +2,7 @@ package eu.k5.tolerantreader.tolerant
 
 import com.google.common.collect.ImmutableMap
 import eu.k5.tolerantreader.*
+import eu.k5.tolerantreader.binding.Closer
 import eu.k5.tolerantreader.binding.ElementParameters
 import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.xs.XsComplexType
@@ -153,7 +154,7 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
     private fun prepareComplexType(xsComplexType: XsComplexType) {
         val qname = xsComplexType.getQualifiedName()
         val createSupplier = writer.createSupplier(initContext, qname)
-        var builder = ComplexTypeBuilder(qname, createSupplier, xsComplexType, TolerantComplexProxy(qname))
+        var builder = ComplexTypeBuilder(qname, createSupplier, xsComplexType, TolerantComplexProxy(qname), writer.createCloser(initContext))
         complexTypeBuilders[xsComplexType.getQualifiedName()] = builder
 
         val simpleContent = xsComplexType.simpleContent
@@ -267,7 +268,8 @@ private class ComplexTypeBuilder(
         val name: QName,
         val konstructor: (QName) -> Any,
         val xsComplexType: XsComplexType,
-        val proxy: TolerantComplexProxy
+        val proxy: TolerantComplexProxy,
+        val closer: Closer
 ) {
 
     val elements = ImmutableMap.builder<String, TolerantElement>()!!
@@ -295,7 +297,7 @@ private class ComplexTypeBuilder(
             return complexType
         }
 
-        complexType = TolerantComplexType(name!!, konstructor, elements.build(), concreteSubtypes.build(), simpleContext)
+        complexType = TolerantComplexType(name!!, konstructor, elements.build(), concreteSubtypes.build(), simpleContext, closer)
         proxy.delegate = complexType
         tolerantComplexType = complexType
         return complexType

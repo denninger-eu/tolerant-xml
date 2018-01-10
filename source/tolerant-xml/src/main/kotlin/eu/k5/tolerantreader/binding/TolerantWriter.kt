@@ -8,6 +8,8 @@ import javax.xml.namespace.QName
 
 interface TolerantWriter {
 
+    fun createCloser(initContext: InitContext): Closer
+
     fun createSupplier(initContext: InitContext, typeName: QName): (elementName: QName) -> Any
 
     fun createEnumSupplier(initContext: InitContext, enumName: QName, literals: Collection<String>): EnumSupplier

@@ -1,11 +1,8 @@
 package eu.k5.tolerantreader.binding.model
 
 import eu.k5.tolerantreader.*
+import eu.k5.tolerantreader.binding.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
-import eu.k5.tolerantreader.binding.Assigner
-import eu.k5.tolerantreader.binding.ElementParameters
-import eu.k5.tolerantreader.binding.EnumSupplier
-import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.tolerant.IdRefType
 import org.slf4j.LoggerFactory
 import java.lang.reflect.InvocationTargetException
@@ -18,7 +15,16 @@ import javax.xml.datatype.Duration
 import javax.xml.datatype.XMLGregorianCalendar
 import javax.xml.namespace.QName
 
+class NoOpCloser : Closer {
+    override fun close(bindContext: BindContext, instance: Any) {
+    }
+
+}
+
 class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
+    override fun createCloser(initContext: InitContext): Closer {
+        return NoOpCloser()
+    }
 
 
     private val utils = ReflectionUtils()

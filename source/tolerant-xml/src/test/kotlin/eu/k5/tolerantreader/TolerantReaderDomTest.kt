@@ -108,6 +108,13 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testMinimal("simple-types-comments")
     }
 
+    @Test
+    @DisplayName("Read complex type. comments")
+    fun readModelComments() {
+        testModel("complex-type-comment")
+    }
+
+
     private fun testMinimal(testCase: String) {
         val obj = readMinimalType(testCase)
                 as? Document ?: Assertions.fail<Nothing>("Invalid root type")

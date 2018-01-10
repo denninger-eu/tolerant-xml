@@ -1,11 +1,8 @@
 package eu.k5.tolerantreader.binding.dom
 
 import eu.k5.tolerantreader.*
+import eu.k5.tolerantreader.binding.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
-import eu.k5.tolerantreader.binding.Assigner
-import eu.k5.tolerantreader.binding.ElementParameters
-import eu.k5.tolerantreader.binding.EnumSupplier
-import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.binding.model.NoOpAssigner
 import eu.k5.tolerantreader.binding.model.ReflectionUtils
 import eu.k5.tolerantreader.tolerant.IdRefType
@@ -17,10 +14,12 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 
 class DomWriter : TolerantWriter {
+    override fun createCloser(initContext: InitContext): Closer {
+        return DomElementCloser()
+    }
 
     private val utils = ReflectionUtils()
     private val simpleTypeAdapter = HashMap<QName, (Any) -> String>()
-
 
 
     init {
@@ -295,7 +294,7 @@ class DomTextContentAssigner(
         if (instance is DomValue) {
             if (value != null) {
 
-                context.getComments().mapTo(instance.element!!.elements) {
+                context.retrieveComments().mapTo(instance.element!!.elements) {
                     DomComment(it, weight)
                 }
 
@@ -320,7 +319,7 @@ class DomElementAssigner(
             if (value is DomValue) {
 
 
-                val comments = context.getComments()
+                val comments = context.retrieveComments()
 
                 val domElement = DomElement(element, target, value.typeName, weight)
                 domElement.attributes.addAll(value.attributes)
@@ -348,6 +347,20 @@ class DomAttributeAssigner(
             if (value != null) {
                 instance.attributes.add(DomAttribute(element, toStringAdapter(value), 0))
             }
+        }
+    }
+}
+
+class DomElementCloser : Closer {
+
+    override fun close(bindContext: BindContext, instance: Any) {
+        if (instance is DomValue) {
+            val comments = bindContext.retrieveComments()
+
+            comments.mapTo(instance.element!!.elements) {
+                DomComment(it, Int.MAX_VALUE)
+            }
+
         }
     }
 }
