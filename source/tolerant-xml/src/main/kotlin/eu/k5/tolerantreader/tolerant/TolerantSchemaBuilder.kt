@@ -21,7 +21,7 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
     private val complexTypeBuilding: MutableSet<QName> = HashSet()
 
-    private val elements: MutableMap<String, TolerantElement> = HashMap()
+    private val elements: MutableMap<QName, TolerantElement> = HashMap()
 
     private val initContext: InitContext = InitContext()
 
@@ -248,14 +248,14 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
                 val bindElement = TolerantElement(element.getQualifiedName(), complexType!!, writer.rootAssigner(element.getQualifiedName()), false)
 
-                elements.put(element.localName!!, bindElement)
+                elements.put(element.getQualifiedName(), bindElement)
             } else if (element.complexType != null) {
 
                 val complexType = tolerantComplexTypes?.get(element.getQualifiedName())
 
                 val bindElement = TolerantElement(element.getQualifiedName(), complexType!!, writer.rootAssigner(element.getQualifiedName()), false)
 
-                elements.put(element.localName!!, bindElement)
+                elements.put(element.getQualifiedName(), bindElement)
 
             }
 
