@@ -1,0 +1,28 @@
+<xs:schema xmlns="http://k5.eu/tr/model/inheritance"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tr="http://k5.eu/tr/model/inheritance/basis"
+           targetNamespace="http://k5.eu/tr/model/inheritance/sub">
+
+    <xs:import namespace="http://k5.eu/tr/model/inheritance/basis" schemaLocation="complex-type-inheritance-base.xsd"/>
+
+    <xs:complexType name="NsSubType">
+        <xs:complexContent>
+            <xs:extension base="tr:NsBaseType">
+                <xs:sequence>
+                    <xs:element name="subElement" type="xs:string"/>
+                </xs:sequence>
+                <xs:attribute name="subAttribute" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <xs:element name="NsComplexInheritance">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="type" type="tr:NsBaseType"/>
+            </xs:sequence>
+        </xs:complexType>
+
+    </xs:element>
+</xs:schema>

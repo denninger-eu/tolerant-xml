@@ -102,6 +102,13 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testModel("complex-type-inheritance")
     }
 
+
+    @Test
+    @DisplayName("Read model type. Inheritance different ns")
+    fun readComplexTypesInheritanceNs() {
+        testModel("complex-type-inheritance-ns")
+    }
+
     @Test
     @DisplayName("Read simple type. comments")
     fun readSimpleComments() {

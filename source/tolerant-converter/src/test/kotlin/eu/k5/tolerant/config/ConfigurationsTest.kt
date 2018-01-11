@@ -1,13 +1,10 @@
 package eu.k5.tolerant.config
 
 import eu.k5.tolerant.converter.config.Configurations
-import eu.k5.tolerant.converter.config.NamespacePrefixConfig
 import eu.k5.tolerantreader.binding.dom.NamespaceStrategy
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.nio.file.Paths
-import javax.naming.Name
-import javax.xml.stream.events.Namespace
 
 class ConfigurationsTest {
 

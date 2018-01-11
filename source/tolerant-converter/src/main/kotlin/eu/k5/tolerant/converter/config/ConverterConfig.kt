@@ -16,6 +16,7 @@ class ConverterConfig {
 
     @XmlElement(name = "readerRef")
     var readerRef: String? = null
+
     @XmlElement(name = "writerRef")
     var writerRef: String? = null
 }

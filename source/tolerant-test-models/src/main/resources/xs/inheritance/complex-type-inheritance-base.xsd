@@ -1,0 +1,15 @@
+<xs:schema xmlns="http://k5.eu/tr/model/inheritance"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tr="http://k5.eu/tr/model/inheritance"
+           targetNamespace="http://k5.eu/tr/model/inheritance/basis">
+
+
+    <xs:complexType name="NsBaseType">
+        <xs:sequence>
+            <xs:element name="baseElement" type="xs:string"/>
+
+        </xs:sequence>
+        <xs:attribute name="baseAttribute" type="xs:string"/>
+    </xs:complexType>
+
+</xs:schema>
