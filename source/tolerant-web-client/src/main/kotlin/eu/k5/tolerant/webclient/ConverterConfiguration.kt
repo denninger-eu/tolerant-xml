@@ -4,4 +4,5 @@ import io.dropwizard.Configuration
 
 class ConverterConfiguration : Configuration() {
 
+
 }

@@ -12,7 +12,7 @@ $(document).ready(function() {
 
 
        $.ajax({
-        url: '/convert/request',
+        url: '/api/convert/request',
         type: 'POST',
         data: JSON.stringify(data),
         dataType: 'json',
@@ -34,7 +34,7 @@ $(document).ready(function() {
 $(document).ready(function(){
 
     $.ajax({
-        url: '/convert/targets',
+        url: '/api/convert/targets',
         type: 'GET',
         dataType:'json',
         contentType:'application/json',

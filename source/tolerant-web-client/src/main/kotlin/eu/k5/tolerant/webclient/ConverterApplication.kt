@@ -9,8 +9,10 @@ import io.dropwizard.assets.AssetsBundle
 import io.dropwizard.servlets.assets.AssetServlet
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
+import org.glassfish.jersey.media.multipart.MultiPartFeature
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.nio.file.Paths
 
 
 fun main(args: Array<String>) {
@@ -22,24 +24,27 @@ class ConverterApplication : Application<ConverterConfiguration>() {
 
 
     override fun initialize(bootstrap: Bootstrap<ConverterConfiguration>) {
-        //bootstrap.addBundle(AssetsBundle("/META-INF/static", "/static", "", "static"))
 
 
-        //bootstrap.addBundle(FileAssetsBundle("src/main/resources/META-INF/static", "/file"))
+        bootstrap.addBundle(AssetsBundle("/META-INF/resources/webjars", "/libs", "", "lib"))
 
-        bootstrap.addBundle(object : AssetsBundle("/META-INF/static", "/static", "static") {
+        bootstrap.addBundle(object : AssetsBundle("/META-INF/static", "/", "", "static") {
+
+
             override fun createServlet(): AssetServlet {
                 return object : AssetServlet(resourcePath, uriPath, indexFile, StandardCharsets.UTF_8) {
                     override fun getResourceUrl(absoluteRequestedResourcePath: String): URL {
-                        if (absoluteRequestedResourcePath == "static/kotlin.js") {
-                            return super.getResourceUrl("kotlin.js")
-                        }
-                        return super.getResourceUrl(absoluteRequestedResourcePath)
+                        val localPath = absoluteRequestedResourcePath.substring("META-INF/static/".length)
+                        val path = Paths.get("src", "main", "resources", "META-INF", "static").resolve(localPath)
+
+                        return path.toUri().toURL()
                     }
 
                 }
             }
+
         })
+
     }
 
     override fun run(configuration: ConverterConfiguration, environment: Environment) {
@@ -49,7 +54,8 @@ class ConverterApplication : Application<ConverterConfiguration>() {
         val injector = Guice.createInjector(Module {
             it.bind(Converter::class.java).toInstance(converter)
         })
-        //environment.jersey().register(MultiPartFeature::class.java)
+        environment.jersey().urlPattern = "/api/*"
+        environment.jersey().register(MultiPartFeature::class.java)
         environment.jersey().register(injector.getInstance(ConvertResource::class.java))
         //environment.jersey().register(injector.getInstance(SoapUiResource::class.java))
     }

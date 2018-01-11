@@ -20,6 +20,7 @@ class Converter {
     private val converter = ConcurrentHashMap<String, TolerantConverter>()
 
     init {
+
         val base = Paths.get("config")
 
         LOGGER.info("Loading converter targets  from: {}", base.toAbsolutePath())

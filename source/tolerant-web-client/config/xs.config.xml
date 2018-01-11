@@ -1,0 +1,23 @@
+<ConverterConfig>
+
+
+    <reader key="abc">
+        <xsd>file:/repositories/tolerant-xml/source/tolerant-test-models/src/main/resources/xs/import.xsd</xsd>
+        <numbers>US</numbers>
+        <enforceLengthRestriction>false</enforceLengthRestriction>
+    </reader>
+
+
+    <writer key="standard">
+        <explicitPrefix namespace="http://schemas.xmlsoap.org/wsdl/soap/" prefix="soap"/>
+        <patternPrefix use="http://(.*)/V" extract="http://(?&lt;prefix&gt;.*)/V"/>
+    </writer>
+
+
+    <converter key="conv">
+        <name>Model</name>
+        <readerRef>abc</readerRef>
+        <writerRef>standard</writerRef>
+    </converter>
+
+</ConverterConfig>
