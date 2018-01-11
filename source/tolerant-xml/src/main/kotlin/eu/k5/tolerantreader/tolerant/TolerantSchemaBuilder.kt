@@ -200,9 +200,9 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
                 val type = attribute.type!!
                 val simpleType = resolveType(type)
                 val parameters = ElementParameters(false, 0, true)
-                val assigner = writer.createElementAssigner(initContext, qualifiedName, QName(qualifiedName.namespaceURI, attribute.name!!), simpleType.getTypeName(), parameters)
+                val qname = attribute.getQualifiedName()
+                val assigner = writer.createElementAssigner(initContext, qualifiedName, qname, simpleType.getTypeName(), parameters)
 
-                val qname = QName(qualifiedName.namespaceURI, attribute.name)
 
                 typeBuilder.addElement(attribute.name!!, TolerantElement(qname, simpleType, assigner, true))
             } else {

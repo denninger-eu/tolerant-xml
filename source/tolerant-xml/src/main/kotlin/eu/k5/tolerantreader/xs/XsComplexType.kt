@@ -266,6 +266,7 @@ class XsComplexExtension {
     fun postSchemaMarshall(xsSchema: XsSchema) {
         owningSchema = xsSchema
         sequence?.elements?.forEach { it.postSchemaMarshall(xsSchema) }
+        attributes?.forEach { it.postSchemaMarshall(xsSchema) }
     }
 }
 
