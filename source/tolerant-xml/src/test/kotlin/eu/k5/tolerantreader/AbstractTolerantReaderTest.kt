@@ -10,6 +10,8 @@ import eu.k5.tolerantreader.xs.Schema
 import eu.k5.tr.model.NumericTypes
 import eu.k5.tr.model.idref.Referenced
 import eu.k5.tr.model.inheritance.ComplexInheritance
+import eu.k5.tr.model.inheritance.basis.NsBaseType
+import eu.k5.tr.model.inheritance.sub.NsComplexInheritance
 import eu.k5.tr.strict.StrictRoot
 import java.io.StringReader
 import java.nio.charset.StandardCharsets
@@ -60,6 +62,8 @@ abstract class AbstractTolerantReaderTest {
             builder.add("http://k5.eu/tr/model", NumericTypes::class.java.`package`.name)
             builder.add("http://k5.eu/tr/model/idref", Referenced::class.java.`package`.name)
             builder.add("http://k5.eu/tr/model/inheritance", ComplexInheritance::class.java.`package`.name)
+            builder.add("http://k5.eu/tr/model/inheritance/sub", NsComplexInheritance::class.java.`package`.name)
+            builder.add("http://k5.eu/tr/model/inheritance/basis", NsBaseType::class.java.`package`.name)
             return builder.build()
         }
     }
