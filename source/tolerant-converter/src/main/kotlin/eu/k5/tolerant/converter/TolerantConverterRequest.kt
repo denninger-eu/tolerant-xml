@@ -7,5 +7,7 @@ enum class PreProcessing {
 data class TolerantConverterRequest(
         var content: String? = null,
 
+        var extract: String? = null,
+
         var preProcessing: List<PreProcessing>? = ArrayList()
 )

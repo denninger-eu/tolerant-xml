@@ -37,7 +37,6 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
         val result = reader.read(createStream(request.content!!), readerConfig)
         if (result is Document) {
-
             val xmlString = toString(result)
             return TolerantConverterResult(xmlString)
         } else {

@@ -1,5 +1,6 @@
 package eu.k5.tolerantreader
 
+import eu.k5.tolerantreader.tolerant.NumberFormat
 import org.slf4j.LoggerFactory
 
 enum class Type {
@@ -18,6 +19,10 @@ class InitContext {
     fun addFinding(type: Type, s: String) {
         LOGGER.warn(type.toString() + ": " + s)
 
+    }
+
+    fun getNumberFormat(): NumberFormat {
+        return NumberFormat.EN_US
     }
 
     companion object {

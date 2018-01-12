@@ -28,6 +28,7 @@
             <version>${dropwizard.version}</version>
             <type>pom</type>
         </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

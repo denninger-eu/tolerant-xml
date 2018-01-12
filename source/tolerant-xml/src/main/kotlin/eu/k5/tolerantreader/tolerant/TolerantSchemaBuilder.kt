@@ -11,11 +11,10 @@ import javax.xml.namespace.QName
 
 class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writer: TolerantWriter) {
 
-
     private val simpleTypes: MutableMap<QName, TolerantSimpleType> = HashMap()
 
-
     private val complexTypes: MutableMap<QName, TolerantComplexType> = HashMap()
+
 
     private val complexTypeBuilders: MutableMap<QName, ComplexTypeBuilder> = HashMap()
 
@@ -25,10 +24,12 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
     private val initContext: InitContext = InitContext()
 
+    private val baseTypes = TolerantBaseTypes(initContext)
+
     private var tolerantComplexTypes: TolerantMap<TolerantComplexType>? = null
 
     private fun resolveType(name: QName): TolerantType {
-        val simpleType = simpleTypes[name]
+        val simpleType = getSimpleType(name)
         if (simpleType != null) {
             return simpleType
         }
@@ -47,7 +48,6 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
     fun build(): TolerantSchema {
 
-        initBaseTypes()
 
         initSimpleTypes()
 
@@ -62,46 +62,14 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
         return TolerantSchema(TolerantMap.of(elements.values) { it.qname }, tolerantComplexTypes!!, writer)
     }
 
-    private fun initBaseTypes() {
-        simpleTypes.put(xsString, TolerantStringType(xsString))
-        simpleTypes.put(xsAnyUri, TolerantStringType(xsAnyUri))
-        simpleTypes.put(xsBase64Binary, TolerantBase64BinaryType())
-        simpleTypes.put(xsHexBinary, TolerantHexBinaryType())
-        simpleTypes.put(xsBoolean, TolerantBooleanType())
-        simpleTypes.put(xsQname, TolerantQNameType())
 
-
-        simpleTypes.put(xsDate, TolerantTemporalType(xsDate))
-        simpleTypes.put(xsDatetime, TolerantTemporalType(xsDatetime))
-        simpleTypes.put(xsDuration, TolerantTemporalType(xsDuration))
-        simpleTypes.put(xsGDay, TolerantTemporalType(xsGDay))
-        simpleTypes.put(xsGMonth, TolerantTemporalType(xsGMonth))
-        simpleTypes.put(xsGMonthDay, TolerantTemporalType(xsGMonthDay))
-        simpleTypes.put(xsGYear, TolerantTemporalType(xsGYear))
-        simpleTypes.put(xsGYearMonth, TolerantTemporalType(xsGYearMonth))
-        simpleTypes.put(xsTime, TolerantTemporalType(xsTime))
-
-        simpleTypes.put(xsByte, byteType)
-        simpleTypes.put(xsDecimal, decimalType)
-        simpleTypes.put(xsInt, intType)
-        simpleTypes.put(xsInteger, integerType)
-        simpleTypes.put(xsLong, longType)
-        simpleTypes.put(xsNegativeInteger, negativeIntegerType)
-        simpleTypes.put(xsNonNegativeInteger, nonNegativeIntegerType)
-        simpleTypes.put(xsNonPositiveInteger, nonPositiveIntegerType)
-        simpleTypes.put(xsPositiveInteger, positiveIntegerType)
-        simpleTypes.put(xsShort, shortType)
-        simpleTypes.put(xsUnsignedLong, unsignedLongType)
-        simpleTypes.put(xsUnsignedInt, unsignedIntType)
-        simpleTypes.put(xsUnsignedShort, unsignedShortType)
-        simpleTypes.put(xsUnsignedByte, unsignedByteType)
-        simpleTypes.put(xsDouble, doubleType)
-        simpleTypes.put(xsFloat, floatType)
-
-        simpleTypes.put(xsId, TolerantIdType())
-        simpleTypes.put(xsIdRef, TolerantIdRefType())
+    private fun getSimpleType(qName: QName): TolerantSimpleType? {
+        val baseType = baseTypes.getBaseType(qName)
+        if (baseType != null) {
+            return baseType
+        }
+        return simpleTypes[qName]
     }
-
 
     private fun initSimpleTypes() {
         for (simpleType in xsRegistry.getAllSimpleTypes()) {
@@ -118,7 +86,7 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
             } else {
 
-                val baseType = simpleTypes[simpleType.restriction!!.base!!]
+                val baseType = getSimpleType(simpleType.restriction!!.base!!)
 
                 if (baseType != null) {
                     val type = TolerantSimpleRestriction(simpleType.getQualifiedName(), baseType)
@@ -161,7 +129,7 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
         if (simpleContent != null) {
             val baseName = simpleContent.extension?.base
 
-            val baseType = simpleTypes.get(baseName)
+            val baseType = getSimpleType(baseName!!)
 
             val parameters = ElementParameters(false, 0, false)
 
