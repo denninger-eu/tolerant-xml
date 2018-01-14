@@ -1,0 +1,59 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+html,
+body {
+  height: 100%;
+  margin: 0
+}
+
+#main-pane {
+   display: flex;
+   flex-flow: column;
+   height: 100%;
+}
+
+
+#select-target-wrapper {
+  flex: 0 1 auto;
+}
+
+#select-target {
+    height:50px;
+    background:#555;
+}
+
+#editor-pane {
+  flex: 1 1 100%;
+  display: flex;
+
+}
+
+#source-tabs {
+    flex: 1 1 50%;
+    width: 50%;
+    display: flex;
+    flex-flow: column;
+}
+
+#source-tab-request {}
+
+#result-tabs {
+    flex: 1 1 50%;
+    display: flex;
+    flex-flow: column;
+}
+
+
+#result-editor, #code-editor, #report {
+    flex: 1 1 100%;
+}
+
+
+
+
+select {
+    background-color: white;
+    border-color: #d3d3d3;
+}

@@ -13,12 +13,14 @@ class DomRoot(private val document: Document) : RootElement {
         rootElement = element
     }
 
-    override fun seal(bindContext: BindContext): Any {
+    override fun seal(bindContext: BindContext): Any? {
+
+        val rootElement = rootElement ?: return null
 
         bindContext.queryConfiguration(NamespaceStrategy::class.java)
 
         val context = DomContext(document, bindContext.readerConfig)
-        val root = rootElement!!.asNode(context) as Element
+        val root = rootElement.asNode(context)[0] as Element
 
         for ((namespace, prefix) in context.getUsedNamespaces()) {
             root.setAttribute("xmlns:" + prefix, namespace)

@@ -12,6 +12,7 @@ import io.dropwizard.setup.Environment
 import org.glassfish.jersey.media.multipart.MultiPartFeature
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 import java.nio.file.Paths
 
 
@@ -33,11 +34,16 @@ class ConverterApplication : Application<ConverterConfiguration>() {
 
             override fun createServlet(): AssetServlet {
                 return object : AssetServlet(resourcePath, uriPath, indexFile, StandardCharsets.UTF_8) {
-                    override fun getResourceUrl(absoluteRequestedResourcePath: String): URL {
+                    override fun getResourceUrl(absoluteRequestedResourcePath: String): URL? {
                         val localPath = absoluteRequestedResourcePath.substring("META-INF/static/".length)
                         val path = Paths.get("src", "main", "resources", "META-INF", "static").resolve(localPath)
 
-                        return path.toUri().toURL()
+                        return if (Files.exists(path)) {
+                            path.toUri().toURL()
+                        } else {
+                            null
+                        }
+
                     }
 
                 }

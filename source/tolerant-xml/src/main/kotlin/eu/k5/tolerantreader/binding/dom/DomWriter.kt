@@ -171,7 +171,7 @@ class DomWriter : TolerantWriter {
                 initContext.addFinding(Type.MISSING_TYPE_ADAPTER, target.toString())
                 NoOpAssigner
             } else {
-                DomTextContentAssigner(element, parameters.weight, toStringAdapter)
+                DomTextContentAssigner(parameters.weight, element, toStringAdapter)
             }
         } else {
 
@@ -189,13 +189,16 @@ class DomWriter : TolerantWriter {
 
 abstract class DomNode(val weight: Int) {
 
-    abstract fun asNode(context: DomContext): Node
+    abstract fun asNode(context: DomContext): List<Node>
 }
 
 class DomComment(private val comment: String, weight: Int) : DomNode(weight) {
 
-    override fun asNode(context: DomContext): Node {
-        return context.document.createComment(comment)
+    override fun asNode(context: DomContext): List<Node> {
+        //    val textBefore = context.document.createTextNode(" ")
+        val comment = context.document.createComment(comment)
+        //   val textAfter = context.document.createTextNode("\n\t")
+        return Arrays.asList(comment)
     }
 
 }
@@ -221,14 +224,16 @@ class DomElement(
 
     val attributes: MutableList<DomAttribute> = ArrayList()
 
-    override fun asNode(context: DomContext): Node {
+    override fun asNode(context: DomContext): List<Node> {
 
         val elementPrefix = context.getPrefix(elementName.namespaceURI)
         val element = context.document.createElement(elementPrefix + ":" + elementName.localPart)
 
         elements.sortBy { it.weight }
         val nodes = ArrayList<Node>()
-        elements.mapTo(nodes) { it.asNode(context) }
+        for (element in elements) {
+            nodes.addAll(element.asNode(context))
+        }
 
 
         attributes.sortBy { it.weight }
@@ -247,24 +252,24 @@ class DomElement(
         nodes.forEach {
             element.appendChild(it)
         }
-        return element
+        return Arrays.asList(element)
     }
 }
 
 class DomTextContent(
+        weight: Int,
         private val elementName: QName,
-        private val value: String,
-        weight: Int
+        private val value: String
 ) : DomNode(weight) {
 
-    override fun asNode(context: DomContext): Node {
+    override fun asNode(context: DomContext): List<Node> {
         val textNode = context.document.createTextNode(value)
 
         val prefix = context.getPrefix(elementName.namespaceURI)
 
         val element = context.document.createElement(prefix + ":" + elementName.localPart)
         element.appendChild(textNode)
-        return element
+        return Arrays.asList(element)
     }
 
 }
@@ -285,8 +290,8 @@ class DomRootAssigner(
 }
 
 class DomTextContentAssigner(
-        private var elementName: QName,
         private val weight: Int,
+        private var elementName: QName,
         private val toString: (Any) -> String
 ) : Assigner {
 
@@ -299,7 +304,7 @@ class DomTextContentAssigner(
                 }
 
                 val element = instance.element
-                element?.elements?.add(DomTextContent(elementName, toString(value), weight))
+                element?.elements?.add(DomTextContent(weight, elementName, toString(value)))
             }
         } else {
             TODO("unsupported")

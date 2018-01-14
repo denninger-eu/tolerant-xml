@@ -87,7 +87,7 @@ class BindContext(
             = instances.peek()
 
 
-    fun sealedRoot(): Any
+    fun sealedRoot(): Any?
             = root.seal(this)
 
     fun getComplexType(name: QName): TolerantType {
@@ -186,6 +186,8 @@ class TolerantReader(val schema: TolerantSchema) {
 
                 if (element == null) {
                     // balance stream
+
+
                     context.addViolation(Violation.UNKNOWN_CONTENT, "Element: " + qname)
                     skipToEndElement(context, stream)
                     continue

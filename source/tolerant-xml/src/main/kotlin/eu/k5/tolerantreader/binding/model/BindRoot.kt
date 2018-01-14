@@ -7,7 +7,8 @@ class BindRoot : RootElement {
 
     var instance: Any? = null
 
-    override fun seal(context: BindContext): Any = instance!!
+    override fun seal(context: BindContext): Any?
+            = instance
 
 
 }

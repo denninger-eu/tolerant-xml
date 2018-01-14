@@ -32,7 +32,8 @@ class ConvertResource @Inject constructor(
         val request = TolerantConverterRequest()
         request.content = body.content
         val result = converter.convert(body.target, request)
-        return Response.ok(ConvertResponse(result.content!!, "abc")).build()
+
+        return Response.ok(result).build()
     }
 
 }
@@ -52,8 +53,3 @@ data class ConvertRequest(
 
 )
 
-data class ConvertResponse(
-        val content: String,
-        val log: String
-
-)

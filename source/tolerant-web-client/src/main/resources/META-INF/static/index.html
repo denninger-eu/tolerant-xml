@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tolerant xml</title>
+    <script src="/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="/libs/jquery-ui/1.11.4/jquery-ui.min.css">
+    <link rel="stylesheet" href="/libs/jquery-ui/1.11.4/jquery-ui.theme.min.css">
+
+    <script src="/libs/jquery-ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="/libs/ace/01.08.2014/src-min/ace.js"></script>
+
+    <link rel="stylesheet" href="index.css">
+    <script src="tolerant.js"></script>
+</head>
+<body>
+
+
+<div id="main-pane">
+
+    <div id="select-target-wrapper">
+        <div id="select-target">
+            <select id="target-type" title="Target Type">
+            </select>
+            <button class="ui-widget" id="compile" title="Ctrl-Enter to compile">xonvert</button>
+        </div>
+    </div>
+
+    <div id="editor-pane">
+
+        <div id="source-tabs">
+
+            <ul>
+                <li><a href="#code-editor">Request</a></li>
+                <li><a href="#source-tab-soapui">Soap UI</a></li>
+            </ul>
+
+            <div id="code-editor"></div>
+
+            <div id="source-tab-soapui"></div>
+
+        </div>
+
+        <div id="result-tabs">
+            <ul>
+                <li><a href="#report">Report</a></li>
+                <li><a href="#result-editor">Result</a></li>
+            </ul>
+            <div id="report"></div>
+            <div id="result-editor"></div>
+        </div>
+    </div>
+
+</div>
+
+
+</body>
+</html>
