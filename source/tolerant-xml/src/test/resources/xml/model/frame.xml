@@ -1,5 +1,8 @@
 <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
     <soap:Header>
+        <wsse:UsernameToken xmlns:wsse="http://schemas.xmlsoap.org/ws/2002/07/secext">
+            <wsse:Username>Alice</wsse:Username>
+        </wsse:UsernameToken>
     </soap:Header>
     <!-- pre body -->
     <soap:Body>

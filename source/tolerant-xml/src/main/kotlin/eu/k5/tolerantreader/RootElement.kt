@@ -10,4 +10,6 @@ interface RootElement {
 
     fun popFrameElement(context: BindContext)
 
+    fun addCharacters(elementText: String)
+
 }

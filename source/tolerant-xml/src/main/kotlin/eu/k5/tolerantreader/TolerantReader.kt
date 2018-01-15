@@ -28,14 +28,10 @@ class BindContext(
 ) {
 
     private val trackComments: Boolean = true
-
-
     private val elements: Deque<TolerantElement> = ArrayDeque()
     private val types: Deque<TolerantType> = ArrayDeque()
     private val instances: Deque<Any> = ArrayDeque()
-
     private val openReferences: MutableList<OpenReference> = ArrayList()
-
     private val comments: MutableList<String> = ArrayList()
 
     init {
@@ -131,10 +127,6 @@ class BindContext(
         return retrieved
     }
 
-    fun <C> queryConfiguration(java: Class<C>): C? {
-
-        return null
-    }
 
     fun pushFrameElement(stream: XMLStreamReader) {
         root.pushFrameElement(this, stream)
@@ -147,6 +139,14 @@ class BindContext(
     fun popFrame() {
         root.popFrameElement(this)
     }
+
+    fun keepCharacters(): Boolean
+            = keepFrame() && isEmpty()
+
+    fun addCharacters(elementText: String) {
+        root.addCharacters(elementText)
+    }
+
 }
 
 class OpenReference(
@@ -221,6 +221,12 @@ class TolerantReader(val schema: TolerantSchema) {
                 }
             } else if (XMLEvent.COMMENT == event) {
                 context.addComment(stream.text)
+            } else if (XMLEvent.CHARACTERS == event) {
+                if (context.keepCharacters()) {
+                    context.addCharacters(stream.text)
+                }
+
+
             } else if (XMLEvent.END_ELEMENT == event) {
                 if (context.isEmpty()) {
                     context.popFrame()

@@ -3,14 +3,14 @@ package eu.k5.tolerantreader.binding.dom
 import eu.k5.tolerantreader.TolerantReaderConfiguration
 import org.w3c.dom.Document
 
-class DomSealContext(val document: Document, readerConfiguration: TolerantReaderConfiguration) {
+class DomSealContext(val document: Document, val namespaceStrategy: NamespaceStrategy) {
+
+    constructor(document: Document, readerConfiguration: TolerantReaderConfiguration) : this(document, readerConfiguration.queryConfigOrDefault(NamespaceStrategy::class.java) {
+        DefaultNamespaceStrategy()
+    })
+
 
     private val prefixes: MutableMap<String, String> = HashMap()
-
-    private val namespaceStrategy: NamespaceStrategy
-            = readerConfiguration.queryConfigOrDefault(NamespaceStrategy::class.java) {
-        DefaultNamespaceStrategy()
-    }
 
 
     fun getPrefix(namespace: String): String
@@ -29,5 +29,9 @@ class DomSealContext(val document: Document, readerConfiguration: TolerantReader
         return prefix
     }
 
+
+    fun subContext(): DomSealContext {
+        return DomSealContext(document, namespaceStrategy)
+    }
 
 }

@@ -16,6 +16,7 @@ class DomRoot(private val document: Document) : RootElement {
     private var rootElement: DomElement? = null
 
     fun addRootElement(element: DomElement) {
+        element.generateNamespaces = true
         if (frame.isEmpty()) {
             rootElement = element
         } else {
@@ -27,14 +28,12 @@ class DomRoot(private val document: Document) : RootElement {
 
         val rootElement = rootElement ?: return null
 
-        bindContext.queryConfiguration(NamespaceStrategy::class.java)
-
         val sealContext = DomSealContext(document, bindContext.readerConfig)
-        val root = rootElement.asNode(sealContext)[0] as Element
 
-        for ((namespace, prefix) in sealContext.getUsedNamespaces()) {
-            root.setAttribute("xmlns:" + prefix, namespace)
-        }
+        rootElement.generateNamespaces = true
+
+
+        val root = rootElement.asNode(sealContext)[0] as Element
 
         document.appendChild(root)
         return document
@@ -43,10 +42,12 @@ class DomRoot(private val document: Document) : RootElement {
     override fun pushFrameElement(context: BindContext, stream: XMLStreamReader) {
         val localName1 = stream.localName
         val namespaceURI = stream.namespaceURI
-
         val qName = QName(namespaceURI, localName1)
         val domElement = DomElement(qName, qName, qName, 0)
 
+        if (stream.isCharacters) {
+            domElement.elements.add(DomTextOnlyContent(0, stream.elementText))
+        }
 
         for (index in 0 until stream.attributeCount) {
             val namespace = stream.getAttributeNamespace(index)
@@ -70,8 +71,22 @@ class DomRoot(private val document: Document) : RootElement {
         frame.push(domElement)
     }
 
+    override fun addCharacters(elementText: String) {
+        val current = frame.peek()
+        if (current != null) {
+            if (elementText.trim() != "") {
+                current.elements.add(DomTextOnlyContent(0, elementText))
+            }
+        }
+    }
+
+
     override fun popFrameElement(context: BindContext) {
-        frame.pop()
+        val current = frame.pop()
+        context.retrieveComments().mapTo(current.elements) {
+            DomComment(it, 0)
+        }
+
     }
 }
 

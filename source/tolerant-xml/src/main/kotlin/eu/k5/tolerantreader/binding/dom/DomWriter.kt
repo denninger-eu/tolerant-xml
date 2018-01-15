@@ -1,5 +1,6 @@
 package eu.k5.tolerantreader.binding.dom
 
+import com.sun.java.browser.plugin2.DOM
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.binding.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
@@ -10,6 +11,7 @@ import org.w3c.dom.Node
 import java.util.*
 import javax.xml.namespace.QName
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.collections.HashMap
 
 
 class DomWriter : TolerantWriter {
@@ -222,33 +224,48 @@ class DomElement(
 
     val attributes: MutableList<DomAttribute> = ArrayList()
 
-    override fun asNode(context: DomSealContext): List<Node> {
+    var generateNamespaces: Boolean = false
 
-        val elementPrefix = context.getPrefix(elementName.namespaceURI)
-        val element = context.document.createElement(elementPrefix + ":" + elementName.localPart)
+    override fun asNode( context: DomSealContext): List<Node> {
+        val sealContext: DomSealContext = if (generateNamespaces) {
+            context.subContext()
+        } else {
+            context
+        }
+
+
+        val elementPrefix = sealContext.getPrefix(elementName.namespaceURI)
+        val element = sealContext.document.createElement(elementPrefix + ":" + elementName.localPart)
 
         elements.sortBy { it.weight }
         val nodes = ArrayList<Node>()
         for (element in elements) {
-            nodes.addAll(element.asNode(context))
+            nodes.addAll(element.asNode(sealContext))
         }
 
 
         attributes.sortBy { it.weight }
 
         if (actualType != expectedTypeName) {
-            val typePrefix = context.getPrefix(actualType.namespaceURI)
-            val xsiPrefix = context.getPrefix(XSI_NAMESPACE)
+            val typePrefix = sealContext.getPrefix(actualType.namespaceURI)
+            val xsiPrefix = sealContext.getPrefix(XSI_NAMESPACE)
             element.setAttribute(xsiPrefix + ":type", typePrefix + ":" + actualType.localPart)
         }
 
         for (attribute in attributes) {
-            val attributePrefix = context.getPrefix(attribute.attributeName.namespaceURI)
+            val attributePrefix = sealContext.getPrefix(attribute.attributeName.namespaceURI)
             element.setAttribute(attributePrefix + ":" + attribute.attributeName.localPart, attribute.value)
         }
 
         nodes.forEach {
             element.appendChild(it)
+        }
+
+        if (generateNamespaces) {
+            for ((namespace, prefix) in sealContext.getUsedNamespaces()) {
+                element.setAttribute("xmlns:" + prefix, namespace)
+            }
+            (sealContext.getUsedNamespaces() as HashMap).clear()
         }
         return Arrays.asList(element)
     }
@@ -270,6 +287,12 @@ class DomTextContent(
         return Arrays.asList(element)
     }
 
+}
+
+class DomTextOnlyContent(weight: Int, private val value: String) : DomNode(weight) {
+    override fun asNode(context: DomSealContext): List<Node> {
+        return Arrays.asList(context.document.createTextNode(value))
+    }
 }
 
 class DomRootAssigner(

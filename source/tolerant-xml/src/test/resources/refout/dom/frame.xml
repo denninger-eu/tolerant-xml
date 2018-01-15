@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ns:Envelope xmlns:ns="http://www.w3.org/2003/05/soap-envelope" xmlns:ns0="http://k5.eu/tr/model/inheritance"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <ns:Header/>
+<ns:Envelope xmlns:ns="http://www.w3.org/2003/05/soap-envelope"
+             xmlns:ns0="http://schemas.xmlsoap.org/ws/2002/07/secext">
+    <ns:Header>
+        <ns0:UsernameToken>
+            <ns0:Username>Alice</ns0:Username>
+        </ns0:UsernameToken>
+    </ns:Header>
+    <!-- pre body -->
     <ns:Body>
-        <ns0:ComplexInheritance>
+        <ns:ComplexInheritance xmlns:ns="http://k5.eu/tr/model/inheritance"
+                               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <!-- before type -->
-            <ns0:type ns0:baseAttribute="baseAttrValue" ns0:subAttribute="subAttrValue" xsi:type="ns0:SubType">
+            <ns:type ns:baseAttribute="baseAttrValue" ns:subAttribute="subAttrValue" xsi:type="ns:SubType">
                 <!-- before base value -->
-                <ns0:baseElement>baseValue</ns0:baseElement>
+                <ns:baseElement>baseValue</ns:baseElement>
                 <!-- before subvalue -->
-                <ns0:subElement>subValue</ns0:subElement>
+                <ns:subElement>subValue</ns:subElement>
                 <!-- after subvalue -->
-            </ns0:type>
-        </ns0:ComplexInheritance>
+            </ns:type>
+        </ns:ComplexInheritance>
     </ns:Body>
+    <!-- post body -->
 </ns:Envelope>

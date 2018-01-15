@@ -38,7 +38,7 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
         val writer: TolerantWriter = DomWriter()
 
 
-        val xsRegistry = Schema.parse(configuration.xsd!!)
+        val xsRegistry = Schema.parse(configuration.xsd!!.trim())
         xsRegistry.init()
         val tolerantSchema = TolerantSchemaBuilder(xsRegistry, writer).build()
         reader = TolerantReader(tolerantSchema)

@@ -21,6 +21,7 @@ object Schema {
     val context = JAXBContext.newInstance(XsSchema::class.java)
 
     fun parse(location: String): XsRegistry {
+
         if (location.startsWith("classpath:", ignoreCase = true)) {
             return parse(location.substring("classpath:".length), ClasspathStreamSource(Thread.currentThread().contextClassLoader))
         } else if (location.startsWith("file:", ignoreCase = true)) {
