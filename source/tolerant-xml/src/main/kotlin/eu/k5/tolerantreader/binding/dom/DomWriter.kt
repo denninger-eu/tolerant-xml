@@ -4,7 +4,6 @@ import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.binding.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.model.NoOpAssigner
-import eu.k5.tolerantreader.binding.model.ReflectionUtils
 import eu.k5.tolerantreader.tolerant.IdRefType
 import eu.k5.tolerantreader.tolerant.XSI_NAMESPACE
 import org.w3c.dom.Node
@@ -14,11 +13,10 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 
 class DomWriter : TolerantWriter {
-    override fun createCloser(initContext: InitContext): Closer {
-        return DomElementCloser()
-    }
+    override fun createCloser(initContext: InitContext): Closer
+            = DomElementCloser()
 
-    private val utils = ReflectionUtils()
+
     private val simpleTypeAdapter = HashMap<QName, (Any) -> String>()
 
 
@@ -143,9 +141,8 @@ class DomWriter : TolerantWriter {
     }
 
 
-    override fun rootAssigner(elementName: QName): Assigner {
-        return DomRootAssigner(elementName)
-    }
+    override fun rootAssigner(elementName: QName): Assigner
+            = DomRootAssigner(elementName)
 
     override fun createContext(schema: TolerantSchema, readerConfig: TolerantReaderConfiguration): BindContext {
         val documentBuilderFactory = DocumentBuilderFactory.newInstance()
@@ -179,9 +176,8 @@ class DomWriter : TolerantWriter {
         }
     }
 
-    override fun createSupplier(initContext: InitContext, typeName: QName): (elementName: QName) -> Any {
-        return { DomValue(it, typeName) }
-    }
+    override fun createSupplier(initContext: InitContext, typeName: QName): (elementName: QName) -> Any
+            = { DomValue(typeName) }
 
 
 }
@@ -189,12 +185,12 @@ class DomWriter : TolerantWriter {
 
 abstract class DomNode(val weight: Int) {
 
-    abstract fun asNode(context: DomContext): List<Node>
+    abstract fun asNode(context: DomSealContext): List<Node>
 }
 
 class DomComment(private val comment: String, weight: Int) : DomNode(weight) {
 
-    override fun asNode(context: DomContext): List<Node> {
+    override fun asNode(context: DomSealContext): List<Node> {
         //    val textBefore = context.document.createTextNode(" ")
         val comment = context.document.createComment(comment)
         //   val textAfter = context.document.createTextNode("\n\t")
@@ -204,14 +200,16 @@ class DomComment(private val comment: String, weight: Int) : DomNode(weight) {
 }
 
 
-class DomValue(name: QName, val typeName: QName) {
+class DomValue(val typeName: QName) {
     val attributes: MutableList<DomAttribute> = ArrayList()
     var element: DomElement? = null
 }
 
-class DomAttribute(val attributeName: QName, val value: String?, val weight: Int) {
-
-}
+class DomAttribute(
+        val attributeName: QName,
+        val value: String?,
+        val weight: Int
+)
 
 class DomElement(
         private val elementName: QName,
@@ -224,7 +222,7 @@ class DomElement(
 
     val attributes: MutableList<DomAttribute> = ArrayList()
 
-    override fun asNode(context: DomContext): List<Node> {
+    override fun asNode(context: DomSealContext): List<Node> {
 
         val elementPrefix = context.getPrefix(elementName.namespaceURI)
         val element = context.document.createElement(elementPrefix + ":" + elementName.localPart)
@@ -262,7 +260,7 @@ class DomTextContent(
         private val value: String
 ) : DomNode(weight) {
 
-    override fun asNode(context: DomContext): List<Node> {
+    override fun asNode(context: DomSealContext): List<Node> {
         val textNode = context.document.createTextNode(value)
 
         val prefix = context.getPrefix(elementName.namespaceURI)

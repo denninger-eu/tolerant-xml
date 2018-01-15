@@ -3,7 +3,7 @@ package eu.k5.tolerantreader.binding.dom
 import eu.k5.tolerantreader.TolerantReaderConfiguration
 import org.w3c.dom.Document
 
-class DomContext(val document: Document, readerConfiguration: TolerantReaderConfiguration) {
+class DomSealContext(val document: Document, readerConfiguration: TolerantReaderConfiguration) {
 
     private val prefixes: MutableMap<String, String> = HashMap()
 

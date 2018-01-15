@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns:Envelope xmlns:ns="http://www.w3.org/2003/05/soap-envelope" xmlns:ns0="http://k5.eu/tr/model/inheritance"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ns:Header/>
+    <ns:Body>
+        <ns0:ComplexInheritance>
+            <!-- before type -->
+            <ns0:type ns0:baseAttribute="baseAttrValue" ns0:subAttribute="subAttrValue" xsi:type="ns0:SubType">
+                <!-- before base value -->
+                <ns0:baseElement>baseValue</ns0:baseElement>
+                <!-- before subvalue -->
+                <ns0:subElement>subValue</ns0:subElement>
+                <!-- after subvalue -->
+            </ns0:type>
+        </ns0:ComplexInheritance>
+    </ns:Body>
+</ns:Envelope>

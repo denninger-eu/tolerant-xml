@@ -18,6 +18,7 @@ interface TolerantWriter {
 
     fun rootAssigner(elementName: QName): Assigner
 
+
     fun createContext(schema: TolerantSchema, readerConfig: TolerantReaderConfiguration): BindContext
 }
 

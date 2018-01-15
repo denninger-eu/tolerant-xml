@@ -135,6 +135,18 @@ class BindContext(
 
         return null
     }
+
+    fun pushFrameElement(stream: XMLStreamReader) {
+        root.pushFrameElement(this, stream)
+    }
+
+    fun keepFrame(): Boolean {
+        return true;
+    }
+
+    fun popFrame() {
+        root.popFrameElement(this)
+    }
 }
 
 class OpenReference(
@@ -175,7 +187,7 @@ class TolerantReader(val schema: TolerantSchema) {
 
                 val localName = stream.localName
                 val namespaceURI: String = stream.namespaceURI ?: ""
-                val qname = QName(namespaceURI, localName)
+                val qName = QName(namespaceURI, localName)
 
                 val element =
                         if (context.isEmpty()) {
@@ -186,10 +198,13 @@ class TolerantReader(val schema: TolerantSchema) {
 
                 if (element == null) {
                     // balance stream
+                    if (context.keepFrame()) {
 
-
-                    context.addViolation(Violation.UNKNOWN_CONTENT, "Element: " + qname)
-                    skipToEndElement(context, stream)
+                        context.pushFrameElement(stream)
+                    } else {
+                        context.addViolation(Violation.UNKNOWN_CONTENT, "Element: " + qName)
+                        skipToEndElement(context, stream)
+                    }
                     continue
                 }
 
@@ -207,7 +222,12 @@ class TolerantReader(val schema: TolerantSchema) {
             } else if (XMLEvent.COMMENT == event) {
                 context.addComment(stream.text)
             } else if (XMLEvent.END_ELEMENT == event) {
-                context.pop()
+                if (context.isEmpty()) {
+                    context.popFrame()
+                } else {
+                    context.pop()
+
+                }
             }
         }
         context.postProcess()

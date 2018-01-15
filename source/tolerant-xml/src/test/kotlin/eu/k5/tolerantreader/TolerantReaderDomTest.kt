@@ -121,6 +121,12 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testModel("complex-type-comment")
     }
 
+    @Test
+    @DisplayName("Model, with frame")
+    fun readModelKeepFrame() {
+        testModel("frame")
+    }
+
 
     private fun testMinimal(testCase: String) {
         val obj = readMinimalType(testCase)
