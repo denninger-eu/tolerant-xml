@@ -13,6 +13,7 @@
         <module>tolerant-test-models</module>
         <module>tolerant-xml</module>
         <module>tolerant-converter</module>
+        <module>tolerant-converter-soapui</module>
         <module>tolerant-web-client</module>
     </modules>
 

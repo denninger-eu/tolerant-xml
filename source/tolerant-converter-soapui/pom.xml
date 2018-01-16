@@ -3,9 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tolerant-converter</artifactId>
+    <artifactId>tolerant-converter-soapui</artifactId>
 
     <packaging>jar</packaging>
+
 
     <parent>
         <groupId>eu.k5.tolerant</groupId>
@@ -14,7 +15,21 @@
 
     </parent>
 
+    <repositories>
+        <repository>
+            <id>smartbear</id>
+            <name>smartbear repository</name>
+            <url>http://smartbearsoftware.com/repository/maven2</url>
+        </repository>
+    </repositories>
     <dependencies>
+
+        <dependency>
+            <groupId>eu.k5.tolerant</groupId>
+            <artifactId>tolerant-converter</artifactId>
+            <version>0.1-SNAPSHOT</version>
+
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -43,13 +58,23 @@
             <artifactId>log4j-slf4j-impl</artifactId>
         </dependency>
 
-
-
         <dependency>
             <groupId>eu.k5.tolerant</groupId>
             <artifactId>tolerant-test-models</artifactId>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.smartbear.soapui</groupId>
+            <artifactId>soapui</artifactId>
+            <version>5.3.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javafx</groupId>
+                    <artifactId>jfxrt</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>eu.k5.tolerant</groupId>

@@ -4,9 +4,7 @@ import eu.k5.tr.model.Shoe
 import eu.k5.tr.model.ShoesizeSimpleContent
 import eu.k5.tr.model.idref.Reference
 import eu.k5.tr.strict.StrictRoot
-import junit.framework.Assert.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Assertions.fail
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.util.*
 import javax.xml.namespace.QName

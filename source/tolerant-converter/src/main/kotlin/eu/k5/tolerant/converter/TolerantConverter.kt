@@ -48,9 +48,9 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
         try {
 
-            val extracted = extract(request)
+//            val extracted = extract(request)
 
-            val result = reader.read(createStream(extracted), readerConfig)
+            val result = reader.read(createStream(request.content!!), readerConfig)
 
             if (result is Document) {
                 val xmlString = beautify(result)

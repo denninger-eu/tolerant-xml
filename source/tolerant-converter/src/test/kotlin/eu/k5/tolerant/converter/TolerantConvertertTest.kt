@@ -1,4 +1,4 @@
-package eu.k5.tolerant
+package eu.k5.tolerant.converter
 
 import eu.k5.tolerant.converter.TolerantConverter
 import eu.k5.tolerant.converter.config.TolerantConverterConfiguration
