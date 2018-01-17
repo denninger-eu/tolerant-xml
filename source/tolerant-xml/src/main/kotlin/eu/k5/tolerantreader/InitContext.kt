@@ -18,6 +18,9 @@ enum class Type {
 class InitContext {
     fun addFinding(type: Type, s: String) {
         LOGGER.warn(type.toString() + ": " + s)
+    }
+
+    fun getAdapter(){
 
     }
 
@@ -26,7 +29,7 @@ class InitContext {
     }
 
     companion object {
-        val LOGGER = LoggerFactory.getLogger(InitContext::class.java)
+        val LOGGER = LoggerFactory.getLogger(InitContext::class.java)!!
     }
 
 

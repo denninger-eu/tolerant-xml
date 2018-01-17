@@ -15,7 +15,6 @@ class TolerantSchemaBuilder(private val xsRegistry: XsRegistry, private val writ
 
     private val complexTypes: MutableMap<QName, TolerantComplexType> = HashMap()
 
-
     private val complexTypeBuilders: MutableMap<QName, ComplexTypeBuilder> = HashMap()
 
     private val complexTypeBuilding: MutableSet<QName> = HashSet()

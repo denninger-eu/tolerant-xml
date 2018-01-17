@@ -1,0 +1,29 @@
+<transformers>
+
+
+    <element typeName="BaseType" element="element">
+        <as target="element2/element" />
+    </element>
+
+    <element typeName="BaseType" element="element">
+        <as target="../element2/element" />
+    </element>
+
+    <element typeName="BaseType" element="element">
+        <asElement name="name"/>
+    </element>
+
+    <element typeName="BaseType" element="element">
+        <down intoElement="element2" as="element3"/>
+    </element>
+
+    <element typeName="BaseType" element="element">
+        <up intoElement="down" />
+    </element>
+
+    <element typeName="BaseType" element="element">
+        <
+    </element>
+
+
+</transformers>

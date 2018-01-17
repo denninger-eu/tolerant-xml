@@ -103,11 +103,11 @@ object AnalysePrefixes {
         }
 
         fun pop() {
-            val popedDeclares = declared[level]
-            for (declare in popedDeclares) {
-                val use = used[declare]
+            val undeclared = declared[level]
+            for (undeclare in undeclared) {
+                val use = used[undeclare]
                 if (use != null && use >= level) {
-                    used.remove(declare)
+                    used.remove(undeclare)
                 }
             }
             level--
@@ -121,13 +121,12 @@ object AnalysePrefixes {
             }
         }
 
-        fun getAllUsed(): Set<String> {
-            return HashSet(allUsed)
-        }
+        fun getAllUsed(): Set<String>
+                = allUsed
 
-        fun getAllDeclared(): Set<String> {
-            return HashSet(allDeclared)
-        }
+
+        fun getAllDeclared(): Set<String>
+                = allDeclared
 
         fun addUsed(prefix: String) {
             allUsed.add(prefix)

@@ -30,7 +30,6 @@ data class Violation(
 data class ReadResult(
         val violations: List<Violation>,
         val instance: Any?
-
 )
 
 class BindContext(
@@ -38,7 +37,7 @@ class BindContext(
         private val root: RootElement,
         val readerConfig: TolerantReaderConfiguration
 ) {
-    val violations: MutableList<Violation> = ArrayList()
+    private val violations: MutableList<Violation> = ArrayList()
 
     private val trackComments: Boolean = true
     private val elements: Deque<TolerantElement> = ArrayDeque()
@@ -167,6 +166,14 @@ class BindContext(
         return ReadResult(violations, instance)
     }
 
+    fun getTransformer() {
+
+        val current = types.peek()
+
+        current.get
+
+    }
+
 }
 
 class OpenReference(
@@ -209,6 +216,8 @@ class TolerantReader(val schema: TolerantSchema) {
                 val namespaceURI: String = stream.namespaceURI ?: ""
                 val qName = QName(namespaceURI, localName)
 
+
+
                 val element =
                         if (context.isEmpty()) {
                             schema.getElement(namespaceURI, localName)
@@ -217,6 +226,9 @@ class TolerantReader(val schema: TolerantSchema) {
                         }
 
                 if (element == null) {
+
+                    context.getTransformer()
+
                     // balance stream
                     if (context.keepFrame() && context.isEmpty()) {
 
