@@ -17,6 +17,7 @@
         <module>tolerant-web-client</module>
     </modules>
 
+
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>

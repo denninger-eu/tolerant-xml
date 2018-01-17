@@ -96,7 +96,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
             try {
                 factoryMethod.invoke(null, token)
             } catch (exception: InvocationTargetException) {
-                context.addViolation(Violation.INVALID_ENUM_LITERAL, token)
+                context.addViolation(ViolationType.INVALID_ENUM_LITERAL, token)
                 null
             }
         }
@@ -216,7 +216,7 @@ class BasicSetterAssigner(private val setter: Method) : Assigner {
         try {
             setter.invoke(instance, value)
         } catch (exception: IllegalArgumentException) {
-            context.addViolation(Violation.TYPE_MISMATCH, exception.message!!)
+            context.addViolation(ViolationType.TYPE_MISMATCH, exception.message!!)
         }
     }
 }

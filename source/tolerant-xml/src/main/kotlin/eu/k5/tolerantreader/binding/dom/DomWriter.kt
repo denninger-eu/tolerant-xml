@@ -1,6 +1,5 @@
 package eu.k5.tolerantreader.binding.dom
 
-import com.sun.java.browser.plugin2.DOM
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.binding.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
@@ -135,7 +134,7 @@ class DomWriter : TolerantWriter {
             if (literals.contains(value)) {
                 value
             } else {
-                content.addViolation(Violation.INVALID_ENUM_LITERAL, value)
+                content.addViolation(ViolationType.INVALID_ENUM_LITERAL, value)
                 null
             }
         }

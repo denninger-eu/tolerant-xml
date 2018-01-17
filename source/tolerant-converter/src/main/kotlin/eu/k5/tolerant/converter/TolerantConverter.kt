@@ -52,8 +52,9 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
             val result = reader.read(createStream(request.content!!), readerConfig)
 
-            if (result is Document) {
-                val xmlString = beautify(result)
+            val document = result.instance
+            if (document is Document) {
+                val xmlString = beautify(document)
                 return TolerantConverterResult(content = xmlString)
             } else {
                 return TolerantConverterResult(error = "Root Element could not be interpreted")

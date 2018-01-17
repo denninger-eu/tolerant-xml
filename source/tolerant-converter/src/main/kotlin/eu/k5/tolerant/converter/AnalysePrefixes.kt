@@ -7,6 +7,7 @@ import org.xml.sax.InputSource
 import java.io.StringReader
 import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.collections.HashSet
 
 object AnalysePrefixes {
 
@@ -28,10 +29,10 @@ object AnalysePrefixes {
         val context = AnalyseContext()
         analyseElement(context, element)
 
-        
 
-        return Prefixes(declared = Collections.unmodifiableSet(context.declared),
-                used = Collections.unmodifiableSet(context.values()))
+
+        return Prefixes(declared = Collections.unmodifiableSet(context.getAllDeclared()),
+                used = Collections.unmodifiableSet(context.getAllUsed()))
     }
 
     private fun analyseElement(context: AnalyseContext, element: Element) {
@@ -43,21 +44,21 @@ object AnalysePrefixes {
         analyseAttributes(context, element.attributes)
 
         val children = element.childNodes
-        for (index in 0..children.length) {
+        for (index in 0 until children.length) {
             analyse(context, children.item(index))
         }
     }
 
     private fun analyseAttributes(context: AnalyseContext, attributes: NamedNodeMap) {
-        for (index in 0..attributes.length) {
-            val attribute = attributes.item(index)
-            val name = attribute.nodeName
+        for (index in 0 until attributes.length) {
+            val attribute = attributes.item(index) as Attr
+            val name = attribute.name
 
             val delimiter = name.indexOf(':')
             if (delimiter >= 0) {
                 val prefix = name.substring(0, delimiter)
                 if (prefix == "xmlns") {
-                    context.addDeclared(name.substring(delimiter))
+                    context.addDeclared(name.substring(delimiter+1))
                 } else {
                     context.addUsed(prefix)
                 }
@@ -95,6 +96,14 @@ object AnalysePrefixes {
         fun pop() {
             level--
 
+        }
+
+        fun getAllUsed(): Set<String> {
+            return HashSet()
+        }
+
+        fun getAllDeclared(): Set<String> {
+            return HashSet()
         }
 
         fun addUsed(prefix: String) {

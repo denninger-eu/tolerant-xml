@@ -32,7 +32,7 @@ abstract class AbstractTolerantReaderTest {
 
     private fun read(request: String, reader: TolerantReader): Any? {
         val stream = openRequest(request)
-        return reader.read(stream, TolerantReaderConfiguration(HashMap()))
+        return reader.read(stream, TolerantReaderConfiguration(HashMap())).instance
     }
 
     private fun openRequest(name: String): XMLStreamReader {

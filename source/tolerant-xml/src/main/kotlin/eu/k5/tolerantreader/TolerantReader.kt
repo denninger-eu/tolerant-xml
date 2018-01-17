@@ -10,7 +10,7 @@ import javax.xml.stream.events.XMLEvent
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-enum class Violation {
+enum class ViolationType {
     TYPE_MISMATCH,
 
     UNKNOWN_CONTENT,
@@ -21,11 +21,24 @@ enum class Violation {
 
 }
 
+data class Violation(
+        val type: ViolationType,
+        val description: String,
+        val location: String?
+)
+
+data class ReadResult(
+        val violations: List<Violation>,
+        val instance: Any?
+
+)
+
 class BindContext(
         private val schema: TolerantSchema,
         private val root: RootElement,
         val readerConfig: TolerantReaderConfiguration
 ) {
+    val violations: MutableList<Violation> = ArrayList()
 
     private val trackComments: Boolean = true
     private val elements: Deque<TolerantElement> = ArrayDeque()
@@ -44,7 +57,7 @@ class BindContext(
             if (entity != null) {
                 open.assigner.assign(this, open.instance, entity)
             } else {
-                addViolation(Violation.MISSING_ENTITY, "")
+                addViolation(ViolationType.MISSING_ENTITY, "")
             }
 
         }
@@ -71,7 +84,7 @@ class BindContext(
     }
 
     fun pop() {
-        val element = elements.pop()
+        elements.pop()
         val instance = instances.pop()
         val type = types.pop()
 
@@ -90,8 +103,9 @@ class BindContext(
         return schema.getComplexType(name)
     }
 
-    fun addViolation(type: Violation, description: String) {
+    fun addViolation(type: ViolationType, description: String) {
         logger.warn("{}: {}", type, description)
+        violations.add(Violation(type, description, ""))
     }
 
     companion object {
@@ -133,7 +147,7 @@ class BindContext(
     }
 
     fun keepFrame(): Boolean {
-        return true;
+        return true
     }
 
     fun popFrame() {
@@ -145,6 +159,12 @@ class BindContext(
 
     fun addCharacters(elementText: String) {
         root.addCharacters(elementText)
+    }
+
+    fun createResult(): ReadResult {
+        val instance = sealedRoot()
+
+        return ReadResult(violations, instance)
     }
 
 }
@@ -176,7 +196,7 @@ class TolerantReaderConfiguration(init: Map<Class<*>, Any>) {
 class TolerantReader(val schema: TolerantSchema) {
 
 
-    fun read(stream: XMLStreamReader, readerConfig: TolerantReaderConfiguration): Any? {
+    fun read(stream: XMLStreamReader, readerConfig: TolerantReaderConfiguration): ReadResult {
 
         val context = schema.createContext(readerConfig)
 
@@ -198,11 +218,11 @@ class TolerantReader(val schema: TolerantSchema) {
 
                 if (element == null) {
                     // balance stream
-                    if (context.keepFrame()) {
+                    if (context.keepFrame() && context.isEmpty()) {
 
                         context.pushFrameElement(stream)
                     } else {
-                        context.addViolation(Violation.UNKNOWN_CONTENT, "Element: " + qName)
+                        context.addViolation(ViolationType.UNKNOWN_CONTENT, "Element: " + qName)
                         skipToEndElement(context, stream)
                     }
                     continue
@@ -237,7 +257,8 @@ class TolerantReader(val schema: TolerantSchema) {
             }
         }
         context.postProcess()
-        return context.sealedRoot()
+
+        return context.createResult()
     }
 
     private fun skipToEndElement(context: BindContext, stream: XMLStreamReader) {
