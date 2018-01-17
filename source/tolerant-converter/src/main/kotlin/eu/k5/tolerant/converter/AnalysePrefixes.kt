@@ -7,11 +7,13 @@ import org.xml.sax.InputSource
 import java.io.StringReader
 import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
 object AnalysePrefixes {
 
     data class Prefixes(
+            var missing: Set<String>,
             val declared: Set<String>,
             val used: Set<String>
     )
@@ -27,11 +29,11 @@ object AnalysePrefixes {
 
     fun ana(element: Element): Prefixes {
         val context = AnalyseContext()
-        analyseElement(context, element)
+        analyse(context, element)
 
+        val missing = context.getMissing()
 
-
-        return Prefixes(declared = Collections.unmodifiableSet(context.getAllDeclared()),
+        return Prefixes(missing = missing, declared = Collections.unmodifiableSet(context.getAllDeclared()),
                 used = Collections.unmodifiableSet(context.getAllUsed()))
     }
 
@@ -39,6 +41,9 @@ object AnalysePrefixes {
         val tagName = element.tagName
         if (tagName?.contains(":") == true) {
             val delimiter = tagName.indexOf(":")
+            if (delimiter > 0) {
+                context.addUsed(tagName.substring(0, delimiter))
+            }
         }
 
         analyseAttributes(context, element.attributes)
@@ -58,7 +63,7 @@ object AnalysePrefixes {
             if (delimiter >= 0) {
                 val prefix = name.substring(0, delimiter)
                 if (prefix == "xmlns") {
-                    context.addDeclared(name.substring(delimiter+1))
+                    context.addDeclared(name.substring(delimiter + 1))
                 } else {
                     context.addUsed(prefix)
                 }
@@ -72,6 +77,7 @@ object AnalysePrefixes {
     }
 
     private fun analyse(context: AnalyseContext, node: Node) {
+        context.push()
         if (node is Element) {
             analyseElement(context, node)
         } else if (node is Text) {
@@ -81,12 +87,15 @@ object AnalysePrefixes {
         } else {
             TODO("Add other types")
         }
-
+        context.pop()
     }
 
     private class AnalyseContext {
-        val declared: Multimap<Int, String> = TreeMultimap.create()
-        val used: Multimap<Int, String> = TreeMultimap.create()
+        private val allDeclared = HashSet<String>()
+        private val allUsed = HashSet<String>()
+
+        val declared: TreeMultimap<Int, String> = TreeMultimap.create()
+        val used: MutableMap<String, Int> = HashMap()
         var level = 0
 
         fun push() {
@@ -94,24 +103,39 @@ object AnalysePrefixes {
         }
 
         fun pop() {
+            val popedDeclares = declared[level]
+            for (declare in popedDeclares) {
+                val use = used[declare]
+                if (use != null && use >= level) {
+                    used.remove(declare)
+                }
+            }
             level--
+        }
 
+        fun getMissing(): Set<String> {
+            if (level == 0) {
+                return HashSet(used.keys)
+            } else {
+                throw IllegalStateException("Unbalanced context")
+            }
         }
 
         fun getAllUsed(): Set<String> {
-            return HashSet()
+            return HashSet(allUsed)
         }
 
         fun getAllDeclared(): Set<String> {
-            return HashSet()
+            return HashSet(allDeclared)
         }
 
         fun addUsed(prefix: String) {
-            used.put(level, prefix)
-
+            allUsed.add(prefix)
+            used.putIfAbsent(prefix, level)
         }
 
         fun addDeclared(prefix: String) {
+            allDeclared.add(prefix)
             declared.put(level, prefix)
         }
     }
