@@ -170,7 +170,7 @@ class BindContext(
 
         val current = types.peek()
 
-        current.get
+
 
     }
 

@@ -1,6 +1,5 @@
 package eu.k5.tolerant.converter
 
-import com.google.common.collect.Multimap
 import com.google.common.collect.TreeMultimap
 import org.w3c.dom.*
 import org.xml.sax.InputSource
