@@ -55,7 +55,7 @@ class XsComplexType : XsNamed() {
     fun getBaseComplexType(): XsComplexType? {
         val baseName = getBaseName()
         if (baseName != null) {
-            return owningSchema?.getComplexType(baseName)
+            return owningSchema?.registry?.getComplexType(baseName)
         }
         return null
     }

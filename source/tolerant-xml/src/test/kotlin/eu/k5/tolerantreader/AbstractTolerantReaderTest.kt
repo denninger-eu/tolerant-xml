@@ -5,6 +5,9 @@ import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.binding.model.Binder
 import eu.k5.tolerantreader.binding.model.PackageMapping
 import eu.k5.tolerantreader.binding.model.PackageMappingBuilder
+import eu.k5.tolerantreader.tolerant.TolerantTransformer
+import eu.k5.tolerantreader.transformer.Transformer
+import eu.k5.tolerantreader.transformer.Transformers
 import eu.k5.tolerantreader.xs.ClasspathStreamSource
 import eu.k5.tolerantreader.xs.Schema
 import eu.k5.tr.model.NumericTypes
@@ -18,16 +21,23 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
 import javax.xml.stream.XMLInputFactory
 import javax.xml.stream.XMLStreamReader
 
 abstract class AbstractTolerantReaderTest {
 
-    fun readSimpleType(request: String): Any? = read(SIMPLE_TYPES + "/" + request, getReader("xml/" + SIMPLE_TYPES + "/simple-types.xsd"))
-    fun readComplexType(request: String): Any? = read(COMPLEX_TYPES + "/" + request, getReader("xml/" + COMPLEX_TYPES + "/complex-types.xsd"))
-    fun readMinimalType(request: String): Any? = read(MINIMAL + "/" + request, getReader("xml/" + MINIMAL + "/minimal.xsd"))
+    fun readSimpleType(request: String): Any?
+            = read(SIMPLE_TYPES + "/" + request, getReader("xml/" + SIMPLE_TYPES + "/simple-types.xsd"))
 
-    fun readModelType(request: String): Any? = read(MODEL + "/" + request, getReader("xs/import.xsd"))
+    fun readComplexType(request: String): Any?
+            = read(COMPLEX_TYPES + "/" + request, getReader("xml/" + COMPLEX_TYPES + "/complex-types.xsd"))
+
+    fun readMinimalType(request: String): Any?
+            = read(MINIMAL + "/" + request, getReader("xml/" + MINIMAL + "/minimal.xsd"))
+
+    fun readModelType(request: String): Any?
+            = read(MODEL + "/" + request, getReader("xs/import.xsd"))
 
 
     private fun read(request: String, reader: TolerantReader): Any? {
@@ -68,28 +78,39 @@ abstract class AbstractTolerantReaderTest {
         }
     }
 
-    private fun getBasePath(): Path {
-        return Paths.get("src", "test", "resources", "xml")
-    }
+    private fun getBasePath(): Path
+            = Paths.get("src", "test", "resources", "xml")
 
 
     abstract fun getReader(path: String): TolerantReader
 
 }
 
-class ReaderCache(val writer: TolerantWriter) {
+class ReaderCache(private val writer: TolerantWriter) {
     private val readers = HashMap<String, TolerantReader>()
 
-    fun getReader(xsPath: String): TolerantReader = readers.computeIfAbsent(xsPath) { createReader(it) }
+    fun getReader(xsPath: String): TolerantReader
+            = readers.computeIfAbsent(xsPath) { createReader(it) }
 
     private fun createReader(xsdPath: String): TolerantReader {
 
-
         val xsRegistry = Schema.parse(xsdPath, ClasspathStreamSource(ReaderCache::class.java.classLoader))
         xsRegistry.init()
-        val tolerantSchema = TolerantSchemaBuilder(xsRegistry, writer).build()
+        val tolerantSchema = TolerantSchemaBuilder(InitContext(), xsRegistry, writer, transformers = createTransformers()).build()
         return TolerantReader(tolerantSchema)
     }
 
+
+    private fun createTransformers(): Transformers {
+        val transformers = Transformers()
+
+        val transformer = Transformer()
+        transformer.type = "SubType"
+        transformer.element = "subElementRename"
+        transformer.target = "subElement"
+        transformers.transformes.add(transformer)
+
+        return transformers
+    }
 
 }

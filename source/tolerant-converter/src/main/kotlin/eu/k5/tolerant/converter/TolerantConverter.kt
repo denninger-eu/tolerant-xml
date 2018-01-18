@@ -1,6 +1,7 @@
 package eu.k5.tolerant.converter
 
 import eu.k5.tolerant.converter.config.TolerantConverterConfiguration
+import eu.k5.tolerantreader.InitContext
 import eu.k5.tolerantreader.TolerantReader
 import eu.k5.tolerantreader.TolerantReaderConfiguration
 import eu.k5.tolerantreader.binding.TolerantWriter
@@ -40,7 +41,7 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
         val xsRegistry = Schema.parse(configuration.xsd!!.trim())
         xsRegistry.init()
-        val tolerantSchema = TolerantSchemaBuilder(xsRegistry, writer).build()
+        val tolerantSchema = TolerantSchemaBuilder(InitContext(), xsRegistry, writer).build()
         reader = TolerantReader(tolerantSchema)
     }
 

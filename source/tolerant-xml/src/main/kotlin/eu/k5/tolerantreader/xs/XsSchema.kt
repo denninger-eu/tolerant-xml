@@ -44,14 +44,6 @@ class XsSchema {
 
     }
 
-    fun resolveNamespace(prefix: String): String {
-        return ""
-    }
-
-    fun getComplexType(baseName: QName): XsComplexType? {
-        return registry?.getComplexType(baseName.localPart)
-
-    }
 
 }
 

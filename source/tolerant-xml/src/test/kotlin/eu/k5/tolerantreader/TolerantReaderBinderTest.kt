@@ -1,8 +1,5 @@
 package eu.k5.tolerantreader
 
-import eu.k5.tolerantreader.binding.model.Binder
-import eu.k5.tolerantreader.binding.model.PackageMapping
-import eu.k5.tolerantreader.binding.model.PackageMappingBuilder
 import eu.k5.tr.model.*
 import eu.k5.tr.model.idref.Reference
 import eu.k5.tr.model.idref.Referenced
@@ -19,6 +16,7 @@ import java.math.BigInteger
 import java.nio.charset.StandardCharsets
 
 class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
+
 
     @Test
     @DisplayName("Read minimal xml")
@@ -284,6 +282,15 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertEquals(BigDecimal("1.0"), obj.mydecimal)
     }
 
+
+    @Test
+    @DisplayName("Read model type. With transformer")
+    fun readModelTransformer() {
+        val obj = readModelType("transformer")
+                as? ComplexInheritance ?: fail<Nothing>("Invalid root type")
+
+        assertEquals("", (obj.type as SubType).subElement)
+    }
 
     override fun getReader(path: String): TolerantReader = reader.getReader(path)
 

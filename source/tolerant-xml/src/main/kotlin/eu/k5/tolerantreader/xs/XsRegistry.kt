@@ -46,19 +46,35 @@ class XsRegistry(val initSchema: XsSchema, private val allSchemas: Map<String, X
         return first
     }
 
-    fun getComplexType(localName: String): XsComplexType {
+    fun getComplexTypeByLocalName(localName:String) : XsComplexType{
+        for((qName, type) in complexTypes){
+            if (qName.localPart == localName){
+                return type;
+            }
+        }
+
+        throw IllegalStateException("Unknown complextype with localName: " + localName)
+
+    }
+
+    fun getComplexType(name: QName): XsComplexType? {
         // FIXME forward declarationen, performance optimieren
 
-        for (xsSchema in allSchemas.values) {
+        return complexTypes[name]
+
+
+    /*    for (xsSchema in allSchemas.values) {
+
+            xsSchema.complexTypes[name]
             for (xsComplexType in xsSchema.complexTypes) {
-                if (xsComplexType.localName == localName) {
+                if (xsComplexType.getQualifiedName() == name) {
                     return xsComplexType
                 }
             }
         }
 
         throw IllegalStateException("Unknown complextype with localName: " + localName)
-
+*/
     }
 
     fun getElement(s: String): XsElement {

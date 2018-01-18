@@ -63,7 +63,7 @@ class XsTest {
     @DisplayName("ComplexType with direct sequence no complexContent")
     fun complexType() {
         val registry = resolve("complex-type")
-        val complexType = registry.getComplexType("personinfo")
+        val complexType = registry.getComplexTypeByLocalName("personinfo")
 
         Assertions.assertNotNull(complexType.sequence)
         Assertions.assertEquals(2, complexType.sequence!!.elements.size)
@@ -87,7 +87,7 @@ class XsTest {
     @DisplayName("ComplexType with complexContent extension")
     fun complexTypeWithComplexContent() {
         val registry = resolve("complex-type")
-        val complexType = registry.getComplexType("fullpersoninfo")
+        val complexType = registry.getComplexTypeByLocalName("fullpersoninfo")
 
         Assertions.assertNull(complexType.sequence)
 
@@ -106,7 +106,7 @@ class XsTest {
     @DisplayName("ComplexType with simpleContent")
     fun complexTypeSimpleContent() {
         val registry = resolve("complex-type")
-        val complexType = registry.getComplexType("fullpersoninfo")
+        val complexType = registry.getComplexTypeByLocalName("fullpersoninfo")
 
         Assertions.assertNull(complexType.sequence)
 

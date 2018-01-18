@@ -166,10 +166,11 @@ class BindContext(
         return ReadResult(violations, instance)
     }
 
-    fun getTransformer() {
-
+    fun getTransformer(localName: String) {
         val current = types.peek()
+        val qName = current.getQualifiedName()
 
+        val transformer = schema.getTransformer(qName, localName)
 
 
     }
@@ -227,7 +228,7 @@ class TolerantReader(val schema: TolerantSchema) {
 
                 if (element == null) {
 
-                    context.getTransformer()
+                    context.getTransformer(localName)
 
                     // balance stream
                     if (context.keepFrame() && context.isEmpty()) {
@@ -290,6 +291,10 @@ class TolerantReader(val schema: TolerantSchema) {
                 return
             }
         }
+
+    }
+
+    private fun recordForTransformer(context: BindContext, stream:XMLStreamReader){
 
     }
 }
