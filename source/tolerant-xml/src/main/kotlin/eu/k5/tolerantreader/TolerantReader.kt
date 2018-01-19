@@ -40,11 +40,15 @@ class BindContext(
     private val violations: MutableList<Violation> = ArrayList()
 
     private val trackComments: Boolean = true
+
+    private val names: Deque<QName> = ArrayDeque()
     private val elements: Deque<TolerantElement> = ArrayDeque()
     private val types: Deque<TolerantType> = ArrayDeque()
     private val instances: Deque<Any> = ArrayDeque()
     private val openReferences: MutableList<OpenReference> = ArrayList()
     private val comments: MutableList<String> = ArrayList()
+
+    private val replays: Deque<MutableMap<String, Replay>> = ArrayDeque()
 
     init {
         instances.push(root)
@@ -74,6 +78,11 @@ class BindContext(
             return current.getElement(namespaceURI, localName)
         }
         return null
+    }
+
+    fun pushName(qName: QName) {
+        names.push(qName)
+        replays.push(HashMap())
     }
 
     fun push(element: TolerantElement, instance: Any, type: TolerantType) {
@@ -166,13 +175,33 @@ class BindContext(
         return ReadResult(violations, instance)
     }
 
-    fun getTransformer(localName: String) {
+    fun getTransformer(localName: String): TolerantTransformer? {
         val current = types.peek()
         val qName = current.getQualifiedName()
 
         val transformer = schema.getTransformer(qName, localName)
 
+        return transformer
 
+    }
+
+    fun pushReplay(target: String, replay: Replay) {
+        var current = replays.peek()
+        if (current == null) {
+            replays.pop()
+            current = HashMap<String, Replay>()
+            replays.push(current)
+        }
+        current.put(target, replay)
+    }
+
+    fun popName() {
+        names.pop()
+        replays.pop()
+    }
+
+    fun getReplay(): MutableMap<String, Replay>? {
+        return replays.peek()
     }
 
 }
@@ -217,7 +246,7 @@ class TolerantReader(val schema: TolerantSchema) {
                 val namespaceURI: String = stream.namespaceURI ?: ""
                 val qName = QName(namespaceURI, localName)
 
-
+                context.pushName(qName)
 
                 val element =
                         if (context.isEmpty()) {
@@ -228,10 +257,14 @@ class TolerantReader(val schema: TolerantSchema) {
 
                 if (element == null) {
 
-                    context.getTransformer(localName)
 
-                    // balance stream
-                    if (context.keepFrame() && context.isEmpty()) {
+                    val transformer = context.getTransformer(localName)
+                    if (transformer != null) {
+                        val replay = recordReplay(context, qName, stream)
+
+                        context.pushReplay(transformer.target, replay)
+
+                    } else if (context.keepFrame() && context.isEmpty()) {
 
                         context.pushFrameElement(stream)
                     } else {
@@ -250,7 +283,11 @@ class TolerantReader(val schema: TolerantSchema) {
 
                     if (type.pushedOnStack()) {
                         context.push(element, readValue, type)
+                    } else {
+                        context.popName()
                     }
+                } else {
+                    context.popName()
                 }
             } else if (XMLEvent.COMMENT == event) {
                 context.addComment(stream.text)
@@ -264,14 +301,35 @@ class TolerantReader(val schema: TolerantSchema) {
                 if (context.isEmpty()) {
                     context.popFrame()
                 } else {
-                    context.pop()
+                    val replay = context.getReplay()
 
+                    if (replay != null) {
+                        doReplay(context, replay)
+                    }
+                    context.pop()
                 }
+                context.popName()
             }
         }
         context.postProcess()
 
         return context.createResult()
+    }
+
+    private fun doReplay(context: BindContext, replays: MutableMap<String, Replay>) {
+        for ((elementName, replay) in replays) {
+
+            val element = context.getElement(null, elementName)
+            if (element != null) {
+
+                val value = element.type.readValue(context, element, replay.asStreamReader())
+                if (value != null) {
+                    element.assigner.assign(context, context.getCurrentInstance()!!, value)
+
+                }
+            }
+
+        }
     }
 
     private fun skipToEndElement(context: BindContext, stream: XMLStreamReader) {
@@ -294,7 +352,71 @@ class TolerantReader(val schema: TolerantSchema) {
 
     }
 
-    private fun recordForTransformer(context: BindContext, stream:XMLStreamReader){
+    private fun recordReplay(context: BindContext, qName: QName, stream: XMLStreamReader): Replay {
 
+
+        var replay = Replay(qName)
+
+
+        // attributes
+
+        var balance = 1
+        while (stream.hasNext()) {
+            val event = stream.next()
+
+            if (XMLEvent.START_ELEMENT == event) {
+
+                balance++
+                TODO("Not supported yet")
+            } else if (XMLEvent.END_ELEMENT == event) {
+                balance--
+                if (balance == 0) {
+                    return replay
+                }
+            } else if (XMLEvent.CHARACTERS == event) {
+                replay.replayText = stream.text
+            } else if (XMLEvent.END_DOCUMENT == event) {
+                break
+            }
+        }
+        return replay
     }
+}
+
+class Replay(val qName: QName) {
+
+
+    val subreplay = ArrayList<Replay>()
+
+    var replayText: String? = null
+
+
+    fun asStreamReader(): TolerantStreamReader {
+        return ReplayStream(this)
+    }
+
+}
+
+class ReplayStream(private val replay: Replay) : TolerantStreamReader() {
+    override fun hasNext(): Boolean {
+        return index < 2
+    }
+
+    private var index = 0
+
+
+    override fun getText(): String? {
+        return replay.replayText
+    }
+
+    override fun next(): Int {
+        if (index == 0) {
+            index++
+            return XMLEvent.CHARACTERS
+        } else {
+            index ++
+            return XMLEvent.END_ELEMENT
+        }
+    }
+
 }

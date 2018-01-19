@@ -60,7 +60,18 @@ class TolerantSchemaBuilder(
 
         initElements()
 
-        return TolerantSchema(TolerantMap.of(elements.values) { it.qname }, tolerantComplexTypes!!, writer)
+        return TolerantSchema(TolerantMap.of(elements.values) { it.qname }, tolerantComplexTypes!!, writer, getTransformer())
+    }
+
+    private fun getTransformer(): Map<String, Map<String, TolerantTransformer>> {
+        val byType = HashMap<String, Map<String, TolerantTransformer>>()
+        for (transformer in transformers.transformes) {
+            val tolerantTransformer = TolerantTransformer(transformer.element!!, transformer.target!!)
+            val byElement = byType.computeIfAbsent(transformer.type!!) { HashMap() } as MutableMap
+            byElement.put(transformer.element!!, tolerantTransformer)
+
+        }
+        return byType
     }
 
 

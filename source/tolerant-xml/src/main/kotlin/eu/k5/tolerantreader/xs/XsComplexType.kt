@@ -173,8 +173,8 @@ class XsAttribute {
 
     fun postSchemaMarshall(xsSchema: XsSchema) {
         owningSchema = xsSchema
-        if (type == null) {
-            type = QName(owningSchema?.targetNamespace, typeName)
+        if (type == null && typeName != null) {
+            type = QName(owningSchema?.targetNamespace, typeName!!)
         }
     }
 
