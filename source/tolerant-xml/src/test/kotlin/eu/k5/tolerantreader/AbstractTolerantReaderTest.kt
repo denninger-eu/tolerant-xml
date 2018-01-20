@@ -5,7 +5,8 @@ import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.binding.model.Binder
 import eu.k5.tolerantreader.binding.model.PackageMapping
 import eu.k5.tolerantreader.binding.model.PackageMappingBuilder
-import eu.k5.tolerantreader.tolerant.TolerantTransformer
+import eu.k5.tolerantreader.reader.TolerantReader
+import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
 import eu.k5.tolerantreader.transformer.Transformer
 import eu.k5.tolerantreader.transformer.Transformers
 import eu.k5.tolerantreader.xs.ClasspathStreamSource

@@ -1,12 +1,8 @@
 package eu.k5.tolerantreader
 
 import eu.k5.tolerantreader.binding.dom.DomWriter
-import eu.k5.tr.model.ListType
-import eu.k5.tr.model.idref.Reference
-import eu.k5.tr.model.inheritance.ComplexInheritance
-import eu.k5.tr.model.inheritance.SubType
+import eu.k5.tolerantreader.reader.TolerantReader
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.w3c.dom.Document

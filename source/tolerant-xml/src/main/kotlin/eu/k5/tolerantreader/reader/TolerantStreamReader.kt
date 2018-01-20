@@ -1,4 +1,4 @@
-package eu.k5.tolerantreader
+package eu.k5.tolerantreader.reader
 
 import javax.xml.namespace.NamespaceContext
 import javax.xml.namespace.QName

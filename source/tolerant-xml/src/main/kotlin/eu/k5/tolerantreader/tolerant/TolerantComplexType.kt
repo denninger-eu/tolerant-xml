@@ -1,9 +1,9 @@
 package eu.k5.tolerantreader.tolerant
 
-import eu.k5.tolerantreader.BindContext
+import eu.k5.tolerantreader.ReaderContext
+import eu.k5.tolerantreader.reader.BindContext
 import eu.k5.tolerantreader.binding.Assigner
 import eu.k5.tolerantreader.binding.Closer
-import eu.k5.tolerantreader.xs.XsComplexType
 import javax.xml.namespace.QName
 import javax.xml.stream.XMLStreamReader
 
@@ -14,14 +14,14 @@ class TolerantComplexType(private val name: QName,
                           private val simpleContent: TolerantSimpleContent?,
                           private val closer: Closer) : TolerantType() {
 
-    override fun closeType(bindContext: BindContext, instance: Any) {
+    override fun closeType(bindContext: ReaderContext, instance: Any) {
 
         closer.close(bindContext, instance)
 
     }
 
 
-    override fun asSubtype(context: BindContext, stream: XMLStreamReader): TolerantType {
+    override fun asSubtype(context: ReaderContext, stream: XMLStreamReader): TolerantType {
         if (concreteSubtypes.isEmpty()) {
             return this
         }
@@ -58,7 +58,7 @@ class TolerantComplexType(private val name: QName,
 
     override fun getQualifiedName(): QName = name
 
-    override fun readValue(context: BindContext, element: TolerantElement, stream: XMLStreamReader): Any {
+    override fun readValue(context: ReaderContext, element: TolerantElement, stream: XMLStreamReader): Any {
         val newInstance = konstructor(element.qname)
         handleAttributes(context, stream, newInstance)
 
@@ -66,7 +66,7 @@ class TolerantComplexType(private val name: QName,
         return newInstance
     }
 
-    private fun handleAttributes(context: BindContext, stream: XMLStreamReader, instance: Any) {
+    private fun handleAttributes(context: ReaderContext, stream: XMLStreamReader, instance: Any) {
         for (index in 0 until stream.attributeCount) {
             val localName = stream.getAttributeLocalName(index)
             val attributeElement = elements.get(localName)
@@ -99,9 +99,9 @@ class TolerantComplexProxy(val name: QName) : TolerantType() {
 
     override fun pushedOnStack(): Boolean = true
 
-    override fun readValue(context: BindContext, element: TolerantElement, stream: XMLStreamReader): Any = delegate!!.readValue(context, element, stream)
+    override fun readValue(context: ReaderContext, element: TolerantElement, stream: XMLStreamReader): Any = delegate!!.readValue(context, element, stream)
 
-    override fun asSubtype(context: BindContext, stream: XMLStreamReader): TolerantType = delegate!!.asSubtype(context, stream)
+    override fun asSubtype(context: ReaderContext, stream: XMLStreamReader): TolerantType = delegate!!.asSubtype(context, stream)
 
     fun getElement(namespaceURI: String?, localName: String?): TolerantElement? = delegate?.getElement(namespaceURI, localName)
 
@@ -109,7 +109,7 @@ class TolerantComplexProxy(val name: QName) : TolerantType() {
 
 class TolerantSimpleContent(val base: TolerantSimpleType, val baseAssigner: Assigner) {
 
-    fun handle(context: BindContext, element: TolerantElement, stream: XMLStreamReader, instance: Any) {
+    fun handle(context: ReaderContext, element: TolerantElement, stream: XMLStreamReader, instance: Any) {
         val baseValue = base.readValue(context, element, stream)
         baseAssigner.assign(context, instance, baseValue)
     }

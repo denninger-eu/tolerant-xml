@@ -1,6 +1,6 @@
 package eu.k5.tolerantreader.binding.model
 
-import eu.k5.tolerantreader.BindContext
+import eu.k5.tolerantreader.reader.BindContext
 import eu.k5.tolerantreader.RootElement
 import javax.xml.stream.XMLStreamReader
 

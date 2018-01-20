@@ -4,6 +4,9 @@ import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.binding.*
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.model.NoOpAssigner
+import eu.k5.tolerantreader.reader.BindContext
+import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
+import eu.k5.tolerantreader.reader.ViolationType
 import eu.k5.tolerantreader.tolerant.IdRefType
 import eu.k5.tolerantreader.tolerant.XSI_NAMESPACE
 import org.w3c.dom.Node
@@ -129,7 +132,7 @@ class DomWriter : TolerantWriter {
                                     literals: Collection<String>):
             EnumSupplier {
 
-        return EnumSupplier(xsString) { content: BindContext, value: String
+        return EnumSupplier(xsString) { content: ReaderContext, value: String
             ->
             if (literals.contains(value)) {
                 value
@@ -297,7 +300,7 @@ class DomTextOnlyContent(weight: Int, private val value: String) : DomNode(weigh
 class DomRootAssigner(
         private val elementName: QName
 ) : Assigner {
-    override fun assign(context: BindContext, instance: Any, value: Any?) {
+    override fun assign(context: ReaderContext, instance: Any, value: Any?) {
         if (instance is DomRoot) {
             if (value is DomValue) {
                 val domElement = DomElement(elementName, value.typeName, value.typeName, 0)
@@ -315,7 +318,7 @@ class DomTextContentAssigner(
         private val toString: (Any) -> String
 ) : Assigner {
 
-    override fun assign(context: BindContext, instance: Any, value: Any?) {
+    override fun assign(context: ReaderContext, instance: Any, value: Any?) {
         if (instance is DomValue) {
             if (value != null) {
 
@@ -339,7 +342,7 @@ class DomElementAssigner(
         private val target: QName
 ) : Assigner {
 
-    override fun assign(context: BindContext, instance: Any, value: Any?) {
+    override fun assign(context: ReaderContext, instance: Any, value: Any?) {
         if (instance is DomValue) {
             if (value is DomValue) {
 
@@ -367,7 +370,7 @@ class DomAttributeAssigner(
         private val element: QName,
         private val toStringAdapter: (Any) -> String
 ) : Assigner {
-    override fun assign(context: BindContext, instance: Any, value: Any?) {
+    override fun assign(context: ReaderContext, instance: Any, value: Any?) {
         if (instance is DomValue) {
             if (value != null) {
                 instance.attributes.add(DomAttribute(element, toStringAdapter(value), 0))
@@ -378,7 +381,7 @@ class DomAttributeAssigner(
 
 class DomElementCloser : Closer {
 
-    override fun close(bindContext: BindContext, instance: Any) {
+    override fun close(bindContext: ReaderContext, instance: Any) {
         if (instance is DomValue) {
             val comments = bindContext.retrieveComments()
 

@@ -1,6 +1,7 @@
 package eu.k5.tolerantreader.tolerant
 
-import eu.k5.tolerantreader.BindContext
+import eu.k5.tolerantreader.ReaderContext
+import eu.k5.tolerantreader.reader.BindContext
 import javax.xml.namespace.QName
 import javax.xml.stream.XMLStreamReader
 import javax.xml.stream.events.XMLEvent
@@ -13,7 +14,7 @@ abstract class TolerantSimpleType(private val name: QName, private val baseName:
 
     override fun pushedOnStack(): Boolean = false
 
-    override fun readValue(context: BindContext, element: TolerantElement, stream: XMLStreamReader): Any? {
+    override fun readValue(context: ReaderContext, element: TolerantElement, stream: XMLStreamReader): Any? {
         var text = ""
         var balance = 1
         while (stream.hasNext()) {
@@ -34,5 +35,5 @@ abstract class TolerantSimpleType(private val name: QName, private val baseName:
     }
 
 
-    abstract fun parse(context: BindContext, text: String): Any?
+    abstract fun parse(context: ReaderContext, text: String): Any?
 }

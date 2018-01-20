@@ -2,8 +2,8 @@ package eu.k5.tolerant.converter
 
 import eu.k5.tolerant.converter.config.TolerantConverterConfiguration
 import eu.k5.tolerantreader.InitContext
-import eu.k5.tolerantreader.TolerantReader
-import eu.k5.tolerantreader.TolerantReaderConfiguration
+import eu.k5.tolerantreader.reader.TolerantReader
+import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
 import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.binding.dom.DomWriter
 import eu.k5.tolerantreader.tolerant.TolerantSchemaBuilder
@@ -26,7 +26,6 @@ import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
-import javax.xml.xpath.XPathConstants.NODESET
 
 
 class TolerantConverter(configuration: TolerantConverterConfiguration) {

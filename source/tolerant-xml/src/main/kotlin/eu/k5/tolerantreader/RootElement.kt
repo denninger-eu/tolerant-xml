@@ -1,5 +1,6 @@
 package eu.k5.tolerantreader
 
+import eu.k5.tolerantreader.reader.BindContext
 import javax.xml.stream.XMLStreamReader
 
 interface RootElement {

@@ -2,6 +2,9 @@ package eu.k5.tolerantreader.binding.model
 
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.binding.*
+import eu.k5.tolerantreader.reader.BindContext
+import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
+import eu.k5.tolerantreader.reader.ViolationType
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.tolerant.IdRefType
 import org.slf4j.LoggerFactory
@@ -16,7 +19,7 @@ import javax.xml.datatype.XMLGregorianCalendar
 import javax.xml.namespace.QName
 
 class NoOpCloser : Closer {
-    override fun close(bindContext: BindContext, instance: Any) {
+    override fun close(bindContext: ReaderContext, instance: Any) {
     }
 
 }
@@ -92,7 +95,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
         val factoryMethod = enumClass.getMethod("fromValue", String::class.java)
 
 
-        return EnumSupplier(enumName) { context: BindContext, token: String ->
+        return EnumSupplier(enumName) { context: ReaderContext, token: String ->
             try {
                 factoryMethod.invoke(null, token)
             } catch (exception: InvocationTargetException) {
@@ -194,14 +197,14 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
 
 object NoOpAssigner : Assigner {
     private val LOGGER = LoggerFactory.getLogger(NoOpAssigner::class.java)
-    override fun assign(context: BindContext, instance: Any, value: Any?) {
+    override fun assign(context: ReaderContext, instance: Any, value: Any?) {
         LOGGER.debug("Usage for NOOP Assigner")
     }
 }
 
 object BindRootAssigner : Assigner {
 
-    override fun assign(context: BindContext, instance: Any, value: Any?) {
+    override fun assign(context: ReaderContext, instance: Any, value: Any?) {
         if (instance is BindRoot) {
             instance.instance = value
             return
@@ -212,7 +215,7 @@ object BindRootAssigner : Assigner {
 }
 
 class BasicSetterAssigner(private val setter: Method) : Assigner {
-    override fun assign(context: BindContext, instance: Any, value: Any?) {
+    override fun assign(context: ReaderContext, instance: Any, value: Any?) {
         try {
             setter.invoke(instance, value)
         } catch (exception: IllegalArgumentException) {
@@ -222,7 +225,7 @@ class BasicSetterAssigner(private val setter: Method) : Assigner {
 }
 
 class JaxbElementSetterAssigner(private val setter: Method, private val jaxb: (Any?) -> JAXBElement<*>) : Assigner {
-    override fun assign(context: BindContext, instance: Any, value: Any?) {
+    override fun assign(context: ReaderContext, instance: Any, value: Any?) {
 
         setter.invoke(instance, jaxb(value))
 
@@ -230,7 +233,7 @@ class JaxbElementSetterAssigner(private val setter: Method, private val jaxb: (A
 }
 
 class ListAppendAssigner(private val getter: Method) : Assigner {
-    override fun assign(context: BindContext, instance: Any, value: Any?) {
+    override fun assign(context: ReaderContext, instance: Any, value: Any?) {
 
         val obj = getter.invoke(instance)
         @Suppress("UNCHECKED_CAST")
@@ -241,7 +244,7 @@ class ListAppendAssigner(private val getter: Method) : Assigner {
 
 class IdRefAssigner(private val delegate: Assigner) : Assigner {
 
-    override fun assign(context: BindContext, instance: Any, value: Any?) {
+    override fun assign(context: ReaderContext, instance: Any, value: Any?) {
         if (value !is IdRefType) {
             TODO("Find proper error handling here")
         }
@@ -255,7 +258,7 @@ class IdRefAssigner(private val delegate: Assigner) : Assigner {
 }
 
 class IdAssigner(private val delegate: Assigner) : Assigner {
-    override fun assign(context: BindContext, instance: Any, value: Any?) {
+    override fun assign(context: ReaderContext, instance: Any, value: Any?) {
         if (value !is String) {
             TODO("Find proper error handling here")
         }

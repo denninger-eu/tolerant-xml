@@ -1,8 +1,7 @@
 package eu.k5.tolerantreader.binding.dom
 
-import eu.k5.tolerantreader.BindContext
+import eu.k5.tolerantreader.reader.BindContext
 import eu.k5.tolerantreader.RootElement
-import eu.k5.tolerantreader.tolerant.TolerantSimpleType
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import java.util.*

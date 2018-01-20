@@ -1,6 +1,6 @@
 package eu.k5.tolerantreader.binding.dom
 
-import eu.k5.tolerantreader.TolerantReaderConfiguration
+import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
 import org.w3c.dom.Document
 
 class DomSealContext(val document: Document, val namespaceStrategy: NamespaceStrategy) {

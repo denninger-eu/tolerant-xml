@@ -1,5 +1,6 @@
 package eu.k5.tolerantreader
 
+import eu.k5.tolerantreader.reader.TolerantReader
 import  eu.k5.tr.strict.StrictRoot
 import eu.k5.tolerantreader.source.model.XjcRegistry
 import eu.k5.tolerantreader.strict.StrictSchemaBuilder

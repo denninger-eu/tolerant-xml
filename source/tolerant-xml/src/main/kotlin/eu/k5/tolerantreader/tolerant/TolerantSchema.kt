@@ -1,7 +1,7 @@
 package eu.k5.tolerantreader.tolerant
 
-import eu.k5.tolerantreader.BindContext
-import eu.k5.tolerantreader.TolerantReaderConfiguration
+import eu.k5.tolerantreader.reader.BindContext
+import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
 import eu.k5.tolerantreader.binding.TolerantWriter
 import javax.xml.namespace.QName
 

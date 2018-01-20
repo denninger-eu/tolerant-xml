@@ -2,13 +2,12 @@ package eu.k5.tolerantreader.tolerant
 
 import com.google.common.collect.ImmutableMap
 import eu.k5.tolerantreader.*
+import eu.k5.tolerantreader.reader.BindContext
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
-import javax.swing.text.NumberFormatter
 import javax.xml.namespace.QName
 import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 
 
 class TolerantBaseTypes(private val initContext: InitContext) {
@@ -137,17 +136,17 @@ class TolerantBaseTypes(private val initContext: InitContext) {
 }
 
 class TolerantStringType(name: QName) : TolerantSimpleType(name, xsString) {
-    override fun parse(context: BindContext, text: String)
+    override fun parse(context: ReaderContext, text: String)
             : Any = text
 }
 
 class TolerantBooleanType : TolerantSimpleType(xsBoolean, xsBoolean) {
-    override fun parse(context: BindContext, text: String)
+    override fun parse(context: ReaderContext, text: String)
             : Any = java.lang.Boolean.valueOf(text.trim())
 }
 
 class TolerantQNameType : TolerantSimpleType(xsQname, xsQname) {
-    override fun parse(context: BindContext, text: String): Any {
+    override fun parse(context: ReaderContext, text: String): Any {
         TODO("Implement")
     }
 
@@ -155,27 +154,27 @@ class TolerantQNameType : TolerantSimpleType(xsQname, xsQname) {
 
 
 class TolerantBase64BinaryType : TolerantSimpleType(xsBase64Binary, xsBase64Binary) {
-    override fun parse(context: BindContext, text: String)
+    override fun parse(context: ReaderContext, text: String)
             : Any = Base64.getDecoder().decode(text)
 
 }
 
 
 class TolerantHexBinaryType : TolerantSimpleType(xsHexBinary, xsHexBinary) {
-    override fun parse(context: BindContext, text: String): Any {
+    override fun parse(context: ReaderContext, text: String): Any {
         return Base64.getDecoder().decode(text)
     }
 }
 
 class TolerantTemporalType(name: QName) : TolerantSimpleType(name, name) {
-    override fun parse(context: BindContext, text: String): Any {
+    override fun parse(context: ReaderContext, text: String): Any {
         TODO("Implement")
     }
 }
 
 
 class TolerantNumericType(name: QName, private val parser: (String) -> Any) : TolerantSimpleType(name, name) {
-    override fun parse(context: BindContext, text: String)
+    override fun parse(context: ReaderContext, text: String)
             : Any = parser(text)
 
     override fun toString()
