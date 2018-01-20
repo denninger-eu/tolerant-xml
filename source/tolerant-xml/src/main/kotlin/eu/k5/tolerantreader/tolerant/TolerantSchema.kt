@@ -1,5 +1,6 @@
 package eu.k5.tolerantreader.tolerant
 
+import eu.k5.tolerantreader.RootElement
 import eu.k5.tolerantreader.reader.BindContext
 import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
 import eu.k5.tolerantreader.binding.TolerantWriter
@@ -9,14 +10,16 @@ class TolerantSchema(
 
         private val elements: TolerantMap<TolerantElement>,
         private val types: TolerantMap<TolerantComplexType>,
-        private val writer: TolerantWriter,
+        private val rootSupplier: () -> RootElement,
         private val transformer: Map<String, Map<String, TolerantTransformer>>
 
 ) {
 
 
-    fun createContext(readerConfig: TolerantReaderConfiguration): BindContext
-            = writer.createContext(this, readerConfig)
+    fun createContext(readerConfig: TolerantReaderConfiguration): BindContext {
+        val root = rootSupplier()
+        return BindContext(this, root, readerConfig)
+    }
 
     fun getElement(namespaceURI: String, localName: String): TolerantElement?
             = elements.get(namespaceURI, localName)

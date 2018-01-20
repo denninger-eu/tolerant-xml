@@ -60,7 +60,7 @@ class TolerantSchemaBuilder(
 
         initElements()
 
-        return TolerantSchema(TolerantMap.of(elements.values) { it.qname }, tolerantComplexTypes!!, writer, getTransformer())
+        return TolerantSchema(TolerantMap.of(elements.values) { it.qname }, tolerantComplexTypes!!, writer.createRootElementSupplier(), getTransformer())
     }
 
     private fun getTransformer(): Map<String, Map<String, TolerantTransformer>> {

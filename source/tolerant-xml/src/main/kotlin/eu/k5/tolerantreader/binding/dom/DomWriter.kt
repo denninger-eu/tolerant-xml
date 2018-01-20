@@ -17,8 +17,9 @@ import kotlin.collections.HashMap
 
 
 class DomWriter : TolerantWriter {
-    override fun createCloser(initContext: InitContext): Closer
-            = DomElementCloser()
+
+
+    override fun createCloser(initContext: InitContext): Closer = DomElementCloser()
 
 
     private val simpleTypeAdapter = HashMap<QName, (Any) -> String>()
@@ -148,11 +149,15 @@ class DomWriter : TolerantWriter {
     override fun rootAssigner(elementName: QName): Assigner
             = DomRootAssigner(elementName)
 
-    override fun createContext(schema: TolerantSchema, readerConfig: TolerantReaderConfiguration): BindContext {
-        val documentBuilderFactory = DocumentBuilderFactory.newInstance()
-        val documentBuilder = documentBuilderFactory.newDocumentBuilder()
-        return BindContext(schema, DomRoot(documentBuilder.newDocument()), readerConfig)
+
+    override fun createRootElementSupplier(): () -> RootElement {
+        return {
+            val documentBuilderFactory = DocumentBuilderFactory.newInstance()
+            val documentBuilder = documentBuilderFactory.newDocumentBuilder()
+            DomRoot(documentBuilder.newDocument())
+        }
     }
+
 
     override fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner {
         if (parameters.attribute) {
@@ -180,8 +185,7 @@ class DomWriter : TolerantWriter {
         }
     }
 
-    override fun createSupplier(initContext: InitContext, typeName: QName): (elementName: QName) -> Any
-            = { DomValue(typeName) }
+    override fun createSupplier(initContext: InitContext, typeName: QName): (elementName: QName) -> Any = { DomValue(typeName) }
 
 
 }
@@ -228,7 +232,7 @@ class DomElement(
 
     var generateNamespaces: Boolean = false
 
-    override fun asNode( context: DomSealContext): List<Node> {
+    override fun asNode(context: DomSealContext): List<Node> {
         val sealContext: DomSealContext = if (generateNamespaces) {
             context.subContext()
         } else {

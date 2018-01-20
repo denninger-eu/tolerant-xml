@@ -3,6 +3,7 @@ package eu.k5.tolerantreader.binding
 import eu.k5.tolerantreader.reader.BindContext
 import eu.k5.tolerantreader.InitContext
 import eu.k5.tolerantreader.ReaderContext
+import eu.k5.tolerantreader.RootElement
 import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
 import eu.k5.tolerantreader.tolerant.TolerantSchema
 import javax.xml.namespace.QName
@@ -19,8 +20,8 @@ interface TolerantWriter {
 
     fun rootAssigner(elementName: QName): Assigner
 
+    fun createRootElementSupplier(): () -> RootElement
 
-    fun createContext(schema: TolerantSchema, readerConfig: TolerantReaderConfiguration): BindContext
 }
 
 class EnumSupplier(

@@ -25,6 +25,8 @@ class NoOpCloser : Closer {
 }
 
 class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
+
+
     override fun createCloser(initContext: InitContext): Closer {
         return NoOpCloser()
     }
@@ -128,7 +130,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
         return assigner
     }
 
-    override fun createContext(schema: TolerantSchema, readerConfig: TolerantReaderConfiguration): BindContext = BindContext(schema, BindRoot(), readerConfig)
+    override fun createRootElementSupplier(): () -> RootElement = { BindRoot() }
 
     override fun rootAssigner(elementName: QName): Assigner = BindRootAssigner
 
