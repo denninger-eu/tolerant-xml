@@ -6,6 +6,8 @@ import eu.k5.tr.model.idref.Reference
 import eu.k5.tr.model.idref.Referenced
 import eu.k5.tr.model.inheritance.ComplexInheritance
 import eu.k5.tr.model.inheritance.SubType
+import eu.k5.tr.model.inheritance.sub.NsComplexInheritance
+import eu.k5.tr.model.inheritance.sub.NsSubType
 import model.complex.ComplexRoot
 import model.minimal.Root
 import org.junit.jupiter.api.Assertions.*
@@ -295,7 +297,7 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
 
 
     @Test
-    @DisplayName("Read model type. With transformer")
+    @DisplayName("Read model type. With transformer for complex type")
     fun readModelTransformerComplex() {
         val obj = readModelType("transformer-complex-type")
                 as? FullPerson ?: fail<Nothing>("Invalid root type")
@@ -303,6 +305,30 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertEquals("InfoAttrib", obj.info.attrib)
         assertEquals("FirstName", obj.info.firstname)
     }
+
+    @Test
+    @DisplayName("Read model type. With transformer for inherited type")
+    fun readModelTransformerInheritance() {
+        val obj = readModelType("transformer-inheritance-ns")
+                as? NsComplexInheritance ?: fail<Nothing>("Invalid root type")
+
+        val inherited = obj.type as NsSubType
+        assertEquals("baseAttrValue", inherited.baseAttribute)
+        assertEquals("subAttrValue", inherited.subAttribute)
+        assertEquals("baseValue", inherited.baseElement)
+        assertEquals("subValue", inherited.subElement)
+    }
+
+    @Test
+    @DisplayName("Read model type. With transformer two step path")
+    fun readModelTransformerTargetPath() {
+        val obj = readModelType("transformer-two-step-path")
+                as? FullPerson ?: fail<Nothing>("Invalid root type")
+
+        assertEquals("InfoAttrib", obj.info.attrib)
+        assertEquals("MyName", obj.info.firstname)
+    }
+
 
     override fun getReader(path: String): TolerantReader = reader.getReader(path)
 

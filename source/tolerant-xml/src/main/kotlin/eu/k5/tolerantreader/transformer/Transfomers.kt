@@ -1,11 +1,11 @@
 package eu.k5.tolerantreader.transformer
 
-import eu.k5.tolerantreader.tolerant.TolerantTransformer
+import javax.xml.namespace.QName
 
 
 class Transformers {
 
-    val transformes: MutableList<Transformer> = ArrayList()
+    val transformers: MutableList<Transformer> = ArrayList()
 
 }
 
@@ -22,5 +22,11 @@ class Transformer() {
         this.type = type
         this.target = target
         this.element = element
+    }
+
+    fun getTargetPath(): Array<QName> {
+        val targets = target!!.split("/")
+
+        return Array(targets.size) { QName("", targets[it]) }
     }
 }

@@ -99,8 +99,10 @@ class ReaderCache(private val writer: TolerantWriter) {
     private fun createTransformers(): Transformers {
         val transformers = Transformers()
 
-        transformers.transformes.add(Transformer(type = "SubType", element = "subElementRename", target = "subElement"))
-        transformers.transformes.add(Transformer(type = "FullPerson", element = "InfoRename", target = "Info"))
+        transformers.transformers.add(Transformer(type = "SubType", element = "subElementRename", target = "subElement"))
+        transformers.transformers.add(Transformer(type = "FullPerson", element = "InfoRename", target = "Info"))
+        transformers.transformers.add(Transformer(type = "FullPerson", element = "name", target = "Info/firstname"))
+        transformers.transformers.add(Transformer(type = "NsComplexInheritance", element = "typeRename", target = "type"))
 
         return transformers
     }

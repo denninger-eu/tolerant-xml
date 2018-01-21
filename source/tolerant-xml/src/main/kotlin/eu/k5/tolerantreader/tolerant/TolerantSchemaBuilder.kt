@@ -65,8 +65,11 @@ class TolerantSchemaBuilder(
 
     private fun getTransformer(): Map<String, Map<String, TolerantTransformer>> {
         val byType = HashMap<String, Map<String, TolerantTransformer>>()
-        for (transformer in transformers.transformes) {
-            val tolerantTransformer = TolerantTransformer(transformer.element!!, transformer.target!!)
+        for (transformer in transformers.transformers) {
+
+            val split = transformer.target!!.split("/")
+
+            val tolerantTransformer = TolerantTransformer(transformer.element!!, transformer.getTargetPath())
             val byElement = byType.computeIfAbsent(transformer.type!!) { HashMap() } as MutableMap
             byElement.put(transformer.element!!, tolerantTransformer)
 

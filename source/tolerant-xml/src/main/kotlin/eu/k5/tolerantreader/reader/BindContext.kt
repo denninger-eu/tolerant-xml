@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import javax.xml.namespace.QName
 import javax.xml.stream.XMLStreamReader
+import kotlin.collections.HashMap
 
 
 class OpenReference(
@@ -25,14 +26,13 @@ class BindContext(
 
     private val trackComments: Boolean = true
 
-    private val names: Deque<QName> = ArrayDeque()
+    private val names: Deque<NameFrame> = ArrayDeque()
     private val elements: Deque<TolerantElement> = ArrayDeque()
     private val types: Deque<TolerantType> = ArrayDeque()
     private val instances: Deque<Any> = ArrayDeque()
     private val openReferences: MutableList<OpenReference> = ArrayList()
     private val comments: MutableList<String> = ArrayList()
 
-    private val replays: Deque<MutableMap<String, Replay>> = ArrayDeque()
 
     init {
         instances.push(root)
@@ -64,8 +64,17 @@ class BindContext(
     }
 
     fun pushName(qName: QName) {
-        names.push(qName)
-        replays.push(HashMap())
+        val current = NameFrame(qName)
+        val lastName = names.peek()
+        if (lastName != null) {
+            val replay = lastName.replays?.remove(qName.localPart)
+            if (replay != null) {
+                current.pushChildren(replay)
+            }
+        }
+
+        names.push(current)
+
     }
 
     fun push(element: TolerantElement, instance: Any, type: TolerantType) {
@@ -165,23 +174,41 @@ class BindContext(
 
     }
 
-    fun pushReplay(target: String, replay: Replay) {
-        var current = replays.peek()
-        if (current == null) {
-            replays.pop()
-            current = HashMap<String, Replay>()
-            replays.push(current)
-        }
-        current.put(target, replay)
+    fun pushReplay(replay: Replay) {
+        val nameFrame = names.peek()
+
+        nameFrame.pushReplay(replay)
+
+
     }
 
     fun popName() {
         names.pop()
-        replays.pop()
     }
 
     fun getReplay(): MutableMap<String, Replay>? {
-        return replays.peek()
+        return names.peek().replays
+    }
+
+}
+
+class NameFrame(
+        val name: QName
+) {
+
+    var replays: MutableMap<String, Replay>? = null
+
+    fun pushReplay(replay: Replay) {
+        if (replays == null) {
+            replays = HashMap()
+        }
+        replays!!.put(replay.qName.localPart, replay)
+    }
+
+    fun pushChildren(replay: Replay) {
+        for (child in replay.children) {
+            pushReplay(child)
+        }
     }
 
 }

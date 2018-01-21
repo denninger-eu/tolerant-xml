@@ -1,0 +1,6 @@
+<FullPerson xmlns="http://k5.eu/tr/model">
+    <name>MyName</name>
+    <Info attrib="InfoAttrib">
+    </Info>
+
+</FullPerson>

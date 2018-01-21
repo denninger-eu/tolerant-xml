@@ -1,7 +1,6 @@
 package eu.k5.tolerantreader.reader
 
 import eu.k5.tolerantreader.tolerant.*
-import javax.xml.namespace.QName
 import javax.xml.stream.XMLStreamReader
 import javax.xml.stream.events.XMLEvent
 
@@ -49,11 +48,8 @@ class TolerantReader(val schema: TolerantSchema) {
 
             if (XMLEvent.START_ELEMENT == event) {
 
-/*                val localName = stream.localName
-                val namespaceURI: String = stream.namespaceURI ?: ""*/
-                val qName = stream.name // QName(namespaceURI, localName)
+                val qName = stream.name
 
-                context.pushName(qName)
 
                 val element =
                         if (context.isEmpty()) {
@@ -63,16 +59,11 @@ class TolerantReader(val schema: TolerantSchema) {
                         }
 
                 if (element == null) {
-
-
                     val transformer = context.getTransformer(qName.localPart)
                     if (transformer != null) {
-                        val replay = Replay.record(qName, stream)
-
-                        context.pushReplay(transformer.target, replay)
-
+                        val replay = Replay.record(transformer.target, stream)
+                        context.pushReplay(replay)
                     } else if (context.keepFrame() && context.isEmpty()) {
-
                         context.pushFrameElement(stream)
                     } else {
                         context.addViolation(ViolationType.UNKNOWN_CONTENT, "Element: " + qName)
@@ -80,6 +71,7 @@ class TolerantReader(val schema: TolerantSchema) {
                     }
                     continue
                 }
+                context.pushName(qName)
 
 
                 val type = element.type.asSubtype(context, stream)
@@ -114,8 +106,8 @@ class TolerantReader(val schema: TolerantSchema) {
                         doReplay(context, replay)
                     }
                     context.pop()
+                    context.popName()
                 }
-                context.popName()
             }
         }
     }
@@ -123,7 +115,7 @@ class TolerantReader(val schema: TolerantSchema) {
     private fun doReplay(context: BindContext, replays: MutableMap<String, Replay>) {
         for ((elementName, replay) in replays) {
 
-            val stream = replay.asStreamReader(elementName)
+            val stream = replay.asStreamReader()
 
             read(context, stream)
 

@@ -20,16 +20,36 @@ class Replay(
 
     var childrenDepth = 1
 
-    fun asStreamReader(targetName: String): XMLStreamReader {
-        return ReplayStream(this, targetName, childrenDepth)
+    init {
+        if (parent != null) {
+            parent.children.add(this)
+        }
+    }
+
+    fun asStreamReader(): XMLStreamReader {
+        return ReplayStream(this, childrenDepth)
+    }
+
+    fun getRoot(): Replay {
+        return parent?.getRoot() ?: this
     }
 
     companion object {
-        fun record(qName: QName, stream: XMLStreamReader): Replay {
 
-            var root = Replay(qName, null, readAttributes(stream))
+        private fun createRoot(targetPath: Array<QName>, stream: XMLStreamReader): Replay {
+            var root: Replay? = null
+            for (index in 0 until targetPath.size - 1) {
+                root = Replay(targetPath[index], root, Collections.emptyList())
+            }
 
-            var current = root
+            return Replay(targetPath.last(), root, readAttributes(stream))
+        }
+
+        fun record(targetPath: Array<QName>, stream: XMLStreamReader): Replay {
+
+            var current = createRoot(targetPath, stream)
+
+            val root = current.getRoot()
 
 
             // attributes
@@ -50,9 +70,11 @@ class Replay(
                     if (balance == 0) {
                         return root
                     } else {
-                        current.parent!!.children.add(current)
+
                         current = current.parent!!
-                        current.childrenDepth++
+                        if (current.children.size == 1) {
+                            current.childrenDepth++
+                        }
                     }
                 } else if (XMLEvent.CHARACTERS == event) {
                     current.replayText = stream.text
@@ -84,8 +106,7 @@ class ReplayAttribute(
 )
 
 class ReplayStream(
-        private val replay: Replay,
-        private val targetName: String,
+        replay: Replay,
         childrenDepth: Int
 ) : XMLStreamReader {
 
@@ -113,7 +134,9 @@ class ReplayStream(
     override fun next(): Int {
         index[level]++
         if (index[level] == -1) {
-            index[level]++
+            if (!current!!.children.isEmpty()) {
+                index[level]++
+            }
             return XMLEvent.START_ELEMENT
         } else if (index[level] > (current!!.children.size)) {
             level--
@@ -123,6 +146,7 @@ class ReplayStream(
             if (!current!!.children.isEmpty()) {
                 current = current!!.children[index[level] - 1]
                 level++
+                index[level] = -1
                 return XMLEvent.START_ELEMENT
             } else {
                 return XMLEvent.CHARACTERS
@@ -132,29 +156,24 @@ class ReplayStream(
     }
 
     override fun getName(): QName {
-        if (level == 0) {
-            return QName(replay.qName.namespaceURI, targetName)
-        } else {
-            return current!!.qName
-        }
+        return current!!.qName
     }
 
-
-    // Unused
-    override fun getLocalName(): String {
-        return targetName
+    override fun getNamespaceURI(prefix: String?): String {
+        return ""
     }
 
-    // Unused
-    override fun getNamespaceURI(): String {
-        return replay.qName.namespaceURI
-    }
 
     override fun getAttributeCount(): Int = current!!.attributes.size
 
     override fun getAttributeLocalName(index: Int): String = current!!.attributes[index].name
 
     override fun getAttributeValue(index: Int): String = current!!.attributes[index].value
+
+
+    override fun getLocalName(): String = throw UnsupportedOperationException()
+
+    override fun getNamespaceURI(): String = throw UnsupportedOperationException()
 
     override fun getAttributeName(index: Int): QName = throw UnsupportedOperationException()
 
@@ -194,8 +213,6 @@ class ReplayStream(
 
     override fun isCharacters(): Boolean = throw UnsupportedOperationException()
 
-
-    override fun getNamespaceURI(prefix: String?): String = throw UnsupportedOperationException()
 
     override fun getNamespaceURI(index: Int): String = throw UnsupportedOperationException()
 
