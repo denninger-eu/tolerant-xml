@@ -6,7 +6,7 @@ import org.w3c.dom.Document
 class DomSealContext(val document: Document, val namespaceStrategy: NamespaceStrategy) {
 
     constructor(document: Document, readerConfiguration: TolerantReaderConfiguration) : this(document, readerConfiguration.queryConfigOrDefault(NamespaceStrategy::class.java) {
-        DefaultNamespaceStrategy()
+        DefaultNamespaceStrategy
     })
 
 

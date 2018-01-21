@@ -241,7 +241,7 @@ class DomElement(
 
 
         val elementPrefix = sealContext.getPrefix(elementName.namespaceURI)
-        val element = sealContext.document.createElement(elementPrefix + ":" + elementName.localPart)
+        val domElement = sealContext.document.createElement(elementPrefix + ":" + elementName.localPart)
 
         elements.sortBy { it.weight }
         val nodes = ArrayList<Node>()
@@ -255,25 +255,25 @@ class DomElement(
         if (actualType != expectedTypeName) {
             val typePrefix = sealContext.getPrefix(actualType.namespaceURI)
             val xsiPrefix = sealContext.getPrefix(XSI_NAMESPACE)
-            element.setAttribute(xsiPrefix + ":type", typePrefix + ":" + actualType.localPart)
+            domElement.setAttribute(xsiPrefix + ":type", typePrefix + ":" + actualType.localPart)
         }
 
         for (attribute in attributes) {
             val attributePrefix = sealContext.getPrefix(attribute.attributeName.namespaceURI)
-            element.setAttribute(attributePrefix + ":" + attribute.attributeName.localPart, attribute.value)
+            domElement.setAttribute(attributePrefix + ":" + attribute.attributeName.localPart, attribute.value)
         }
 
         nodes.forEach {
-            element.appendChild(it)
+            domElement.appendChild(it)
         }
 
         if (generateNamespaces) {
             for ((namespace, prefix) in sealContext.getUsedNamespaces()) {
-                element.setAttribute("xmlns:" + prefix, namespace)
+                domElement.setAttribute("xmlns:" + prefix, namespace)
             }
             (sealContext.getUsedNamespaces() as HashMap).clear()
         }
-        return Arrays.asList(element)
+        return Arrays.asList(domElement)
     }
 }
 

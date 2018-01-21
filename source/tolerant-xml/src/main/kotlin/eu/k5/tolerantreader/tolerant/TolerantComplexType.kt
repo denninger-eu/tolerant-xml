@@ -48,7 +48,7 @@ class TolerantComplexType(private val name: QName,
     }
 
     private fun attributeValue(name: QName, stream: XMLStreamReader): String {
-        for (index in 0..stream.attributeCount) {
+        for (index in 0 until stream.attributeCount) {
             if (stream.getAttributeLocalName(index) == name.localPart) {
                 return stream.getAttributeValue(index)
             }

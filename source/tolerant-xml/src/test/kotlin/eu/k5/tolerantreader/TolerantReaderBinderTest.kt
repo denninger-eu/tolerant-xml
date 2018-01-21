@@ -293,6 +293,17 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertEquals("subValue", (obj.type as SubType).subElement)
     }
 
+
+    @Test
+    @DisplayName("Read model type. With transformer")
+    fun readModelTransformerComplex() {
+        val obj = readModelType("transformer-complex-type")
+                as? FullPerson ?: fail<Nothing>("Invalid root type")
+
+        assertEquals("InfoAttrib", obj.info.attrib)
+        assertEquals("FirstName", obj.info.firstname)
+    }
+
     override fun getReader(path: String): TolerantReader = reader.getReader(path)
 
 

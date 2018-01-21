@@ -28,17 +28,13 @@ import javax.xml.stream.XMLStreamReader
 
 abstract class AbstractTolerantReaderTest {
 
-    fun readSimpleType(request: String): Any?
-            = read(SIMPLE_TYPES + "/" + request, getReader("xml/" + SIMPLE_TYPES + "/simple-types.xsd"))
+    fun readSimpleType(request: String): Any? = read(SIMPLE_TYPES + "/" + request, getReader("xml/" + SIMPLE_TYPES + "/simple-types.xsd"))
 
-    fun readComplexType(request: String): Any?
-            = read(COMPLEX_TYPES + "/" + request, getReader("xml/" + COMPLEX_TYPES + "/complex-types.xsd"))
+    fun readComplexType(request: String): Any? = read(COMPLEX_TYPES + "/" + request, getReader("xml/" + COMPLEX_TYPES + "/complex-types.xsd"))
 
-    fun readMinimalType(request: String): Any?
-            = read(MINIMAL + "/" + request, getReader("xml/" + MINIMAL + "/minimal.xsd"))
+    fun readMinimalType(request: String): Any? = read(MINIMAL + "/" + request, getReader("xml/" + MINIMAL + "/minimal.xsd"))
 
-    fun readModelType(request: String): Any?
-            = read(MODEL + "/" + request, getReader("xs/import.xsd"))
+    fun readModelType(request: String): Any? = read(MODEL + "/" + request, getReader("xs/import.xsd"))
 
 
     private fun read(request: String, reader: TolerantReader): Any? {
@@ -79,8 +75,7 @@ abstract class AbstractTolerantReaderTest {
         }
     }
 
-    private fun getBasePath(): Path
-            = Paths.get("src", "test", "resources", "xml")
+    private fun getBasePath(): Path = Paths.get("src", "test", "resources", "xml")
 
 
     abstract fun getReader(path: String): TolerantReader
@@ -90,8 +85,7 @@ abstract class AbstractTolerantReaderTest {
 class ReaderCache(private val writer: TolerantWriter) {
     private val readers = HashMap<String, TolerantReader>()
 
-    fun getReader(xsPath: String): TolerantReader
-            = readers.computeIfAbsent(xsPath) { createReader(it) }
+    fun getReader(xsPath: String): TolerantReader = readers.computeIfAbsent(xsPath) { createReader(it) }
 
     private fun createReader(xsdPath: String): TolerantReader {
 
@@ -105,11 +99,8 @@ class ReaderCache(private val writer: TolerantWriter) {
     private fun createTransformers(): Transformers {
         val transformers = Transformers()
 
-        val transformer = Transformer()
-        transformer.type = "SubType"
-        transformer.element = "subElementRename"
-        transformer.target = "subElement"
-        transformers.transformes.add(transformer)
+        transformers.transformes.add(Transformer(type = "SubType", element = "subElementRename", target = "subElement"))
+        transformers.transformes.add(Transformer(type = "FullPerson", element = "InfoRename", target = "Info"))
 
         return transformers
     }

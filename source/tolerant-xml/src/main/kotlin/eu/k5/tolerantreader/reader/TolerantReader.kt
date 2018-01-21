@@ -49,25 +49,25 @@ class TolerantReader(val schema: TolerantSchema) {
 
             if (XMLEvent.START_ELEMENT == event) {
 
-                val localName = stream.localName
-                val namespaceURI: String = stream.namespaceURI ?: ""
-                val qName = QName(namespaceURI, localName)
+/*                val localName = stream.localName
+                val namespaceURI: String = stream.namespaceURI ?: ""*/
+                val qName = stream.name // QName(namespaceURI, localName)
 
                 context.pushName(qName)
 
                 val element =
                         if (context.isEmpty()) {
-                            schema.getElement(namespaceURI, localName)
+                            schema.getElement(qName.namespaceURI, qName.localPart)
                         } else {
-                            context.getElement(namespaceURI, localName)
+                            context.getElement(qName.namespaceURI, qName.localPart)
                         }
 
                 if (element == null) {
 
 
-                    val transformer = context.getTransformer(localName)
+                    val transformer = context.getTransformer(qName.localPart)
                     if (transformer != null) {
-                        val replay = recordReplay(context, qName, stream)
+                        val replay = Replay.record(qName, stream)
 
                         context.pushReplay(transformer.target, replay)
 
@@ -123,49 +123,13 @@ class TolerantReader(val schema: TolerantSchema) {
     private fun doReplay(context: BindContext, replays: MutableMap<String, Replay>) {
         for ((elementName, replay) in replays) {
 
-            val element = context.getElement(null, elementName)
-            if (element != null) {
+            val stream = replay.asStreamReader(elementName)
 
-                val value = element.type.readValue(context, element, replay.asStreamReader())
-                if (value != null) {
-                    element.assigner.assign(context, context.getCurrentInstance()!!, value)
-
-                }
-            }
+            read(context, stream)
 
         }
     }
 
-
-    private fun recordReplay(context: BindContext, qName: QName, stream: XMLStreamReader): Replay {
-
-
-        var replay = Replay(qName)
-
-
-        // attributes
-
-        var balance = 1
-        while (stream.hasNext()) {
-            val event = stream.next()
-
-            if (XMLEvent.START_ELEMENT == event) {
-
-                balance++
-                TODO("Not supported yet")
-            } else if (XMLEvent.END_ELEMENT == event) {
-                balance--
-                if (balance == 0) {
-                    return replay
-                }
-            } else if (XMLEvent.CHARACTERS == event) {
-                replay.replayText = stream.text
-            } else if (XMLEvent.END_DOCUMENT == event) {
-                break
-            }
-        }
-        return replay
-    }
 
     private fun skipToEndElement(context: BindContext, stream: XMLStreamReader) {
         var balance = 1

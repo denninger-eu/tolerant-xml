@@ -9,7 +9,7 @@
             <xs:element name="firstname" type="xs:string"/>
             <xs:element name="lastname" type="xs:string"/>
         </xs:sequence>
-        <xs:attribute name="attrib" type="xs:string" />
+        <xs:attribute name="attrib" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="fullpersoninfo">
@@ -23,5 +23,15 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+
+
+    <xs:element name="FullPerson">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Info" type="tr:personinfo"/>
+                <xs:element name="FullInfo" type="tr:fullpersoninfo"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
 </xs:schema>
