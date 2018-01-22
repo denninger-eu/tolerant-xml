@@ -327,6 +327,8 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
 
         assertEquals("InfoAttrib", obj.info.attrib)
         assertEquals("MyName", obj.info.firstname)
+        assertEquals("PostString", obj.post)
+
     }
 
 

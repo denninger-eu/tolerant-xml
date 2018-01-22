@@ -2,6 +2,7 @@ package eu.k5.tolerantreader
 
 import eu.k5.tolerantreader.binding.dom.DomWriter
 import eu.k5.tolerantreader.reader.TolerantReader
+import eu.k5.tr.model.FullPerson
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -123,6 +124,11 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testModel("frame")
     }
 
+    @Test
+    @DisplayName("Model. With transformer two step path")
+    fun readModelTransformerTargetPath() {
+        testModel("transformer-two-step-path")
+    }
 
     private fun testMinimal(testCase: String) {
         val obj = readMinimalType(testCase)

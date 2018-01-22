@@ -2,6 +2,7 @@ package eu.k5.tolerant.converter.config
 
 
 import eu.k5.tolerantreader.binding.dom.NamespaceStrategy
+import eu.k5.tolerantreader.transformer.Transformers
 import java.io.FileInputStream
 import java.io.InputStream
 import java.nio.file.Path
@@ -12,6 +13,9 @@ import javax.xml.bind.annotation.*
 @XmlAccessorType(XmlAccessType.NONE)
 
 class Configurations {
+
+    @XmlElement(name = "transformers")
+    var transformers: List<Transformers>? = ArrayList()
 
     @XmlElement(name = "reader")
     var readers: List<ReaderConfig>? = ArrayList()
@@ -33,6 +37,8 @@ class Configurations {
 
         val configs = HashMap<Class<*>, Any>()
         configs.put(NamespaceStrategy::class.java, writerConfig.createNamespaceStrategy())
+
+        configs.put(Transformers::class.java, Transformers(readerConfig.allTransformers))
         return TolerantConverterConfiguration(converterConfig, readerConfig, writerConfig, configs)
     }
 
@@ -45,11 +51,18 @@ class Configurations {
 
 
     private fun getReaderConfig(key: String): ReaderConfig {
-        readers.orEmpty()
-                .filter { key == it.key }
-                .forEach { return it }
-        throw IllegalArgumentException("Converter with key $key not found")
+        val config = readers.orEmpty().firstOrNull {
+            key == it.key
+        } ?: throw IllegalArgumentException("Converter with key $key not found")
 
+        for (ref in config.transformerRef.orEmpty()) {
+            config.allTransformers.addAll(getTransformer(ref).transformers)
+        }
+        return config
+    }
+
+    private fun getTransformer(key: String): Transformers {
+        return transformers.orEmpty().first { key == it.key }
     }
 
     private fun getWriterConfig(key: String): WriterConfig {

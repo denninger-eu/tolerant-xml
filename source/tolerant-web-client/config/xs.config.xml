@@ -1,10 +1,24 @@
 <ConverterConfig>
 
+    <!--
+    transformers.transformers.add(Transformer(type = "SubType", element = "subElementRename", target = "subElement"))
+    transformers.transformers.add(Transformer(type = "FullPerson", element = "InfoRename", target = "Info"))
+    transformers.transformers.add(Transformer(type = "FullPerson", element = "name", target = "Info/firstname"))
+    transformers.transformers.add(Transformer(type = "NsComplexInheritance", element = "typeRename", target = "type"))
+
+-->
+    <transformers key="transformer">
+        <transformer type="SubType" element="subElementRename" target="subElement"/>
+        <transformer type="FullPerson" element="InfoRename" target="Info"/>
+        <transformer type="FullPerson" element="name" target="Info/firstname"/>
+        <transformer type="NsComplexInheritance" element="typeRename" target="type"/>
+    </transformers>
 
     <reader key="abc">
         <xsd>file:/repositories/tolerant-xml/source/tolerant-test-models/src/main/resources/xs/import.xsd</xsd>
         <numbers>US</numbers>
         <enforceLengthRestriction>false</enforceLengthRestriction>
+        <transformerRef>transformer</transformerRef>
     </reader>
 
 

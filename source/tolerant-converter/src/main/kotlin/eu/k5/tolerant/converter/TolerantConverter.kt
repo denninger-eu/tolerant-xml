@@ -7,6 +7,7 @@ import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
 import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.binding.dom.DomWriter
 import eu.k5.tolerantreader.tolerant.TolerantSchemaBuilder
+import eu.k5.tolerantreader.transformer.Transformers
 import eu.k5.tolerantreader.xs.Schema
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -40,7 +41,8 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
         val xsRegistry = Schema.parse(configuration.xsd!!.trim())
         xsRegistry.init()
-        val tolerantSchema = TolerantSchemaBuilder(InitContext(), xsRegistry, writer).build()
+        val transformers = configuration.configs.getOrDefault(Transformers::class.java) { Transformers() } as Transformers
+        val tolerantSchema = TolerantSchemaBuilder(InitContext(), xsRegistry, writer, transformers = transformers).build()
         reader = TolerantReader(tolerantSchema)
     }
 

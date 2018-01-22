@@ -2,5 +2,5 @@
     <name>MyName</name>
     <Info attrib="InfoAttrib">
     </Info>
-
+    <Post>PostString</Post>
 </FullPerson>

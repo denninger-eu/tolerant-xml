@@ -30,6 +30,7 @@
             <xs:sequence>
                 <xs:element name="Info" type="tr:personinfo"/>
                 <xs:element name="FullInfo" type="tr:fullpersoninfo"/>
+                <xs:element name="Post" type="xs:string" />
             </xs:sequence>
         </xs:complexType>
     </xs:element>
