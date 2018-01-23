@@ -10,7 +10,7 @@ import javax.xml.stream.XMLStreamReader
 class TolerantComplexType(private val name: QName,
                           private val konstructor: (elemantName: QName) -> Any,
                           private val elements: Map<String, TolerantElement>,
-                          private val concreteSubtypes: TolerantMap<QName>,
+                           val concreteSubtypes: TolerantMap<QName>,
                           private val simpleContent: TolerantSimpleContent?,
                           private val closer: Closer) : TolerantType() {
 

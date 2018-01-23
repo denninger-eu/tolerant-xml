@@ -11,7 +11,7 @@ class TolerantSchema(
         private val elements: TolerantMap<TolerantElement>,
         private val types: TolerantMap<TolerantComplexType>,
         private val rootSupplier: () -> RootElement,
-        private val transformer: Map<String, Map<String, TolerantTransformer>>
+        private val transformer: TolerantMap<Map<String, TolerantTransformer>>
 
 ) {
 
@@ -28,8 +28,7 @@ class TolerantSchema(
     fun getComplexType(name: QName): TolerantType
             = types.getByLocalName(name.localPart)!!
 
-    fun getTransformer(typeName: QName, transformerName: String): TolerantTransformer? {
-        return transformer.get(typeName.localPart)?.get(transformerName)
-    }
+    fun getTransformer(typeName: QName, transformerName: String): TolerantTransformer?
+            = transformer.get(typeName)?.get(transformerName)
 
 }

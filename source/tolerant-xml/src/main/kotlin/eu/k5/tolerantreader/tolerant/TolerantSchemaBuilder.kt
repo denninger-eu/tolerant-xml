@@ -60,23 +60,32 @@ class TolerantSchemaBuilder(
 
         initElements()
 
-        return TolerantSchema(TolerantMap.of(elements.values) { it.qname }, tolerantComplexTypes!!, writer.createRootElementSupplier(), getTransformer())
+        val transformer = getTransformer()
+        return TolerantSchema(TolerantMap.of(elements.values) { it.qname }, tolerantComplexTypes!!, writer.createRootElementSupplier(), transformer)
     }
 
-    private fun getTransformer(): Map<String, Map<String, TolerantTransformer>> {
-        val byType = HashMap<String, Map<String, TolerantTransformer>>()
+    private fun getTransformer(): TolerantMap<Map<String, TolerantTransformer>> {
+        val byType = HashMap<QName, Map<String, TolerantTransformer>>()
         for (transformer in transformers.transformers) {
 
-            val split = transformer.target!!.split("/")
+            val complexType = tolerantComplexTypes!!.get(transformer.type!!)
 
-            val tolerantTransformer = TolerantTransformer(transformer.element!!, transformer.getTargetPath())
-            val byElement = byType.computeIfAbsent(transformer.type!!) { HashMap() } as MutableMap
-            byElement.put(transformer.element!!, tolerantTransformer)
+            if (complexType == null) {
+                initContext.addFinding(Type.MISSING_TYPE_TRANSFORMER, transformer.type.toString())
+            } else {
+                val tolerantTransformer = TolerantTransformer(transformer.element!!, transformer.getTargetPath())
+                val byElement = byType.computeIfAbsent(complexType.getQualifiedName()) { HashMap() } as MutableMap
+                byElement.put(transformer.element!!, tolerantTransformer)
+
+                for (concreteSubType in complexType.concreteSubtypes.values()) {
+                    val byElement = byType.computeIfAbsent(concreteSubType) { HashMap() } as MutableMap
+                    byElement.put(transformer.element!!, tolerantTransformer)
+                }
+            }
 
         }
-        return byType
+        return TolerantMap.of(byType)
     }
-
 
     private fun getSimpleType(qName: QName): TolerantSimpleType? {
         val baseType = baseTypes.getBaseType(qName)

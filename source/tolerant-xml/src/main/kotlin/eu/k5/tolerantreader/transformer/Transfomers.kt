@@ -27,7 +27,7 @@ class Transformers() {
 class Transformer() {
 
     @XmlAttribute(name = "type")
-    var type: String? = null
+    var type: QName? = null
 
     @XmlAttribute(name = "target")
     var target: String? = null
@@ -35,7 +35,7 @@ class Transformer() {
     @XmlAttribute(name = "element")
     var element: String? = null
 
-    constructor(type: String, target: String, element: String) : this() {
+    constructor(type: QName, target: String, element: String) : this() {
         this.type = type
         this.target = target
         this.element = element

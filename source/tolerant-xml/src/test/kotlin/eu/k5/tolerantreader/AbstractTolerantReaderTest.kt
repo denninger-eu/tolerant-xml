@@ -23,6 +23,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
+import javax.xml.namespace.QName
 import javax.xml.stream.XMLInputFactory
 import javax.xml.stream.XMLStreamReader
 
@@ -99,10 +100,13 @@ class ReaderCache(private val writer: TolerantWriter) {
     private fun createTransformers(): Transformers {
         val transformers = Transformers()
 
-        transformers.transformers.add(Transformer(type = "SubType", element = "subElementRename", target = "subElement"))
-        transformers.transformers.add(Transformer(type = "FullPerson", element = "InfoRename", target = "Info"))
-        transformers.transformers.add(Transformer(type = "FullPerson", element = "name", target = "Info/firstname"))
-        transformers.transformers.add(Transformer(type = "NsComplexInheritance", element = "typeRename", target = "type"))
+        transformers.transformers.add(Transformer(type = QName("", "SubType"), element = "subElementRename", target = "subElement"))
+        transformers.transformers.add(Transformer(type = QName("", "FullPerson"), element = "InfoRename", target = "Info"))
+        transformers.transformers.add(Transformer(type = QName("", "FullPerson"), element = "name", target = "Info/firstname"))
+        transformers.transformers.add(Transformer(type = QName("", "NsComplexInheritance"), element = "typeRename", target = "type "))
+
+
+        transformers.transformers.add(Transformer(type = QName("", "NsBaseType"), element = "baseElementRename", target = "baseElement"))
 
         return transformers
     }

@@ -320,6 +320,19 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
     }
 
     @Test
+    @DisplayName("Read model type. With transformer for inherited type")
+    fun readModelTransformerInheritedTransformer() {
+        val obj = readModelType("transformer-inherited-transformer")
+                as? NsComplexInheritance ?: fail<Nothing>("Invalid root type")
+
+        val inherited = obj.type as NsSubType
+        assertEquals("baseAttrValue", inherited.baseAttribute)
+        assertEquals("subAttrValue", inherited.subAttribute)
+        assertEquals("baseValue", inherited.baseElement)
+        assertEquals("subValue", inherited.subElement)
+    }
+
+    @Test
     @DisplayName("Read model type. With transformer two step path")
     fun readModelTransformerTargetPath() {
         val obj = readModelType("transformer-two-step-path")

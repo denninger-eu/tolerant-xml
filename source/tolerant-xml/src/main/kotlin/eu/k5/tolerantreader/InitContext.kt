@@ -12,7 +12,9 @@ enum class Type {
 
     UNKNOWN_SCHEMA,
 
-    MISSING_TYPE_ADAPTER
+    MISSING_TYPE_ADAPTER,
+
+    MISSING_TYPE_TRANSFORMER
 }
 
 class InitContext {

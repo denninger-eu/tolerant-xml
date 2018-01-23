@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns:NsComplexInheritance xmlns:ns="http://k5.eu/tr/model/inheritance/sub" xmlns:ns0="http://k5.eu/tr/model/inheritance/basis" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ns:type ns0:baseAttribute="baseAttrValue" ns:subAttribute="subAttrValue" xsi:type="ns:NsSubType">
+        <ns0:baseElement>baseValue</ns0:baseElement>
+        <ns:subElement>subValue</ns:subElement>
+    </ns:type>
+</ns:NsComplexInheritance>

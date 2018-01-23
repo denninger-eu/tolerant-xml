@@ -65,6 +65,9 @@ class TolerantMap<T>(
 
     fun isEmpty(): Boolean = internal.isEmpty()
 
+    fun values(): Collection<T>
+            = internal.values
+
     companion object {
 
         fun <T> of(elements: Map<QName, T>): TolerantMap<T> {
