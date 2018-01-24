@@ -114,17 +114,16 @@ class ReplayStream(
 
     private var level = 0
 
-    private var index = Array(childrenDepth) { -1 }
+    private var steps = Array(childrenDepth) { -1 }
 
     init {
         if (childrenDepth > 0) {
-            index[0]--
+            steps[0]--
         }
     }
 
     override fun hasNext(): Boolean {
-        if (level < 0) return false
-        return index[level] < 2
+       return level >= 0
     }
 
     override fun getText(): String? {
@@ -132,28 +131,45 @@ class ReplayStream(
     }
 
     override fun next(): Int {
-        index[level]++
-        if (index[level] == -1) {
+        steps[level]++
+        if (steps[level] == -1) {
             if (!current!!.children.isEmpty()) {
-                index[level]++
+                steps[level]++
             }
             return XMLEvent.START_ELEMENT
-        } else if (index[level] > (current!!.children.size)) {
+        } else if (isEnd(current!!, steps[level])) {
             level--
             current = current!!.parent
             return XMLEvent.END_ELEMENT
+        } else if (isCharacters(current!!, steps[level])) {
+            return XMLEvent.CHARACTERS
+        } else if (isStart(current!!, steps[level])) {
+            current = current!!.children[steps[level]-1]
+            level++
+            steps[level] = 0
+            return XMLEvent.START_ELEMENT
         } else {
-            if (!current!!.children.isEmpty()) {
-                current = current!!.children[index[level] - 1]
-                level++
-                index[level] = -1
-                return XMLEvent.START_ELEMENT
-            } else {
-                return XMLEvent.CHARACTERS
-            }
 
+            TODO("consider other cases")
+        }
+
+    }
+
+    private fun isStart(replay: Replay, step: Int): Boolean
+            = !replay.children.isEmpty()
+
+
+    private fun isEnd(replay: Replay, step: Int): Boolean {
+        if (replay.children.isEmpty()) {
+            return step >= 1
+        } else {
+            return step > replay.children.size
         }
     }
+
+    private fun isCharacters(replay: Replay, step: Int): Boolean
+            = replay.children.isEmpty()
+
 
     override fun getName(): QName {
         return current!!.qName

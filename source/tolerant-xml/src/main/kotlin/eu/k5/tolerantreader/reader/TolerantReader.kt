@@ -100,7 +100,7 @@ class TolerantReader(val schema: TolerantSchema) {
                 if (context.isEmpty()) {
                     context.popFrame()
                 } else {
-                    val replay = context.getReplay()
+                    val replay = context.retrieveReplay()
 
                     if (replay != null) {
                         doReplay(context, replay)
@@ -112,7 +112,7 @@ class TolerantReader(val schema: TolerantSchema) {
         }
     }
 
-    private fun doReplay(context: BindContext, replays: MutableMap<String, Replay>) {
+    private fun doReplay(context: BindContext, replays: Map<String, Replay>) {
         for ((elementName, replay) in replays) {
 
             val stream = replay.asStreamReader()

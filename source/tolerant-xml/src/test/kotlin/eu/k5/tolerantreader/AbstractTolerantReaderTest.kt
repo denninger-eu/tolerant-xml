@@ -103,7 +103,7 @@ class ReaderCache(private val writer: TolerantWriter) {
         transformers.transformers.add(Transformer(type = QName("", "SubType"), element = "subElementRename", target = "subElement"))
         transformers.transformers.add(Transformer(type = QName("", "FullPerson"), element = "InfoRename", target = "Info"))
         transformers.transformers.add(Transformer(type = QName("", "FullPerson"), element = "name", target = "Info/firstname"))
-        transformers.transformers.add(Transformer(type = QName("", "NsComplexInheritance"), element = "typeRename", target = "type "))
+        transformers.transformers.add(Transformer(type = QName("", "NsComplexInheritance"), element = "typeRename", target = "type"))
 
 
         transformers.transformers.add(Transformer(type = QName("", "NsBaseType"), element = "baseElementRename", target = "baseElement"))

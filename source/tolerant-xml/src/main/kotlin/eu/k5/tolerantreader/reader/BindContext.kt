@@ -186,8 +186,10 @@ class BindContext(
         names.pop()
     }
 
-    fun getReplay(): MutableMap<String, Replay>? {
-        return names.peek().replays
+    fun retrieveReplay(): Map<String, Replay>? {
+        val replays = names.peek().replays
+        names.peek().replays = null
+        return replays
     }
 
 }

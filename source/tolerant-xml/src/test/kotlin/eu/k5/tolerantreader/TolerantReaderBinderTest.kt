@@ -315,8 +315,8 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         val inherited = obj.type as NsSubType
         assertEquals("baseAttrValue", inherited.baseAttribute)
         assertEquals("subAttrValue", inherited.subAttribute)
-        assertEquals("baseValue", inherited.baseElement)
         assertEquals("subValue", inherited.subElement)
+        assertEquals("baseValue", inherited.baseElement)
     }
 
     @Test
@@ -341,9 +341,19 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertEquals("InfoAttrib", obj.info.attrib)
         assertEquals("MyName", obj.info.firstname)
         assertEquals("PostString", obj.post)
-
     }
 
+
+    @Test
+    @DisplayName("Read model type. With transformer two step path")
+    fun readModelTransformerIntegrateIntoExisting() {
+        val obj = readModelType("transformer-integrate-into-existing")
+                as? FullPerson ?: fail<Nothing>("Invalid root type")
+
+        assertEquals("InfoAttrib", obj.info.attrib)
+        assertEquals("MyName", obj.info.firstname)
+        assertEquals("PostString", obj.post)
+    }
 
     override fun getReader(path: String): TolerantReader = reader.getReader(path)
 
