@@ -114,7 +114,7 @@ class ReplayStream(
 
     private var level = 0
 
-    private var steps = Array(childrenDepth) { -1 }
+    private var steps = Array(childrenDepth + 1) { -1 }
 
     init {
         if (childrenDepth > 0) {
@@ -123,7 +123,7 @@ class ReplayStream(
     }
 
     override fun hasNext(): Boolean {
-       return level >= 0
+        return 0 <= level
     }
 
     override fun getText(): String? {
@@ -144,9 +144,9 @@ class ReplayStream(
         } else if (isCharacters(current!!, steps[level])) {
             return XMLEvent.CHARACTERS
         } else if (isStart(current!!, steps[level])) {
-            current = current!!.children[steps[level]-1]
+            current = current!!.children[steps[level] - 1]
             level++
-            steps[level] = 0
+            steps[level] = -1
             return XMLEvent.START_ELEMENT
         } else {
 
@@ -155,8 +155,7 @@ class ReplayStream(
 
     }
 
-    private fun isStart(replay: Replay, step: Int): Boolean
-            = !replay.children.isEmpty()
+    private fun isStart(replay: Replay, step: Int): Boolean = !replay.children.isEmpty()
 
 
     private fun isEnd(replay: Replay, step: Int): Boolean {
@@ -167,8 +166,7 @@ class ReplayStream(
         }
     }
 
-    private fun isCharacters(replay: Replay, step: Int): Boolean
-            = replay.children.isEmpty()
+    private fun isCharacters(replay: Replay, step: Int): Boolean = replay.children.isEmpty()
 
 
     override fun getName(): QName {
