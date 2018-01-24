@@ -22,6 +22,8 @@ interface TolerantWriter {
 
     fun createRootElementSupplier(): () -> RootElement
 
+    fun createElementRetriever(initContext: InitContext, qName: QName)
+
 }
 
 class EnumSupplier(

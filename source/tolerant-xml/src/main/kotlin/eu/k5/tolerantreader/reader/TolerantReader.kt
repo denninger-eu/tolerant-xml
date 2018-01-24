@@ -13,6 +13,8 @@ enum class ViolationType {
 
     INVALID_ENUM_LITERAL,
 
+    INVALID_CLASS_STRUCTURE
+
 }
 
 data class Violation(
@@ -75,6 +77,8 @@ class TolerantReader(val schema: TolerantSchema) {
 
 
                 val type = element.type.asSubtype(context, stream)
+
+
                 val readValue = type.readValue(context, element, stream)
                 if (readValue != null) {
 

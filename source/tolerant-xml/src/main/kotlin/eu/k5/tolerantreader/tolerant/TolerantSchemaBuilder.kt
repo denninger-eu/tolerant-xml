@@ -194,7 +194,7 @@ class TolerantSchemaBuilder(
                 val parameters = ElementParameters(false, 0, true)
                 val qName = attribute.getQualifiedName()
                 val assigner = writer.createElementAssigner(initContext, qualifiedName, qName, simpleType.getTypeName(), parameters)
-
+writer.createElementRetriever(initContext, qName)
 
                 typeBuilder.addElement(attribute.name!!, TolerantElement(qName, simpleType, assigner, true))
             } else {

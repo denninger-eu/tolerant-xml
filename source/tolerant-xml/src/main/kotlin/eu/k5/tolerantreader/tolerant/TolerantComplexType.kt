@@ -10,7 +10,7 @@ import javax.xml.stream.XMLStreamReader
 class TolerantComplexType(private val name: QName,
                           private val konstructor: (elemantName: QName) -> Any,
                           private val elements: Map<String, TolerantElement>,
-                           val concreteSubtypes: TolerantMap<QName>,
+                          val concreteSubtypes: TolerantMap<QName>,
                           private val simpleContent: TolerantSimpleContent?,
                           private val closer: Closer) : TolerantType() {
 
@@ -58,8 +58,20 @@ class TolerantComplexType(private val name: QName,
 
     override fun getQualifiedName(): QName = name
 
-    override fun readValue(context: ReaderContext, element: TolerantElement, stream: XMLStreamReader): Any {
-        val newInstance = konstructor(element.qname)
+    override fun readValue(context: ReaderContext, element: TolerantElement, currentInstance: Any?, stream: XMLStreamReader): Any {
+
+        var newInstance: Any
+        var retrieved: Any? = null
+        if (currentInstance != null) {
+            retrieved = element.retriever.retrieve(context, currentInstance)
+        }
+
+        if (retrieved != null) {
+            newInstance = retrieved
+        } else {
+            newInstance = konstructor(element.qname)
+        }
+
         handleAttributes(context, stream, newInstance)
 
         simpleContent?.handle(context, element, stream, newInstance)
@@ -99,7 +111,7 @@ class TolerantComplexProxy(val name: QName) : TolerantType() {
 
     override fun pushedOnStack(): Boolean = true
 
-    override fun readValue(context: ReaderContext, element: TolerantElement, stream: XMLStreamReader): Any = delegate!!.readValue(context, element, stream)
+    override fun readValue(context: ReaderContext, element: TolerantElement, currentInstance: Any?, stream: XMLStreamReader): Any = delegate!!.readValue(context, element, currentInstance, stream)
 
     override fun asSubtype(context: ReaderContext, stream: XMLStreamReader): TolerantType = delegate!!.asSubtype(context, stream)
 

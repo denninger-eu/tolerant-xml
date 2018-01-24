@@ -1,5 +1,6 @@
 package eu.k5.tolerantreader.binding.model
 
+import com.sun.org.apache.bcel.internal.generic.RET
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.binding.*
 import eu.k5.tolerantreader.reader.BindContext
@@ -130,6 +131,27 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
         return assigner
     }
 
+
+    override fun createElementRetriever(initContext: InitContext, entityType: QName) {
+        val baseClass = resolveJavaClass(entityType)
+        val propertyClass = resolveJavaClass(target)
+
+
+        createGetterRetriever(initContext, baseClass)
+    }
+
+    private fun createGetterRetriever(initContext: InitContext, baseClass: Class<*>, element: String): Retriever {
+        try {
+            val getter = baseClass.getMethod(utils.getGetterName(element))
+
+
+        } catch (exception: Exception) {
+            initContext.addFinding(Type.MISSING_GETTER, exception.message ?: "")
+            return NoOpRetriever
+        }
+    }
+
+
     override fun createRootElementSupplier(): () -> RootElement = { BindRoot() }
 
     override fun rootAssigner(elementName: QName): Assigner = BindRootAssigner
@@ -204,6 +226,15 @@ object NoOpAssigner : Assigner {
     }
 }
 
+object NoOpRetriever : Retriever {
+    private val LOGGER = LoggerFactory.getLogger(NoOpRetriever::class.java)
+    override fun retrieve(context: ReaderContext, instance: Any): Any? {
+        LOGGER.debug("Usage of NoOp Retriever")
+        return null
+    }
+
+}
+
 object BindRootAssigner : Assigner {
 
     override fun assign(context: ReaderContext, instance: Any, value: Any?) {
@@ -267,6 +298,19 @@ class IdAssigner(private val delegate: Assigner) : Assigner {
         delegate.assign(context, instance, value)
         context.registerEntity(value, instance)
 
+    }
+
+}
+
+class GetterRetriever(private val getter: Method) : Retriever {
+    override fun retrieve(context: ReaderContext, instance: Any): Any? {
+        try {
+            val obj = getter.invoke(instance)
+            return obj
+        } catch (exception: Exception) {
+            context.addViolation(ViolationType.INVALID_CLASS_STRUCTURE, exception.message ?: "No message")
+            return null
+        }
     }
 
 }
