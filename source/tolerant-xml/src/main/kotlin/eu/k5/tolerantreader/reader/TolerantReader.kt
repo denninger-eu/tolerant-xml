@@ -79,7 +79,7 @@ class TolerantReader(val schema: TolerantSchema) {
                 val type = element.type.asSubtype(context, stream)
 
 
-                val readValue = type.readValue(context, element, stream)
+                val readValue = type.readValue(context, element, context.getCurrentInstance(), stream)
                 if (readValue != null) {
 
                     element.assigner.assign(context, context.getCurrentInstance()!!, readValue)

@@ -130,6 +130,12 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testModel("transformer-two-step-path")
     }
 
+    @Test
+    @DisplayName("Model. With transformer two step path")
+    fun readModelTransformerIntegrate() {
+        testModel("transformer-integrate-into-existing")
+    }
+
     private fun testMinimal(testCase: String) {
         val obj = readMinimalType(testCase)
                 as? Document ?: Assertions.fail<Nothing>("Invalid root type")

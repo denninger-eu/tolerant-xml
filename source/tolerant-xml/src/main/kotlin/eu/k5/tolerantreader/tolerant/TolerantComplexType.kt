@@ -122,7 +122,7 @@ class TolerantComplexProxy(val name: QName) : TolerantType() {
 class TolerantSimpleContent(val base: TolerantSimpleType, val baseAssigner: Assigner) {
 
     fun handle(context: ReaderContext, element: TolerantElement, stream: XMLStreamReader, instance: Any) {
-        val baseValue = base.readValue(context, element, stream)
+        val baseValue = base.readValue(context, element, null, stream)
         baseAssigner.assign(context, instance, baseValue)
     }
 }

@@ -5,6 +5,7 @@ import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.binding.Closer
 import eu.k5.tolerantreader.binding.ElementParameters
 import eu.k5.tolerantreader.binding.TolerantWriter
+import eu.k5.tolerantreader.binding.model.NoOpRetriever
 import eu.k5.tolerantreader.transformer.Transformers
 import eu.k5.tolerantreader.xs.XsComplexType
 import eu.k5.tolerantreader.xs.XsRegistry
@@ -194,9 +195,10 @@ class TolerantSchemaBuilder(
                 val parameters = ElementParameters(false, 0, true)
                 val qName = attribute.getQualifiedName()
                 val assigner = writer.createElementAssigner(initContext, qualifiedName, qName, simpleType.getTypeName(), parameters)
-writer.createElementRetriever(initContext, qName)
 
-                typeBuilder.addElement(attribute.name!!, TolerantElement(qName, simpleType, assigner, true))
+                val retriever = writer.createElementRetriever(initContext, qualifiedName, qName, simpleType.getTypeName())
+
+                typeBuilder.addElement(attribute.name!!, TolerantElement(qName, simpleType, assigner, retriever, true))
             } else {
                 initContext.addFinding(Type.UNKNOWN_SCHEMA, "Attribute without type")
             }
@@ -218,7 +220,10 @@ writer.createElementRetriever(initContext, qName)
                 val qname = QName(qualifiedName.namespaceURI, element.name)
 
 
-                val tolerantElement = TolerantElement(qname, tolerantType, assigner, false)
+                val retriever = writer.createElementRetriever(initContext, qualifiedName, qname, typeName)
+
+
+                val tolerantElement = TolerantElement(qname, tolerantType, assigner, retriever, false)
                 typeBuilder.addElement(element.name!!, tolerantElement)
             }
         }
@@ -238,14 +243,14 @@ writer.createElementRetriever(initContext, qName)
                 val complexType = tolerantComplexTypes?.get(element.type!!)
 
 
-                val bindElement = TolerantElement(element.getQualifiedName(), complexType!!, writer.rootAssigner(element.getQualifiedName()), false)
+                val bindElement = TolerantElement(element.getQualifiedName(), complexType!!, writer.rootAssigner(element.getQualifiedName()), NoOpRetriever, false)
 
                 elements.put(element.getQualifiedName(), bindElement)
             } else if (element.complexType != null) {
 
                 val complexType = tolerantComplexTypes?.get(element.getQualifiedName())
 
-                val bindElement = TolerantElement(element.getQualifiedName(), complexType!!, writer.rootAssigner(element.getQualifiedName()), false)
+                val bindElement = TolerantElement(element.getQualifiedName(), complexType!!, writer.rootAssigner(element.getQualifiedName()), NoOpRetriever, false)
 
                 elements.put(element.getQualifiedName(), bindElement)
 

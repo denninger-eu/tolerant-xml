@@ -132,18 +132,20 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     }
 
 
-    override fun createElementRetriever(initContext: InitContext, entityType: QName) {
+    override fun createElementRetriever(initContext: InitContext, entityType: QName, element: QName, targetName: QName): Retriever {
         val baseClass = resolveJavaClass(entityType)
-        val propertyClass = resolveJavaClass(target)
+//        val propertyClass = resolveJavaClass(targetName)
 
 
-        createGetterRetriever(initContext, baseClass)
+
+        return createGetterRetriever(initContext, baseClass, element.localPart)
     }
 
     private fun createGetterRetriever(initContext: InitContext, baseClass: Class<*>, element: String): Retriever {
         try {
             val getter = baseClass.getMethod(utils.getGetterName(element))
 
+            return GetterRetriever(getter)
 
         } catch (exception: Exception) {
             initContext.addFinding(Type.MISSING_GETTER, exception.message ?: "")

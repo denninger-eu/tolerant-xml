@@ -2,10 +2,8 @@ package eu.k5.tolerantreader.binding.dom
 
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.binding.*
-import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.binding.model.NoOpAssigner
-import eu.k5.tolerantreader.reader.BindContext
-import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
+import eu.k5.tolerantreader.binding.model.NoOpRetriever
 import eu.k5.tolerantreader.reader.ViolationType
 import eu.k5.tolerantreader.tolerant.IdRefType
 import eu.k5.tolerantreader.tolerant.XSI_NAMESPACE
@@ -158,6 +156,9 @@ class DomWriter : TolerantWriter {
         }
     }
 
+    override fun createElementRetriever(initContext: InitContext, entityType: QName, element: QName, targetName: QName): Retriever {
+        return DomElementRetriever(element.localPart)
+    }
 
     override fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner {
         if (parameters.attribute) {
@@ -220,7 +221,7 @@ class DomAttribute(
 )
 
 class DomElement(
-        private val elementName: QName,
+        val elementName: QName,
         private val expectedTypeName: QName,
         private val actualType: QName,
         weight: Int
@@ -350,7 +351,6 @@ class DomElementAssigner(
         if (instance is DomValue) {
             if (value is DomValue) {
 
-
                 val comments = context.retrieveComments()
 
                 val domElement = DomElement(element, target, value.typeName, weight)
@@ -362,8 +362,27 @@ class DomElementAssigner(
                 instance.element!!.elements.add(domElement)
                 value.element = domElement
                 return
+            } else if (value is DomElement){
+                return
             }
+        } else if (instance is DomElement) {
+
         }
+        TODO("Different types")
+    }
+}
+
+class DomElementRetriever(private val elementName: String) : Retriever {
+    override fun retrieve(context: ReaderContext, instance: Any): Any? {
+        if (instance is DomValue) {
+
+            val elements = instance.element?.elements.orEmpty()
+
+            val element = elements.filter { it is DomElement }.map { it as DomElement }.firstOrNull { it.elementName.localPart == elementName }
+
+            return element
+        }
+
         TODO("Different types")
     }
 

@@ -14,7 +14,7 @@ abstract class TolerantSimpleType(private val name: QName, private val baseName:
 
     override fun pushedOnStack(): Boolean = false
 
-    override fun readValue(context: ReaderContext, element: TolerantElement, stream: XMLStreamReader): Any? {
+    override fun readValue(context: ReaderContext, element: TolerantElement, currentInstance:Any?, stream: XMLStreamReader): Any? {
         var text = ""
         var balance = 1
         while (stream.hasNext()) {
