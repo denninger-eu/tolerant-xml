@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns:FullPerson xmlns:ns="http://k5.eu/tr/model">
+    <ns:Info ns:attrib="InfoAttrib">
+        <ns:firstname>MyName</ns:firstname>
+    </ns:Info>
+    <ns:Post>PostString</ns:Post>
+</ns:FullPerson>

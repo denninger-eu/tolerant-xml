@@ -1,9 +1,9 @@
 package eu.k5.tolerantreader.binding.dom
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.binding.*
 import eu.k5.tolerantreader.binding.model.NoOpAssigner
-import eu.k5.tolerantreader.binding.model.NoOpRetriever
 import eu.k5.tolerantreader.reader.ViolationType
 import eu.k5.tolerantreader.tolerant.IdRefType
 import eu.k5.tolerantreader.tolerant.XSI_NAMESPACE
@@ -157,7 +157,7 @@ class DomWriter : TolerantWriter {
     }
 
     override fun createElementRetriever(initContext: InitContext, entityType: QName, element: QName, targetName: QName): Retriever {
-        return DomElementRetriever(element.localPart)
+        return DomElementRetriever(element.localPart, targetName)
     }
 
     override fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner {
@@ -178,11 +178,11 @@ class DomWriter : TolerantWriter {
                 initContext.addFinding(Type.MISSING_TYPE_ADAPTER, target.toString())
                 NoOpAssigner
             } else {
-                DomTextContentAssigner(parameters.weight, element, toStringAdapter)
+                DomTextContentAssigner(parameters.weight, parameters.list, element, toStringAdapter)
             }
         } else {
 
-            return DomElementAssigner(element, parameters.weight, target)
+            return DomElementAssigner(element, parameters.weight, parameters.list, target)
         }
     }
 
@@ -213,6 +213,7 @@ class DomValue(val typeName: QName) {
     val attributes: MutableList<DomAttribute> = ArrayList()
     var element: DomElement? = null
 }
+
 
 class DomAttribute(
         val attributeName: QName,
@@ -280,7 +281,7 @@ class DomElement(
 
 class DomTextContent(
         weight: Int,
-        private val elementName: QName,
+        val elementName: QName,
         private val value: String
 ) : DomNode(weight) {
 
@@ -319,6 +320,7 @@ class DomRootAssigner(
 
 class DomTextContentAssigner(
         private val weight: Int,
+        private val list: Boolean,
         private var elementName: QName,
         private val toString: (Any) -> String
 ) : Assigner {
@@ -332,6 +334,11 @@ class DomTextContentAssigner(
                 }
 
                 val element = instance.element
+                if (!list){
+                    element?.elements?.removeIf{
+                        it is DomTextContent && it.elementName == elementName
+                    }
+                }
                 element?.elements?.add(DomTextContent(weight, elementName, toString(value)))
             }
         } else {
@@ -344,6 +351,7 @@ class DomTextContentAssigner(
 class DomElementAssigner(
         private val element: QName,
         private val weight: Int,
+        private val list: Boolean,
         private val target: QName
 ) : Assigner {
 
@@ -353,16 +361,29 @@ class DomElementAssigner(
 
                 val comments = context.retrieveComments()
 
-                val domElement = DomElement(element, target, value.typeName, weight)
+                val domElement: DomElement
+                if (value.element != null) {
+                    domElement = value.element!!
+                } else {
+
+                    domElement = DomElement(element, target, value.typeName, weight)
+                }
                 domElement.attributes.addAll(value.attributes)
 
                 comments.mapTo(instance.element!!.elements) {
                     DomComment(it, weight)
                 }
-                instance.element!!.elements.add(domElement)
-                value.element = domElement
+                if (value.element == null) {
+                    if (!list) {
+                        instance.element!!.elements.removeIf {
+                            it is DomElement && it.elementName == domElement.elementName
+                        }
+                    }
+                    instance.element!!.elements.add(domElement)
+                    value.element = domElement
+                }
                 return
-            } else if (value is DomElement){
+            } else if (value is DomElement) {
                 return
             }
         } else if (instance is DomElement) {
@@ -372,7 +393,7 @@ class DomElementAssigner(
     }
 }
 
-class DomElementRetriever(private val elementName: String) : Retriever {
+class DomElementRetriever(private val elementName: String, private val typeName: QName) : Retriever {
     override fun retrieve(context: ReaderContext, instance: Any): Any? {
         if (instance is DomValue) {
 
@@ -380,7 +401,12 @@ class DomElementRetriever(private val elementName: String) : Retriever {
 
             val element = elements.filter { it is DomElement }.map { it as DomElement }.firstOrNull { it.elementName.localPart == elementName }
 
-            return element
+            if (element == null) {
+                return null
+            }
+            val value = DomValue(element!!.elementName)
+            value.element = element
+            return value
         }
 
         TODO("Different types")

@@ -1,0 +1,12 @@
+<FullPerson xmlns="http://k5.eu/tr/model">
+
+    <InfoRename attrib="InfoAttrib">
+        <firstname>FirstName</firstname>
+        <firstname>SecondFirstName</firstname>
+    </InfoRename>
+
+    <InfoRename attrib="InfoAttrib2">
+        <firstname>SecondFirstName</firstname>
+    </InfoRename>
+
+</FullPerson>

@@ -355,6 +355,27 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertEquals("PostString", obj.post)
     }
 
+    @Test
+    @DisplayName("Read model type. Multiple elements for scalar value")
+    fun readModelListIntoScalar() {
+        val obj = readModelType("complex-type-list-into-scalar")
+                as? FullPerson ?: fail<Nothing>("Invalid root type")
+
+        assertEquals("InfoAttrib", obj.info.attrib)
+        assertEquals("SecondFirstName", obj.info.firstname)
+    }
+
+    @Test
+    @DisplayName("Read model type. Multiple elements for scalar value")
+    fun readModelComplexTypeListIntoScalar() {
+        val obj = readModelType("complex-type-complex-type-list-into-scalar")
+                as? FullPerson ?: fail<Nothing>("Invalid root type")
+
+        assertEquals("InfoAttrib2", obj.info.attrib)
+        assertEquals("SecondFirstName", obj.info.firstname)
+    }
+
+
     override fun getReader(path: String): TolerantReader = reader.getReader(path)
 
 

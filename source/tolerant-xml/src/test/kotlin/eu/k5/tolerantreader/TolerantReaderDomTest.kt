@@ -136,6 +136,20 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testModel("transformer-integrate-into-existing")
     }
 
+
+
+    @Test
+    @DisplayName("Model. List Into Scalar")
+    fun readModelListIntoScalar() {
+        testModel("complex-type-list-into-scalar")
+    }
+
+    @Test
+    @DisplayName("Model. List Into Scalar")
+    fun readModelComplexTypeListIntoScalar() {
+        testModel("complex-type-complex-type-list-into-scalar")
+    }
+
     private fun testMinimal(testCase: String) {
         val obj = readMinimalType(testCase)
                 as? Document ?: Assertions.fail<Nothing>("Invalid root type")
