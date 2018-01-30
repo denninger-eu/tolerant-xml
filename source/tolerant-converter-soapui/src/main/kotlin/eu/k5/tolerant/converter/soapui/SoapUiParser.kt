@@ -17,11 +17,14 @@ class SoapUiParser() {
         mainListener.enterProject(env, project)
 
         val interfaceListener = mainListener.createWsdlInterfaceListener()
-        parseInterface(project, env, interfaceListener)
+        if (interfaceListener != null) {
+            parseInterface(project, env, interfaceListener)
+        }
 
         val testSuiteListener = mainListener.createWsdlTestSuiteListener()
-
-        parseSuites(project, env, testSuiteListener)
+        if (testSuiteListener != null) {
+            parseSuites(project, env, testSuiteListener)
+        }
 
     }
 
@@ -85,9 +88,9 @@ class SoapUiParser() {
 
         for (step in steps) {
 
-            if (step is WsdlTestRequestStep){
+            if (step is WsdlTestRequestStep) {
                 listener.request(env, step)
-            } else if (step is WsdlDelayTestStep){
+            } else if (step is WsdlDelayTestStep) {
                 listener.delay(env, step)
             }
 

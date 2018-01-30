@@ -7,15 +7,20 @@ import com.eviware.soapui.model.iface.Interface
 import com.eviware.soapui.model.iface.Operation
 
 interface SuInterfaceListener {
-    fun unsupportedInterface(env: Environment, interfaze: Interface)
+    fun unsupportedInterface(env: Environment, interfaze: Interface) {
 
-    fun enterInterface(env: Environment, interfaze: Interface)
+    }
 
-    fun exitInterface(env: Environment, interfaze: WsdlInterface)
+    fun enterInterface(env: Environment, wsdlInterface: WsdlInterface)
+    fun exitInterface(env: Environment, wsdlInterface: WsdlInterface)
 
-    fun unsupportedOperation(env: Environment, operation: Operation)
+    fun unsupportedOperation(env: Environment, operation: Operation) {
+
+    }
+
     fun enterOperation(env: Environment, operation1: WsdlOperation)
     fun exitOperation(env: Environment, operation: WsdlOperation)
+
     fun request(env: Environment, wsdlRequest: WsdlRequest)
 
 }

@@ -8,9 +8,9 @@ interface SuListener {
 
     fun exitProject()
 
-    fun createWsdlInterfaceListener(): SuInterfaceListener
+    fun createWsdlInterfaceListener(): SuInterfaceListener?
 
-    fun createWsdlTestSuiteListener(): SuWsdlTestSuiteListener
+    fun createWsdlTestSuiteListener(): SuWsdlTestSuiteListener?
 
 
 }

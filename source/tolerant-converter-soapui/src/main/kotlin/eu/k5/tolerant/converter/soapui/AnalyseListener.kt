@@ -23,18 +23,16 @@ class AnalyseListener : SuListener {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun createWsdlInterfaceListener(): SuInterfaceListener
-            = InterfaceAnalyser(description)
+    override fun createWsdlInterfaceListener(): SuInterfaceListener = InterfaceAnalyser(description)
 
-    override fun createWsdlTestSuiteListener(): SuWsdlTestSuiteListener
-            = TestSuiteAnalyser(description)
+    override fun createWsdlTestSuiteListener(): SuWsdlTestSuiteListener = TestSuiteAnalyser(description)
 
 
 }
 
 class TestSuiteAnalyser(private val description: SoapUiDescription) : SuWsdlTestSuiteListener {
     override fun createTestStepListener(): SuTestStepListener {
-        return StepAnalyser()
+        return StepAnalyser(currentCase!!)
     }
 
     private var suite: SoapUiTestSuite? = null
@@ -86,7 +84,7 @@ class InterfaceAnalyser(private val description: SoapUiDescription) : SuInterfac
 
     }
 
-    override fun exitInterface(env: Environment, interfaze: WsdlInterface) {
+    override fun exitInterface(env: Environment, wsdlInterface: WsdlInterface) {
 
     }
 
@@ -105,11 +103,14 @@ class InterfaceAnalyser(private val description: SoapUiDescription) : SuInterfac
 
 }
 
-class StepAnalyser : SuTestStepListener {
+class StepAnalyser(private val testCase: SoapUiTestCase) : SuTestStepListener {
+
     override fun delay(env: Environment, step: WsdlDelayTestStep) {
+        testCase?.steps?.add(SoapUiTestStep(step.name, "delay"))
     }
 
     override fun request(env: Environment, step: WsdlTestRequestStep) {
+        testCase?.steps?.add(SoapUiTestStep(step.name, "request"))
     }
 
 }

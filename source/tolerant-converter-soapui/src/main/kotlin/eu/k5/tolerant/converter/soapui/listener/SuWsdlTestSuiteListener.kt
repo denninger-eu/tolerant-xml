@@ -10,6 +10,7 @@ interface SuWsdlTestSuiteListener {
     fun unsupportedTestSuite(env: Environment, suite: TestSuite)
     fun enterTestSuite(env: Environment, suite: WsdlTestSuite)
     fun exitTestSuite(env: Environment, suite: WsdlTestSuite)
+
     fun unsupportedTestCase(env: Environment, testCase: TestCase)
     fun enterTestCase(env: Environment, testCase: WsdlTestCase)
     fun exitTestCase(env: Environment, testCase: WsdlTestCase)

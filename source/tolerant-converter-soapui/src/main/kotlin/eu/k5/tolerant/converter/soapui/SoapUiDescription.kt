@@ -47,7 +47,8 @@ data class SoapUiTestCase(
 )
 
 data class SoapUiTestStep(
-        var step: String? = null
+        var step: String? = null,
+        var type: String? = null
 )
 
 
