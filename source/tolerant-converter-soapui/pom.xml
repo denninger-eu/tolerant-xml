@@ -63,6 +63,11 @@
             <artifactId>tolerant-test-models</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
 
         <dependency>
             <groupId>com.smartbear.soapui</groupId>

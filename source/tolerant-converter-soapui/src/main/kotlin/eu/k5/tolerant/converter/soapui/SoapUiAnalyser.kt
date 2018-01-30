@@ -8,6 +8,7 @@ import java.io.InputStream
 
 class SoapUiAnalyser(inputStream: InputStream) {
 
+    /*
     val description = SoapUiDescription()
 
     constructor(bytes: ByteArray) : this(ByteArrayInputStream(bytes))
@@ -73,13 +74,13 @@ class SoapUiAnalyser(inputStream: InputStream) {
     }
 
     private fun analyseTestCase(testCase: WsdlTestCase): SoapUiTestCase {
-        val caze = SoapUiTestCase(name = testCase.name, supported = true)
 
         for (step in testCase.testStepList) {
 
         }
         return caze
     }
+    */
 
 
 }

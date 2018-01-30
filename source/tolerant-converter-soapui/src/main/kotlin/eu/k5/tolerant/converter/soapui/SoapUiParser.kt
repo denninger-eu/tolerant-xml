@@ -2,70 +2,96 @@ package eu.k5.tolerant.converter.soapui
 
 import com.eviware.soapui.impl.wsdl.*
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase
-import eu.k5.tolerantreader.xsDatetime
+import com.eviware.soapui.impl.wsdl.teststeps.WsdlDelayTestStep
+import com.eviware.soapui.impl.wsdl.teststeps.WsdlTestRequestStep
+import eu.k5.tolerant.converter.soapui.listener.*
 import java.io.InputStream
 
 class SoapUiParser() {
 
 
-    fun parse(inputStream: InputStream, visitor: SoapUiVisitor) {
+    fun parse(inputStream: InputStream, mainListener: SuListener) {
         val project = WsdlProject(inputStream, null)
 
-        val env = SoapUiVisitor.Environment()
-        visitor.enterProject(env, project)
+        val env = Environment()
+        mainListener.enterProject(env, project)
 
+        val interfaceListener = mainListener.createWsdlInterfaceListener()
+        parseInterface(project, env, interfaceListener)
+
+        val testSuiteListener = mainListener.createWsdlTestSuiteListener()
+
+        parseSuites(project, env, testSuiteListener)
+
+    }
+
+    private fun parseInterface(project: WsdlProject, env: Environment, listener: SuInterfaceListener) {
 
         for (interfaze in project.interfaceList) {
 
             if (interfaze !is WsdlInterface) {
-                visitor.unsupportedInterface(env, interfaze)
+                listener.unsupportedInterface(env, interfaze)
+                continue
             }
-
-            visitor.enterInterface(env, interfaze)
-
+            listener.enterInterface(env, interfaze)
 
             for (operation in interfaze.operationList) {
                 if (operation !is WsdlOperation) {
-                    visitor.unsupportedOperation(env, operation)
+                    listener.unsupportedOperation(env, operation)
+                    continue
                 }
-                visitor.enterOperation(env, operation)
+                listener.enterOperation(env, operation)
                 for (request in operation.requestList) {
 
-                    visitor.request(env, request as WsdlRequest)
+                    listener.request(env, request as WsdlRequest)
                 }
             }
-            visitor.exitInterface(env, interfaze)
+
+            listener.exitInterface(env, interfaze)
         }
 
     }
 
-    private fun parseSuites(env: SoapUiVisitor.Environment, visitor: SoapUiVisitor, project: WsdlProject) {
+    private fun parseSuites(project: WsdlProject, env: Environment, listener: SuWsdlTestSuiteListener) {
         for (suite in project.testSuiteList) {
             if (suite !is WsdlTestSuite) {
-                visitor.unsupportedTestSuite(env, suite)
+                listener.unsupportedTestSuite(env, suite)
                 continue
             }
-            visitor.enterTestSuite(env, suite)
+            listener.enterTestSuite(env, suite)
 
             for (testCase in suite.testCaseList) {
                 if (testCase !is WsdlTestCase) {
-                    visitor.unsupportedTestCase(env, testCase)
+                    listener.unsupportedTestCase(env, testCase)
                     continue
                 }
-                visitor.enterTestCase(env, testCase)
+                listener.enterTestCase(env, testCase)
 
-                for(step in testCase.testStepList){
+                val testStepListener = listener.createTestStepListener()
 
-                }
-                visitor.exitTestCase(env, testCase)
+                parseTestSteps(testCase, env, testStepListener)
+
+                listener.exitTestCase(env, testCase)
             }
 
-            visitor.exitTestSuite(env, suite)
+            listener.exitTestSuite(env, suite)
         }
     }
 
 
-    private fun parseTestSteps(){
+    private fun parseTestSteps(testCase: WsdlTestCase, env: Environment, listener: SuTestStepListener) {
+
+        val steps = testCase.testStepList
+
+        for (step in steps) {
+
+            if (step is WsdlTestRequestStep){
+                listener.request(env, step)
+            } else if (step is WsdlDelayTestStep){
+                listener.delay(env, step)
+            }
+
+        }
 
     }
 }
