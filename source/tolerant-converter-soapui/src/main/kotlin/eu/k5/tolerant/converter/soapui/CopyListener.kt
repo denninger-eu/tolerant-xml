@@ -3,10 +3,12 @@ package eu.k5.tolerant.converter.soapui
 import com.eviware.soapui.impl.WsdlInterfaceFactory
 import com.eviware.soapui.impl.wsdl.*
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase
+import com.eviware.soapui.impl.wsdl.teststeps.PropertyTransfersTestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlDelayTestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlTestRequestStep
-import com.eviware.soapui.model.testsuite.TestCase
-import com.eviware.soapui.model.testsuite.TestSuite
+import com.eviware.soapui.impl.wsdl.teststeps.registry.PropertyTransfersStepFactory
+import com.eviware.soapui.impl.wsdl.teststeps.registry.WsdlTestRequestStepFactory
+import com.eviware.soapui.model.iface.Operation
 import eu.k5.tolerant.converter.soapui.listener.*
 
 class CopyListener(private val wsdlSource: WsdlSource) : SuListener {
@@ -27,7 +29,7 @@ class CopyListener(private val wsdlSource: WsdlSource) : SuListener {
     }
 
     override fun createWsdlTestSuiteListener(): SuWsdlTestSuiteListener {
-
+        return CopyTestSuite(project!!)
     }
 
 }
@@ -102,11 +104,40 @@ class CopyTestSuite(private val project: WsdlProject) : SuWsdlTestSuiteListener 
 
 class CopyTestStep(private val testCase: WsdlTestCase) : SuTestStepListener {
 
+    override fun transfer(env: Environment, step: PropertyTransfersTestStep) {
+        PropertyTransfersStepFactory().
+    }
+
+
+    private fun getOperationByName(operationName: String): Operation {
+        testCase.testSuite.project.interfaceList
+                .filterIsInstance<WsdlInterface>()
+                .forEach {
+                    for (operation in it.allOperations) {
+                        if (operation.name == operationName) {
+                            return operation
+                        }
+                    }
+                }
+
+        // Create detect catchall interface/operation
+        TODO("add error handling")
+    }
 
     override fun request(env: Environment, step: WsdlTestRequestStep) {
+
+
+        val operation = getOperationByName(step.operationName) as WsdlOperation
+
+        val config = WsdlTestRequestStepFactory.createConfig(operation, step.name)
+
+        val newStep = testCase.addTestStep(config) as WsdlTestRequestStep
+        newStep.httpRequest.requestContent = step.httpRequest.requestContent
     }
 
     override fun delay(env: Environment, step: WsdlDelayTestStep) {
+        val newStep = testCase.addTestStep("delay", step.name) as WsdlDelayTestStep
+        newStep.delay = step.delay
     }
 
 }
