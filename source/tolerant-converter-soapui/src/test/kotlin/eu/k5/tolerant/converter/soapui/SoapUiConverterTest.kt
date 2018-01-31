@@ -12,6 +12,14 @@ class SoapUiConverterTest {
     fun test() {
         val bytes = Files.readAllBytes(Paths.get("src", "test", "resources", "ex", "ex-soapui-project.xml"))
 
+        val copy = CopyListener(StaticWsdlSource("src/test/resources/ex/ex.txt"))
+
+        val parser = SoapUiParser()
+
+        parser.parse(ByteArrayInputStream(bytes), copy)
+
+
+
         /*
         val filter = ConvertUiFilter()
 

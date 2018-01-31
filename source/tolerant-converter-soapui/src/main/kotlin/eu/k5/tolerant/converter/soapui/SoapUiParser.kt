@@ -48,6 +48,7 @@ class SoapUiParser() {
 
                     listener.request(env, request as WsdlRequest)
                 }
+                listener.exitOperation(env, operation)
             }
 
             listener.exitInterface(env, interfaze)

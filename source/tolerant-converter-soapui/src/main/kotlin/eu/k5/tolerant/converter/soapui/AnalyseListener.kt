@@ -73,31 +73,48 @@ class TestSuiteAnalyser(private val description: SoapUiDescription) : SuWsdlTest
 
 class InterfaceAnalyser(private val description: SoapUiDescription) : SuInterfaceListener {
 
-    private var interfaze: SoapUiInterface? = null
+    private var currentInterfaze: SoapUiInterface? = null
+    private var currentOperation: SoapUiOperation? = null
 
     override fun unsupportedInterface(env: Environment, interfaze: Interface) {
     }
 
     override fun enterInterface(env: Environment, wsdlInterface: WsdlInterface) {
 
-        interfaze = SoapUiInterface(name = wsdlInterface.name, supported = true)
+        currentInterfaze = SoapUiInterface(name = wsdlInterface.name, supported = true)
 
     }
 
     override fun exitInterface(env: Environment, wsdlInterface: WsdlInterface) {
-
+        if (currentInterfaze != null) {
+            description.interfaces?.add(currentInterfaze!!)
+            currentInterfaze = null
+        }
     }
 
     override fun unsupportedOperation(env: Environment, operation: Operation) {
     }
 
-    override fun enterOperation(operation: Environment, operation1: WsdlOperation) {
+    override fun enterOperation(env: Environment, operation: WsdlOperation) {
+        currentOperation = SoapUiOperation(operation.name, true)
+
     }
 
     override fun exitOperation(env: Environment, operation: WsdlOperation) {
+        if (currentOperation != null) {
+            currentInterfaze?.operation?.add(currentOperation!!)
+        }
     }
 
     override fun request(env: Environment, wsdlRequest: WsdlRequest) {
+
+        if (currentOperation != null) {
+            val request = SoapUiRequest(wsdlRequest.name, currentOperation!!.name)
+
+            currentInterfaze!!.requests.add(request)
+        }
+
+
     }
 
 
