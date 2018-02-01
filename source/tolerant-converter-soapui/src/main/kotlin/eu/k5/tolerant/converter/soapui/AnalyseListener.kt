@@ -2,7 +2,9 @@ package eu.k5.tolerant.converter.soapui
 
 import com.eviware.soapui.impl.wsdl.*
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase
+import com.eviware.soapui.impl.wsdl.teststeps.PropertyTransfersTestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlDelayTestStep
+import com.eviware.soapui.impl.wsdl.teststeps.WsdlGotoTestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlTestRequestStep
 import com.eviware.soapui.model.iface.Interface
 import com.eviware.soapui.model.iface.Operation
@@ -20,7 +22,6 @@ class AnalyseListener : SuListener {
     }
 
     override fun exitProject() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun createWsdlInterfaceListener(): SuInterfaceListener = InterfaceAnalyser(description)
@@ -55,7 +56,6 @@ class TestSuiteAnalyser(private val description: SoapUiDescription) : SuWsdlTest
     }
 
     override fun unsupportedTestCase(env: Environment, testCase: TestCase) {
-
         suite?.cases?.add(SoapUiTestCase(testCase.name, supported = false))
     }
 
@@ -114,13 +114,19 @@ class InterfaceAnalyser(private val description: SoapUiDescription) : SuInterfac
             currentInterfaze!!.requests.add(request)
         }
 
-
     }
 
 
 }
 
 class StepAnalyser(private val testCase: SoapUiTestCase) : SuTestStepListener {
+    override fun gotoStep(env: Environment, step: WsdlGotoTestStep) {
+        testCase?.steps?.add(SoapUiTestStep(step.name, "goto"))
+    }
+
+    override fun transfer(env: Environment, step: PropertyTransfersTestStep) {
+        testCase?.steps?.add(SoapUiTestStep(step.name, "transfer"))
+    }
 
     override fun delay(env: Environment, step: WsdlDelayTestStep) {
         testCase?.steps?.add(SoapUiTestStep(step.name, "delay"))

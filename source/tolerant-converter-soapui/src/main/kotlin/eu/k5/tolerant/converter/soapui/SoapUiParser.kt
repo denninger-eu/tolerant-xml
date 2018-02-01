@@ -2,7 +2,9 @@ package eu.k5.tolerant.converter.soapui
 
 import com.eviware.soapui.impl.wsdl.*
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase
+import com.eviware.soapui.impl.wsdl.teststeps.PropertyTransfersTestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlDelayTestStep
+import com.eviware.soapui.impl.wsdl.teststeps.WsdlGotoTestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlTestRequestStep
 import eu.k5.tolerant.converter.soapui.listener.*
 import java.io.InputStream
@@ -93,6 +95,12 @@ class SoapUiParser() {
                 listener.request(env, step)
             } else if (step is WsdlDelayTestStep) {
                 listener.delay(env, step)
+            } else if (step is PropertyTransfersTestStep){
+                listener.transfer(env, step)
+            } else if (step is WsdlGotoTestStep){
+                listener.gotoStep(env, step)
+            } else {
+                listener.unsupported(env, step)
             }
 
         }

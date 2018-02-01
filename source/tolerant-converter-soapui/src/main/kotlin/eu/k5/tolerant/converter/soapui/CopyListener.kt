@@ -3,22 +3,38 @@ package eu.k5.tolerant.converter.soapui
 import com.eviware.soapui.impl.WsdlInterfaceFactory
 import com.eviware.soapui.impl.wsdl.*
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase
-import com.eviware.soapui.impl.wsdl.teststeps.PropertyTransfersTestStep
-import com.eviware.soapui.impl.wsdl.teststeps.WsdlDelayTestStep
-import com.eviware.soapui.impl.wsdl.teststeps.WsdlTestRequestStep
+import com.eviware.soapui.impl.wsdl.teststeps.*
 import com.eviware.soapui.impl.wsdl.teststeps.registry.PropertyTransfersStepFactory
 import com.eviware.soapui.impl.wsdl.teststeps.registry.WsdlTestRequestStepFactory
 import com.eviware.soapui.model.iface.Operation
+import com.eviware.soapui.model.testsuite.TestProperty
+import com.gargoylesoftware.htmlunit.javascript.host.ActiveXObject.addProperty
 import eu.k5.tolerant.converter.soapui.listener.*
+import java.io.File
+import java.nio.file.Files
 
 class CopyListener(private val wsdlSource: WsdlSource) : SuListener {
     private var project: WsdlProject? = null
+
+    fun getBytes(): ByteArray {
+
+        val file = File.createTempFile("soapui", "temp-project.xml")
+
+        project!!.saveAs(file.absolutePath)
+
+        return Files.readAllBytes(file.toPath())
+    }
 
 
     override fun enterProject(env: Environment, wsdlProject: WsdlProject) {
         project = WsdlProject()
         project?.name = wsdlProject.name
         project?.description = wsdlProject.description
+
+        for (property in wsdlProject.propertyList) {
+            project!!.addProperty(property.name).value = property.value
+        }
+
     }
 
     override fun exitProject() {
@@ -104,8 +120,25 @@ class CopyTestSuite(private val project: WsdlProject) : SuWsdlTestSuiteListener 
 
 class CopyTestStep(private val testCase: WsdlTestCase) : SuTestStepListener {
 
+    private fun copyBasicProperties(source: WsdlTestStep, target: WsdlTestStep) {
+        target.config.disabled = source.isDisabled
+        target.description = source.description
+        for (property in source.propertyList) {
+
+
+            target.setPropertyValue(property.name, property.value)
+            //target.propertyList.add(property)
+        }
+    }
+
+    override fun gotoStep(env: Environment, step: WsdlGotoTestStep) {
+
+    }
+
     override fun transfer(env: Environment, step: PropertyTransfersTestStep) {
-        PropertyTransfersStepFactory().
+        val newStep = testCase.addTestStep("transfer", step.name) as PropertyTransfersTestStep
+
+        copyBasicProperties(step, newStep)
     }
 
 
@@ -120,12 +153,10 @@ class CopyTestStep(private val testCase: WsdlTestCase) : SuTestStepListener {
                     }
                 }
 
-        // Create detect catchall interface/operation
-        TODO("add error handling")
+        TODO("add dummy operation if necessary")
     }
 
     override fun request(env: Environment, step: WsdlTestRequestStep) {
-
 
         val operation = getOperationByName(step.operationName) as WsdlOperation
 
@@ -133,11 +164,15 @@ class CopyTestStep(private val testCase: WsdlTestCase) : SuTestStepListener {
 
         val newStep = testCase.addTestStep(config) as WsdlTestRequestStep
         newStep.httpRequest.requestContent = step.httpRequest.requestContent
+
+        copyBasicProperties(step, newStep)
     }
 
     override fun delay(env: Environment, step: WsdlDelayTestStep) {
         val newStep = testCase.addTestStep("delay", step.name) as WsdlDelayTestStep
         newStep.delay = step.delay
+
+        copyBasicProperties(step, newStep)
     }
 
 }

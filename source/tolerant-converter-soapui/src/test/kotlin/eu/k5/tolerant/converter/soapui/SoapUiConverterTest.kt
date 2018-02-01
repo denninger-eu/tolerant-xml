@@ -18,7 +18,7 @@ class SoapUiConverterTest {
 
         parser.parse(ByteArrayInputStream(bytes), copy)
 
-
+        Files.write(Paths.get("convert-test.project.xml"), copy.getBytes())
 
         /*
         val filter = ConvertUiFilter()
@@ -36,6 +36,5 @@ class SoapUiConverterTest {
 
     class StaticWsdlSource(private val static: String) : WsdlSource {
         override fun getWsdlLocation(name: String): String = static
-
     }
 }
