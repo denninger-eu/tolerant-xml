@@ -20,4 +20,5 @@ interface SuTestStepListener {
 
     }
 
+    fun createAssertionListener(env: Environment, step: TestStep): SuAssertionListener?
 }

@@ -4,11 +4,13 @@ import com.eviware.soapui.impl.WsdlInterfaceFactory
 import com.eviware.soapui.impl.wsdl.*
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase
 import com.eviware.soapui.impl.wsdl.teststeps.*
-import com.eviware.soapui.impl.wsdl.teststeps.registry.PropertyTransfersStepFactory
+import com.eviware.soapui.impl.wsdl.teststeps.assertions.basic.XPathContainsAssertion
+import com.eviware.soapui.impl.wsdl.teststeps.assertions.soap.SoapFaultAssertion
+import com.eviware.soapui.impl.wsdl.teststeps.assertions.soap.SoapResponseAssertion
 import com.eviware.soapui.impl.wsdl.teststeps.registry.WsdlTestRequestStepFactory
 import com.eviware.soapui.model.iface.Operation
-import com.eviware.soapui.model.testsuite.TestProperty
-import com.gargoylesoftware.htmlunit.javascript.host.ActiveXObject.addProperty
+import com.eviware.soapui.model.testsuite.TestAssertion
+import com.eviware.soapui.model.testsuite.TestStep
 import eu.k5.tolerant.converter.soapui.listener.*
 import java.io.File
 import java.nio.file.Files
@@ -120,13 +122,27 @@ class CopyTestSuite(private val project: WsdlProject) : SuWsdlTestSuiteListener 
 
 class CopyTestStep(private val testCase: WsdlTestCase) : SuTestStepListener {
 
+    private var lastRequestStep: WsdlTestRequestStep? = null
+
+    override fun createAssertionListener(env: Environment, step: TestStep): SuAssertionListener? {
+        if (lastRequestStep == null) {
+            return null
+        }
+        if (lastRequestStep!!.name == step.name) {
+            return CopyAssertions(lastRequestStep!!)
+        } else {
+            throw IllegalStateException("LastRequestStep does not match step for assertionListener")
+        }
+
+    }
+
     private fun copyBasicProperties(source: WsdlTestStep, target: WsdlTestStep) {
         target.config.disabled = source.isDisabled
         target.description = source.description
         for (property in source.propertyList) {
 
 
-            target.setPropertyValue(property.name, property.value)
+            //     target.setPropertyValue(property.name, property.value)
             //target.propertyList.add(property)
         }
     }
@@ -166,6 +182,8 @@ class CopyTestStep(private val testCase: WsdlTestCase) : SuTestStepListener {
         newStep.httpRequest.requestContent = step.httpRequest.requestContent
 
         copyBasicProperties(step, newStep)
+
+        lastRequestStep = newStep
     }
 
     override fun delay(env: Environment, step: WsdlDelayTestStep) {
@@ -173,6 +191,37 @@ class CopyTestStep(private val testCase: WsdlTestCase) : SuTestStepListener {
         newStep.delay = step.delay
 
         copyBasicProperties(step, newStep)
+    }
+
+}
+
+class CopyAssertions(private val step: WsdlTestRequestStep) : SuAssertionListener {
+    override fun soapFault(env: Environment, assertion: SoapFaultAssertion) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun soapResponse(env: Environment, assertion: SoapResponseAssertion) {
+        val type = assertion.config.type
+
+        val newAssertion = step.addAssertion(type) as SoapResponseAssertion
+
+        newAssertion.config.name = assertion.config.name
+        newAssertion.config.disabled = assertion.isDisabled
+    }
+
+    override fun xpathContains(env: Environment, assertion: XPathContainsAssertion) {
+
+        val type = assertion.config.type
+
+        val newAssertion = step.addAssertion(type) as XPathContainsAssertion
+
+        newAssertion.path = assertion.path
+        newAssertion.expectedContent = assertion.expectedContent
+        newAssertion.config.disabled = assertion.isDisabled
+    }
+
+    override fun unsupported(env: Environment, assertion: TestAssertion) {
+        println(assertion.javaClass.name)
     }
 
 }

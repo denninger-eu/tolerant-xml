@@ -9,6 +9,7 @@ import com.eviware.soapui.impl.wsdl.teststeps.WsdlTestRequestStep
 import com.eviware.soapui.model.iface.Interface
 import com.eviware.soapui.model.iface.Operation
 import com.eviware.soapui.model.testsuite.TestCase
+import com.eviware.soapui.model.testsuite.TestStep
 import com.eviware.soapui.model.testsuite.TestSuite
 import eu.k5.tolerant.converter.soapui.listener.*
 
@@ -120,6 +121,10 @@ class InterfaceAnalyser(private val description: SoapUiDescription) : SuInterfac
 }
 
 class StepAnalyser(private val testCase: SoapUiTestCase) : SuTestStepListener {
+    override fun createAssertionListener(env: Environment, step: TestStep): SuAssertionListener? {
+        return null
+    }
+
     override fun gotoStep(env: Environment, step: WsdlGotoTestStep) {
         testCase?.steps?.add(SoapUiTestStep(step.name, "goto"))
     }

@@ -6,6 +6,9 @@ import com.eviware.soapui.impl.wsdl.teststeps.PropertyTransfersTestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlDelayTestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlGotoTestStep
 import com.eviware.soapui.impl.wsdl.teststeps.WsdlTestRequestStep
+import com.eviware.soapui.impl.wsdl.teststeps.assertions.basic.XPathContainsAssertion
+import com.eviware.soapui.impl.wsdl.teststeps.assertions.soap.SoapFaultAssertion
+import com.eviware.soapui.impl.wsdl.teststeps.assertions.soap.SoapResponseAssertion
 import eu.k5.tolerant.converter.soapui.listener.*
 import java.io.InputStream
 
@@ -93,11 +96,13 @@ class SoapUiParser() {
 
             if (step is WsdlTestRequestStep) {
                 listener.request(env, step)
+                parseAssertions(listener, env, step)
+
             } else if (step is WsdlDelayTestStep) {
                 listener.delay(env, step)
-            } else if (step is PropertyTransfersTestStep){
+            } else if (step is PropertyTransfersTestStep) {
                 listener.transfer(env, step)
-            } else if (step is WsdlGotoTestStep){
+            } else if (step is WsdlGotoTestStep) {
                 listener.gotoStep(env, step)
             } else {
                 listener.unsupported(env, step)
@@ -106,4 +111,29 @@ class SoapUiParser() {
         }
 
     }
+
+    private fun parseAssertions(listener: SuTestStepListener, env: Environment, step: WsdlTestRequestStep) {
+        val assertionListener = listener.createAssertionListener(env, step)
+        if (assertionListener != null) {
+
+            for (assertion in step.assertionList) {
+
+                if (assertion is XPathContainsAssertion) {
+                    assertionListener.xpathContains(env, assertion)
+                } else if (assertion is SoapFaultAssertion) {
+
+                    assertionListener.soapFault(env, assertion)
+                } else if (assertion is SoapResponseAssertion) {
+                    assertionListener.soapResponse(env, assertion)
+                } else {
+
+                    assertionListener.unsupported(env, assertion)
+                }
+
+            }
+
+        }
+
+    }
+
 }
