@@ -14,7 +14,7 @@ class ReflectionUtils {
             val nameBuilder = StringBuilder()
 
             nameparts
-                    .filter { it.length > 0 }
+                    .filter { it.isNotEmpty() }
                     .forEach { nameBuilder.append(it[0].toUpperCase()).append(it.substring(1)) }
 
             return nameBuilder.toString()

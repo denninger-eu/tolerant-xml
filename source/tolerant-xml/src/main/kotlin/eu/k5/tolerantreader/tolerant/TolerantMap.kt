@@ -2,7 +2,9 @@ package eu.k5.tolerantreader.tolerant
 
 import com.google.common.collect.ImmutableMap
 import java.lang.IllegalStateException
+import java.util.*
 import javax.xml.namespace.QName
+import kotlin.collections.ArrayList
 
 /*
 enum class TolerantMapStrategy {
@@ -59,6 +61,23 @@ class TolerantMap<T>(
         } else {
             internal[localPart.toLowerCase()]
         }
+    }
+
+    fun getAllByLocalName(localName: String): List<T> {
+        if (!prefixLength.containsKey(localName)) {
+            return Arrays.asList(internal[localName]!!)
+        }
+
+        val length = prefixLength[localName]!! + localName.length
+
+        val all = ArrayList<T>()
+        for (entry in internal.entries) {
+            if (entry.key.length == length && entry.key.endsWith(localName)) {
+                all.add(entry.value)
+            }
+        }
+        return all
+
     }
 
     fun get(name: QName): T? = get(name.namespaceURI, name.localPart)

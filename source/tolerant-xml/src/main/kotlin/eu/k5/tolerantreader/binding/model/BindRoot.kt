@@ -5,6 +5,14 @@ import eu.k5.tolerantreader.RootElement
 import javax.xml.stream.XMLStreamReader
 
 class BindRoot : RootElement {
+
+     var instance: Any? = null
+
+
+    override fun seal(context: BindContext): Any?
+            = instance
+
+
     override fun addCharacters(elementText: String) {
     }
 
@@ -13,12 +21,5 @@ class BindRoot : RootElement {
 
     override fun popFrameElement(context: BindContext) {
     }
-
-
-    var instance: Any? = null
-
-    override fun seal(context: BindContext): Any?
-            = instance
-
 
 }

@@ -3,6 +3,8 @@ package eu.k5.tolerantreader
 import eu.k5.tolerantreader.binding.dom.DomWriter
 import eu.k5.tolerantreader.reader.TolerantReader
 import eu.k5.tr.model.FullPerson
+import eu.k5.tr.model.inheritance.sub.NsComplexInheritance
+import eu.k5.tr.model.inheritance.sub.NsSubType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -137,7 +139,6 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
     }
 
 
-
     @Test
     @DisplayName("Model. List Into Scalar")
     fun readModelListIntoScalar() {
@@ -148,6 +149,12 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
     @DisplayName("Model. List Into Scalar")
     fun readModelComplexTypeListIntoScalar() {
         testModel("complex-type-complex-type-list-into-scalar")
+    }
+
+    @Test
+    @DisplayName("Read model type. With transformer for inherited type")
+    fun readModelTransformerInheritedTransformer() {
+        testModel("transformer-inherited-transformer")
     }
 
     private fun testMinimal(testCase: String) {

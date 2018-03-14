@@ -17,6 +17,12 @@
     </xs:complexType>
 
 
+    <xs:complexType name="NsBaseType">
+        <xs:sequence>
+            <xs:element name="ElementSub" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
     <xs:element name="NsComplexInheritance">
         <xs:complexType>
             <xs:sequence>

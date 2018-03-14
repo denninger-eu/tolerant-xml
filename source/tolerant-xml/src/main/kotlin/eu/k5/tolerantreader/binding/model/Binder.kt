@@ -1,12 +1,8 @@
 package eu.k5.tolerantreader.binding.model
 
-import com.sun.org.apache.bcel.internal.generic.RET
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.binding.*
-import eu.k5.tolerantreader.reader.BindContext
-import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
 import eu.k5.tolerantreader.reader.ViolationType
-import eu.k5.tolerantreader.tolerant.TolerantSchema
 import eu.k5.tolerantreader.tolerant.IdRefType
 import org.slf4j.LoggerFactory
 import java.lang.reflect.InvocationTargetException
@@ -28,9 +24,8 @@ class NoOpCloser : Closer {
 class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
 
 
-    override fun createCloser(initContext: InitContext): Closer {
-        return NoOpCloser()
-    }
+    override fun createCloser(initContext: InitContext): Closer
+            = NoOpCloser()
 
 
     private val utils = ReflectionUtils()
@@ -135,7 +130,6 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     override fun createElementRetriever(initContext: InitContext, entityType: QName, element: QName, targetName: QName): Retriever {
         val baseClass = resolveJavaClass(entityType)
 //        val propertyClass = resolveJavaClass(targetName)
-
 
 
         return createGetterRetriever(initContext, baseClass, element.localPart)

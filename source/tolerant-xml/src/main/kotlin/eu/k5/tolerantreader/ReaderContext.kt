@@ -8,7 +8,7 @@ import javax.xml.namespace.QName
 interface ReaderContext {
 
 
-    fun getComplexType(subtypeName: QName): TolerantType
+    fun getComplexType(qName: QName): TolerantType
 
     fun getEntityById(id: String): Any?
 

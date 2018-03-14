@@ -1,15 +1,26 @@
 <xs:schema xmlns="http://k5.eu/tr/model/inheritance"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:tr="http://k5.eu/tr/model/inheritance"
+           xmlns:tns="http://k5.eu/tr/model/inheritance/basis"
            targetNamespace="http://k5.eu/tr/model/inheritance/basis">
 
 
-    <xs:complexType name="NsBaseType">
+    <xs:complexType name="NsAbstractBaseType" abstract="true">
         <xs:sequence>
-            <xs:element name="baseElement" type="xs:string"/>
-
+            <xs:element name="abstractElement" type="xs:string"/>
         </xs:sequence>
-        <xs:attribute name="baseAttribute" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="NsBaseType" abstract="true">
+        <xs:complexContent>
+            <xs:extension base="tns:NsAbstractBaseType">
+                <xs:sequence>
+                    <xs:element name="baseElement" type="xs:string"/>
+
+                </xs:sequence>
+                <xs:attribute name="baseAttribute" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
     </xs:complexType>
 
 </xs:schema>

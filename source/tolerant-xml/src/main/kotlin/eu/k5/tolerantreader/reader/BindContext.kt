@@ -4,6 +4,7 @@ import eu.k5.tolerantreader.ReaderContext
 import eu.k5.tolerantreader.RootElement
 import eu.k5.tolerantreader.binding.Assigner
 import eu.k5.tolerantreader.tolerant.*
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 import javax.xml.namespace.QName
@@ -102,12 +103,21 @@ class BindContext(
     }
 
     override fun addViolation(type: ViolationType, description: String) {
-        logger.warn("{}: {}", type, description)
-        violations.add(Violation(type, description, ""))
+        val location = getCurrentPath()
+        logger.warn("{} {}: {}", type, location, description)
+        violations.add(Violation(type, description, location))
+    }
+
+    private fun getCurrentPath(): String {
+        val builder = StringBuilder()
+        for (name in names.descendingIterator()) {
+            builder.append("/").append(name.name.localPart)
+        }
+        return builder.toString()
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(BindContext::class.java)
+        val logger: Logger = LoggerFactory.getLogger(BindContext::class.java)
     }
 
     private val entities: MutableMap<String, Any> = HashMap()

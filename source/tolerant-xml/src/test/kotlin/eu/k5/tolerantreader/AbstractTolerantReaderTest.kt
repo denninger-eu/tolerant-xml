@@ -105,8 +105,8 @@ class ReaderCache(private val writer: TolerantWriter) {
         transformers.transformers.add(Transformer(type = QName("", "FullPerson"), element = "name", target = "Info/firstname"))
         transformers.transformers.add(Transformer(type = QName("", "NsComplexInheritance"), element = "typeRename", target = "type"))
 
-
-        transformers.transformers.add(Transformer(type = QName("", "NsBaseType"), element = "baseElementRename", target = "baseElement"))
+        transformers.transformers.add(Transformer(type = QName("", "NsAbstractBaseType"), element = "abstractElementRename", target = "abstractElement"))
+        transformers.transformers.add(Transformer(type = QName("http://k5.eu/tr/model/inheritance/basis", "NsBaseType"), element = "baseElementRename", target = "baseElement"))
 
         return transformers
     }

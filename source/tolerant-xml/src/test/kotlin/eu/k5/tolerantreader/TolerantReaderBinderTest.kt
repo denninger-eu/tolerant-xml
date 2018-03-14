@@ -319,6 +319,24 @@ class TolerantReaderBinderTest : AbstractTolerantReaderTest() {
         assertEquals("baseValue", inherited.baseElement)
     }
 
+
+    @Test
+    @DisplayName("Read model type. With transformer for inherited type")
+    fun readModelTransformerInheritanceAbstract() {
+        val obj = readModelType("transformer-inheritance-abstract")
+                as? NsComplexInheritance ?: fail<Nothing>("Invalid root type")
+
+        val inherited = obj.type as NsSubType
+        assertEquals("baseAttrValue", inherited.baseAttribute)
+        assertEquals("subAttrValue", inherited.subAttribute)
+        assertEquals("subValue", inherited.subElement)
+        assertEquals("baseValue", inherited.baseElement)
+
+        assertEquals("abstractValue", inherited.abstractElement)
+    }
+
+
+
     @Test
     @DisplayName("Read model type. With transformer for inherited type")
     fun readModelTransformerInheritedTransformer() {

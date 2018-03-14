@@ -1,0 +1,11 @@
+<NsComplexInheritance>
+    <typeRename baseAttribute="baseAttrValue" subAttribute="subAttrValue"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:trc="http://k5.eu/tr/complex"
+          xsi:type="trc:NsSubType">
+        <subElement>subValue</subElement>
+        <baseElement>baseValue</baseElement>
+        <abstractElementRename>abstractValue</abstractElementRename>
+    </typeRename>
+
+</NsComplexInheritance>
