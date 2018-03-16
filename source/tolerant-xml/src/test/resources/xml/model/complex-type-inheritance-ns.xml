@@ -4,8 +4,15 @@
           xmlns:trc="http://k5.eu/tr/complex"
           xsi:type="trc:NsSubType">
         <baseElement>baseValue</baseElement>
+        <complexElement>
+            <a>a1</a>
+            <b>b1</b>
+        </complexElement>
+        <complexElement>
+            <a>a2</a>
+            <b>b2</b>
+        </complexElement>
         <subElement>subValue</subElement>
-
     </type>
 
 </NsComplexInheritance>

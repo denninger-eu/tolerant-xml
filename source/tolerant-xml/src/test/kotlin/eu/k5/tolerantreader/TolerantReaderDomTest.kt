@@ -157,6 +157,12 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
         testModel("transformer-inherited-transformer")
     }
 
+
+
+
+
+
+
     private fun testMinimal(testCase: String) {
         val obj = readMinimalType(testCase)
                 as? Document ?: Assertions.fail<Nothing>("Invalid root type")

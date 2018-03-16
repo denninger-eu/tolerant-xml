@@ -334,8 +334,8 @@ class DomTextContentAssigner(
                 }
 
                 val element = instance.element
-                if (!list){
-                    element?.elements?.removeIf{
+                if (!list) {
+                    element?.elements?.removeIf {
                         it is DomTextContent && it.elementName == elementName
                     }
                 }
@@ -385,9 +385,12 @@ class DomElementAssigner(
                 return
             } else if (value is DomElement) {
                 return
+            } else {
+                TODO("unsupported")
+
             }
         } else if (instance is DomElement) {
-
+            TODO("unsupported")
         }
         TODO("Different types")
     }
