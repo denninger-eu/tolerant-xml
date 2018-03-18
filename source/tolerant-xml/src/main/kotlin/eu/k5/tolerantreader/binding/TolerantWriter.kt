@@ -22,7 +22,7 @@ interface TolerantWriter {
 
     fun createRootElementSupplier(): () -> RootElement
 
-    fun createElementRetriever(initContext: InitContext, entityType: QName, element: QName, targetName: QName): Retriever
+    fun createElementRetriever(initContext: InitContext, entityType: QName, element: QName, targetName: QName, parameters: ElementParameters): Retriever
 
 }
 

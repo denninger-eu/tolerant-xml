@@ -4,6 +4,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool
 import eu.k5.tolerantreader.*
 import eu.k5.tolerantreader.binding.*
 import eu.k5.tolerantreader.binding.model.NoOpAssigner
+import eu.k5.tolerantreader.binding.model.NoOpRetriever
 import eu.k5.tolerantreader.reader.ViolationType
 import eu.k5.tolerantreader.tolerant.IdRefType
 import eu.k5.tolerantreader.tolerant.XSI_NAMESPACE
@@ -144,8 +145,7 @@ class DomWriter : TolerantWriter {
     }
 
 
-    override fun rootAssigner(elementName: QName): Assigner
-            = DomRootAssigner(elementName)
+    override fun rootAssigner(elementName: QName): Assigner = DomRootAssigner(elementName)
 
 
     override fun createRootElementSupplier(): () -> RootElement {
@@ -156,8 +156,12 @@ class DomWriter : TolerantWriter {
         }
     }
 
-    override fun createElementRetriever(initContext: InitContext, entityType: QName, element: QName, targetName: QName): Retriever {
-        return DomElementRetriever(element.localPart, targetName)
+    override fun createElementRetriever(initContext: InitContext, entityType: QName, element: QName, targetName: QName, parameters: ElementParameters): Retriever {
+        if (parameters.list) {
+            return NoOpRetriever
+        } else {
+            return DomElementRetriever(element.localPart, targetName)
+        }
     }
 
     override fun createElementAssigner(initContext: InitContext, entityType: QName, element: QName, target: QName, parameters: ElementParameters): Assigner {
@@ -373,15 +377,15 @@ class DomElementAssigner(
                 comments.mapTo(instance.element!!.elements) {
                     DomComment(it, weight)
                 }
-                if (value.element == null) {
-                    if (!list) {
-                        instance.element!!.elements.removeIf {
-                            it is DomElement && it.elementName == domElement.elementName
-                        }
+                //if (value.element == null) {
+                if (!list) {
+                    instance.element!!.elements.removeIf {
+                        it is DomElement && it.elementName == domElement.elementName
                     }
-                    instance.element!!.elements.add(domElement)
-                    value.element = domElement
                 }
+                instance.element!!.elements.add(domElement)
+                value.element = domElement
+                //}
                 return
             } else if (value is DomElement) {
                 return

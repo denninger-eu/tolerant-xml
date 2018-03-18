@@ -24,8 +24,7 @@ class NoOpCloser : Closer {
 class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
 
 
-    override fun createCloser(initContext: InitContext): Closer
-            = NoOpCloser()
+    override fun createCloser(initContext: InitContext): Closer = NoOpCloser()
 
 
     private val utils = ReflectionUtils()
@@ -127,11 +126,12 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     }
 
 
-    override fun createElementRetriever(initContext: InitContext, entityType: QName, element: QName, targetName: QName): Retriever {
+    override fun createElementRetriever(initContext: InitContext, entityType: QName, element: QName, targetName: QName, parameters: ElementParameters): Retriever {
+        if (parameters.list) {
+            return NoOpRetriever
+        }
         val baseClass = resolveJavaClass(entityType)
 //        val propertyClass = resolveJavaClass(targetName)
-
-
         return createGetterRetriever(initContext, baseClass, element.localPart)
     }
 

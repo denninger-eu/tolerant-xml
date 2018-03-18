@@ -60,12 +60,12 @@ class TolerantComplexType(private val name: QName,
 
     override fun readValue(context: ReaderContext, element: TolerantElement, currentInstance: Any?, stream: XMLStreamReader): Any {
 
-        var newInstance: Any
         var retrieved: Any? = null
         if (currentInstance != null) {
             retrieved = element.retriever.retrieve(context, currentInstance)
         }
 
+        val newInstance: Any
         if (retrieved != null) {
             newInstance = retrieved
         } else {

@@ -196,7 +196,7 @@ class TolerantSchemaBuilder(
                 val qName = attribute.getQualifiedName()
                 val assigner = writer.createElementAssigner(initContext, qualifiedName, qName, simpleType.getTypeName(), parameters)
 
-                val retriever = writer.createElementRetriever(initContext, qualifiedName, qName, simpleType.getTypeName())
+                val retriever = writer.createElementRetriever(initContext, qualifiedName, qName, simpleType.getTypeName(), parameters)
 
                 typeBuilder.addElement(attribute.name!!, TolerantElement(qName, simpleType, assigner, retriever, true))
             } else {
@@ -220,7 +220,7 @@ class TolerantSchemaBuilder(
                 val qname = QName(qualifiedName.namespaceURI, element.name)
 
 
-                val retriever = writer.createElementRetriever(initContext, qualifiedName, qname, typeName)
+                val retriever = writer.createElementRetriever(initContext, qualifiedName, qname, typeName,parameters)
 
 
                 val tolerantElement = TolerantElement(qname, tolerantType, assigner, retriever, false)
