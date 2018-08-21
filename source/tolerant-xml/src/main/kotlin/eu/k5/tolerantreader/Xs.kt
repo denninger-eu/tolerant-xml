@@ -4,6 +4,8 @@ import eu.k5.tolerantreader.xs.XsSchema
 import javax.xml.bind.annotation.XmlTransient
 import javax.xml.namespace.QName
 
+const val WSDL_NAMESPACE = "http://schemas.xmlsoap.org/wsdl/"
+const val SOAP_NAMESPACE = "http://schemas.xmlsoap.org/wsdl/soap/"
 const val XSD_NAMESPACE = "http://www.w3.org/2001/XMLSchema"
 
 val xsString = QName(XSD_NAMESPACE, "string")

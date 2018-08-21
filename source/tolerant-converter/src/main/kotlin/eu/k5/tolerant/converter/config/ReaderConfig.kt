@@ -16,6 +16,9 @@ class ReaderConfig {
     @XmlElement(name = "xsd")
     var xsd: String? = null
 
+    @XmlElement(name = "xsdcontent")
+    var xsdContent: List<XsdContent>? = ArrayList()
+
     @XmlElement(name = "numbers")
     var numberParser: NumberParsers? = null
 
@@ -28,5 +31,10 @@ class ReaderConfig {
     @XmlTransient
     val allTransformers: MutableList<Transformer> = ArrayList()
 
+}
+
+class XsdContent {
+    var name: String? = null
+    var content: String? = null
 }
 

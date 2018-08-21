@@ -14,6 +14,8 @@
         <module>tolerant-xml</module>
         <module>tolerant-converter</module>
         <module>tolerant-converter-soapui</module>
+        <module>tolerant-soapui-plugin</module>
+
         <module>tolerant-web-client</module>
     </modules>
 

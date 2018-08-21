@@ -38,10 +38,19 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
     init {
         val writer: TolerantWriter = DomWriter()
 
+        val xsRegistry =
+                if (!configuration.reader.xsdContent!!.isEmpty()) {
+                    val xsdContent = HashMap<String, String>()
+                    for (content in configuration.reader.xsdContent.orEmpty()) {
+                        xsdContent.put(content.name!!, content.content!!)
+                    }
+                    Schema.parse(configuration.reader.xsd!!.trim(), xsdContent)
+                } else {
+                    Schema.parse(configuration.reader.xsd!!.trim())
+                }
 
-        val xsRegistry = Schema.parse(configuration.xsd!!.trim())
         xsRegistry.init()
-        val transformers = configuration.configs.getOrDefault(Transformers::class.java) { Transformers() } as Transformers
+        val transformers = configuration.configs.getOrDefault(Transformers::class.java, Transformers()) as Transformers
         val tolerantSchema = TolerantSchemaBuilder(InitContext(), xsRegistry, writer, transformers = transformers).build()
         reader = TolerantReader(tolerantSchema)
     }

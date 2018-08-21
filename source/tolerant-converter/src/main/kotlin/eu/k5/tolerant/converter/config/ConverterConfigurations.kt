@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.*
 class Configurations {
 
     @XmlElement(name = "transformers")
-    var transformers: List<Transformers>? = ArrayList()
+    var transformers: List<Transformers>? = ArrayList<Transformers>()
 
     @XmlElement(name = "reader")
     var readers: List<ReaderConfig>? = ArrayList()
@@ -103,13 +103,14 @@ class Configurations {
 class TolerantConverterConfiguration(
         val key: String,
         val name: String,
-        val xsd: String,
+        val reader: ReaderConfig,
+
         val configs: Map<Class<*>, Any> = HashMap()
 
 ) {
 
     constructor(converterConfig: ConverterConfig, readerConfig: ReaderConfig, writerConfig: WriterConfig, configs: Map<Class<*>, Any>)
-            : this(key = converterConfig.key!!, name = converterConfig.name!!, xsd = readerConfig.xsd!!, configs = HashMap(configs))
+            : this(key = converterConfig.key!!, name = converterConfig.name!!, reader = readerConfig, configs = HashMap(configs))
 }
 
 

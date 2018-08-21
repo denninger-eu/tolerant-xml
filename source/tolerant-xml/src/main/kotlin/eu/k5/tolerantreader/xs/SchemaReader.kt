@@ -1,12 +1,14 @@
 package eu.k5.tolerantreader.xs
 
 import com.google.common.base.Joiner
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.io.InputStream
+import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
@@ -18,7 +20,8 @@ import javax.xml.bind.JAXBContext
 import kotlin.collections.HashMap
 
 object Schema {
-    val context = JAXBContext.newInstance(XsSchema::class.java)
+    val context = JAXBContext.newInstance(XsSchema::class.java, WsdlDefinitions::class.java)
+
 
     fun parse(location: String): XsRegistry {
 
@@ -28,6 +31,10 @@ object Schema {
             return parse(location.substring("file:".length), PathStreamSource())
         }
         TODO("Support other protocols")
+    }
+
+    fun parse(location: String, contents: Map<String, String>): XsRegistry {
+        return parse(location, MapStreamSource(contents))
     }
 
     fun parse(location: String, source: StreamSource): XsRegistry {
@@ -67,6 +74,11 @@ object Schema {
                 obj.schemaLocation = stream.absolutPath
                 obj.complete()
                 return obj
+            } else if (obj is WsdlDefinitions) {
+                val schema = obj.types!!.schema!!
+                schema.schemaLocation = stream.absolutPath
+                schema.complete()
+                return schema
             } else {
                 throw RuntimeException("Invalid file content, expected xsSchema")
             }
@@ -194,6 +206,28 @@ class ClasspathStream(private val classloader: ClassLoader, absolutPath: String)
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(ClasspathStream::class.java)
     }
+}
+
+
+class MapStreamSource(private val content: Map<String, String>) : StreamSource {
+    override fun resolveAbsolute(location: String): Stream {
+        return StringStream(content[location], location)
+    }
+
+    override fun resolveRelative(parentLocation: String, location: String): Stream {
+        val res = resolveRelative(parentLocation, location, '/')
+        return StringStream(content[res], res)
+    }
+}
+
+class StringStream(private val content: String?, absolutPath: String) : Stream(absolutPath) {
+    override fun openStream(): InputStream? {
+        if (content == null) {
+            return null
+        }
+        return ByteArrayInputStream(content.toByteArray(StandardCharsets.UTF_8))
+    }
+
 }
 
 private fun resolveRelative(parent: String, location: String, delimiter: Char): String {
