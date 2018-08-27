@@ -36,6 +36,12 @@
                                             <exclude>org.slf4j:*</exclude>
                                         </excludes>
                                     </artifactSet>
+                                    <relocations>
+                                        <relocation>
+                                            <pattern>org.fife</pattern>
+                                            <shadedPattern>shaded.fife</shadedPattern>
+                                        </relocation>
+                                    </relocations>
                                 </configuration>
                             </execution>
                         </executions>
@@ -74,6 +80,13 @@
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.0.1</version>
             <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.fifesoft</groupId>
+            <artifactId>rsyntaxtextarea</artifactId>
+            <version>2.5.8</version>
         </dependency>
 
         <dependency>
