@@ -5,9 +5,12 @@ import com.eviware.soapui.plugins.ActionConfiguration
 import com.eviware.soapui.plugins.ToolbarPosition
 import com.eviware.soapui.support.action.support.AbstractSoapUIAction
 import eu.k5.tolerant.converter.TolerantConverterRequest
-import eu.k5.tolerant.converter.TolerantConverterResult
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
+import java.io.StringWriter
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 import javax.swing.SwingUtilities
+import javax.xml.bind.JAXB
+import javax.xml.bind.JAXBContext
 
 @ActionConfiguration(actionGroup = "WsdlRequestActions", //
         toolbarPosition = ToolbarPosition.NONE, //
@@ -15,30 +18,33 @@ import javax.swing.SwingUtilities
         description = "Repair Dialog")//
 class RepairAction : AbstractSoapUIAction<WsdlRequest>("Repair Dialog", "Repairs Request") {
 
-  /*  init {
-        SwingUtilities.invokeLater() {
-            val editor = RepairEditor("Example", "<test></test>") { TolerantConverterResult(it) }
-            editor.isVisible = true
-            editor.dispose()
-        }
-
-    }*/
 
     override fun perform(request: WsdlRequest, o: Any?) {
         try {
             val tolerantConverter = createTolerantConverter(request.operation.`interface`)
 
-            SwingUtilities.invokeLater() {
-                val editor = RepairEditor(request.name, request.requestContent) {
-                    val converterRequest = TolerantConverterRequest()
-                    converterRequest.content = it
-                    tolerantConverter.convert(converterRequest)
-                }
-                editor.ok = { request.requestContent = it }
-                editor.isVisible = true
+
+            val configuration = createConverterConfiguration(request.operation.`interface`)
+
+            val repairRequest = RepairRequest()
+            repairRequest.converter = configuration
+            repairRequest.converterKey = "standard"
+            repairRequest.name = request.name
+            repairRequest.request = request.requestContent
+
+            val file = Files.createTempFile("soap", "xml")
+
+            var writer = StringWriter()
+            JAXB.marshal(repairRequest, writer)
+            Files.write(file, writer.toString().toByteArray(StandardCharsets.UTF_8))
 
 
-            }
+            val builder = ProcessBuilder().command("java", "-jar", "C:/Users/k5/.soapuios/plugins/tolerant-soapui-plugin-0.1-SNAPSHOT.jar", file.toAbsolutePath().toString())
+            builder.redirectErrorStream()
+
+            val process = builder.start()
+
+            process.waitFor()
 
         } catch (e: Throwable) {
             e.printStackTrace()

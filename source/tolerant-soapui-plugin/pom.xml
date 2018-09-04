@@ -31,17 +31,31 @@
                                     <goal>shade</goal>
                                 </goals>
                                 <configuration>
-                                    <artifactSet>
+                                    <transformers>
+                                        <transformer
+                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>eu.k5.tolerant.soapui.plugin.RepairEditorKt</mainClass>
+                                        </transformer>
+                                    </transformers>
+
+
+                                    <!--artifactSet>
                                         <excludes>
                                             <exclude>org.slf4j:*</exclude>
                                         </excludes>
-                                    </artifactSet>
+                                    </-artifactSet -->
                                     <relocations>
                                         <relocation>
                                             <pattern>org.fife</pattern>
                                             <shadedPattern>shaded.fife</shadedPattern>
                                         </relocation>
+                                        <relocation>
+                                            <pattern>org.slf4j</pattern>
+                                            <shadedPattern>shaded.slf4j</shadedPattern>
+                                        </relocation>
+
                                     </relocations>
+
                                 </configuration>
                             </execution>
                         </executions>
@@ -106,7 +120,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>23.4-jre</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.xmlunit</groupId>
@@ -119,6 +132,11 @@
             <artifactId>log4j-core</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.1</version>
+        </dependency -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>

@@ -1,28 +1,68 @@
 package eu.k5.tolerant.soapui.plugin
 
+import eu.k5.tolerant.converter.TolerantConverter
+import eu.k5.tolerant.converter.TolerantConverterRequest
 import eu.k5.tolerant.converter.TolerantConverterResult
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants
-import org.fife.ui.rtextarea.RTextArea
 import org.fife.ui.rtextarea.RTextScrollPane
 import java.awt.BorderLayout
 import java.awt.Dialog
 import java.awt.FlowLayout
 import java.awt.Frame
 import java.awt.event.ActionEvent
+import java.io.File
 import javax.swing.*
-import javax.swing.JSplitPane
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
+import javax.xml.bind.JAXB
 
 
 fun main(args: Array<String>) {
 
-    // Start all Swing applications on the EDT.
-    SwingUtilities.invokeLater() {
-        val editor = RepairEditor("Example", "<test></test>") { TolerantConverterResult(it) }
-        editor.isVisible = true
+    val request = JAXB.unmarshal(File(args[0]), RepairRequest::class.java)
+
+    val repair = Repair(request)
+    repair.start()
+}
+
+class Repair(private val request: RepairRequest) {
+
+    private val converter: TolerantConverter
+
+    private var result: String? = null
+
+    private var ok: Boolean? = null
+
+    init {
+        converter = TolerantConverter(request.converter!!.queryConverterConfiguration(request.converterKey!!))
     }
+
+    private fun convert(request: String): TolerantConverterResult {
+        val converterRequest = TolerantConverterRequest()
+        converterRequest.content = request
+        return converter.convert(converterRequest)
+    }
+
+    fun start() {
+        SwingUtilities.invokeAndWait({
+            val editor = RepairEditor(request.name ?: "", request.request ?: "", this::convert)
+            editor.cancel = this::cancel
+            editor.ok = this::ok
+            editor.isVisible = true
+        })
+
+    }
+
+    fun cancel() {
+
+    }
+
+    fun ok(result: String) {
+        this.result = result
+        ok = true
+    }
+
 }
 
 class RepairEditor(
@@ -31,7 +71,7 @@ class RepairEditor(
         private val repair: (String) -> TolerantConverterResult
 ) : JDialog(null as Frame?, true) {
 
-    val request = RTextArea(40, 80);
+    val request = RSyntaxTextArea(40, 80);
     private val preview = RSyntaxTextArea(40, 80)
 
     private val okButton = JButton("Ok")
@@ -42,13 +82,9 @@ class RepairEditor(
 
 
     init {
-        println("changed" + Thread.currentThread().name)
         val cp = JPanel(BorderLayout());
-
-        println(request.javaClass.name)
-
-        //   request.syntaxEditingStyle = SyntaxConstants.SYNTAX_STYLE_XML;
-        //  request.isCodeFoldingEnabled = true;
+        request.syntaxEditingStyle = SyntaxConstants.SYNTAX_STYLE_XML;
+        request.isCodeFoldingEnabled = true;
         request.isEditable = true
         request.document.insertString(0, initial, null)
         request.document.addDocumentListener(DocumentChanged(this::documentChanged))
@@ -102,7 +138,7 @@ class RepairEditor(
                 okButton.isEnabled = true
             }
         } catch (t: Throwable) {
-            t.printStackTrace()
+            t.printStackTrace(System.err)
         }
     }
 

@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlElement
 class WriterConfig {
 
     @XmlAttribute(name = "key")
-    val key: String? = null
+    var key: String? = null
 
     @XmlElement(name = "fallbackPrefix")
     var fallbackPrefix: String = "ns"

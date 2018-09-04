@@ -104,7 +104,7 @@ class BindContext(
 
     override fun addViolation(type: ViolationType, description: String) {
         val location = getCurrentPath()
-        logger.warn("{} {}: {}", type, location, description)
+        logger.warn(type.name + " " + location + " " + description)
         violations.add(Violation(type, description, location))
     }
 
