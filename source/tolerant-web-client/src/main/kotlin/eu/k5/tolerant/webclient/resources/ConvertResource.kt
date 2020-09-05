@@ -1,7 +1,7 @@
 package  eu.k5.tolerant.webclient.resources
 
 import eu.k5.tolerant.converter.TolerantConverterRequest
-import eu.k5.tolerant.webclient.converter.Converter
+import eu.k5.tolerant.webclient.converter.ConverterRepository
 import javax.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.Response
@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response
 @Consumes("application/json", "application/x-www-form-urlencoded")
 @Produces("application/json", "application/x-www-form-urlencoded")
 class ConvertResource @Inject constructor(
-        private val converter: Converter
+        private val converter: ConverterRepository
 ) {
 
 
@@ -35,6 +35,7 @@ class ConvertResource @Inject constructor(
 
         return Response.ok(result).build()
     }
+
 
 }
 

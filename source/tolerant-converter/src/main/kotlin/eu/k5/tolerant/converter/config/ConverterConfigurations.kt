@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.*
 
 @XmlRootElement(name = "ConverterConfig")
 @XmlAccessorType(XmlAccessType.NONE)
-
 class Configurations {
 
     @XmlElement(name = "transformers")

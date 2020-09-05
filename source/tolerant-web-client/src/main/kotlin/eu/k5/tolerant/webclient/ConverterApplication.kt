@@ -2,7 +2,7 @@ package eu.k5.tolerant.webclient
 
 import com.google.inject.Guice
 import com.google.inject.Module
-import eu.k5.tolerant.webclient.converter.Converter
+import eu.k5.tolerant.webclient.converter.ConverterRepository
 import eu.k5.tolerant.webclient.resources.ConvertResource
 import io.dropwizard.Application
 import io.dropwizard.assets.AssetsBundle
@@ -17,6 +17,8 @@ import java.nio.file.Paths
 
 
 fun main(args: Array<String>) {
+
+
     ConverterApplication().run(*args)
 }
 
@@ -46,9 +48,9 @@ class ConverterApplication : Application<ConverterConfiguration>() {
     }
 
     override fun run(configuration: ConverterConfiguration, environment: Environment) {
-        val converter = Converter()
+        val converter = ConverterRepository()
         val injector = Guice.createInjector(Module {
-            it.bind(Converter::class.java).toInstance(converter)
+            it.bind(ConverterRepository::class.java).toInstance(converter)
         })
         environment.jersey().urlPattern = "/api/*"
         environment.jersey().register(MultiPartFeature::class.java)

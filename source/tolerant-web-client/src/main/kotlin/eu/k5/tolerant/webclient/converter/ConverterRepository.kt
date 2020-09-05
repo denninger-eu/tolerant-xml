@@ -6,18 +6,15 @@ import eu.k5.tolerant.converter.TolerantConverterResult
 import eu.k5.tolerant.converter.config.Configurations
 import eu.k5.tolerant.converter.config.TolerantConverterConfiguration
 import org.slf4j.LoggerFactory
-import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
-import java.util.stream.Collectors
-import javax.xml.bind.JAXBContext
 
 
-class Converter {
+class ConverterRepository {
 
     private val configs: MutableMap<String, TolerantConverterConfiguration> = HashMap()
 
-    private val converter = ConcurrentHashMap<String, TolerantConverter>()
+    private val converts = ConcurrentHashMap<String, TolerantConverter>()
 
     init {
 
@@ -28,8 +25,13 @@ class Converter {
         val load = Configurations.Companion.load(base.resolve("xs.config.xml"))
 
         for (config in load.getAll()) {
-            configs.put(config.key, config)
+            configs[config.key] = config
         }
+    }
+
+    fun load(configuration: Configurations) {
+
+
     }
 
     fun listAvailable(): List<TolerantConverterConfiguration> {
@@ -42,12 +44,12 @@ class Converter {
     }
 
     private fun getConverter(target: String): TolerantConverter {
-        return converter.computeIfAbsent(target) {
-            TolerantConverter(configs.get(target)!!)
+        return converts.computeIfAbsent(target) {
+            TolerantConverter(configs[target]!!)
         }
     }
 
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(Converter::class.java)
+        private val LOGGER = LoggerFactory.getLogger(ConverterRepository::class.java)
     }
 }
