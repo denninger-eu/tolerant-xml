@@ -18,7 +18,7 @@ class WriterConfig {
     var fallbackPrefix: String = "ns"
 
     @XmlElement(name = "explicitPrefix")
-    val explicitPrefix: List<Explicit>? = null
+    var explicitPrefix: List<Explicit>? = null
 
     @XmlElement(name = "patternPrefix")
     val patternPrefix: List<Pattern>? = null
@@ -39,20 +39,30 @@ class WriterConfig {
 
 
 @XmlAccessorType(XmlAccessType.NONE)
-class Explicit {
+class Explicit(
+        namespace: String?,
+        prefix: String?
+) {
+
+    constructor() : this(null, null)
 
     @XmlAttribute(name = "namespace")
-    var namespace: String? = null
+    var namespace: String? = namespace
 
     @XmlAttribute(name = "prefix")
-    var prefix: String? = null
+    var prefix: String? = prefix
 }
 
 @XmlAccessorType(XmlAccessType.NONE)
-class Pattern {
+class Pattern(
+        use: String?,
+        extract: String?
+) {
+    constructor() : this(null, null)
+
     @XmlAttribute(name = "use")
-    var use: String? = null
+    var use: String? = use
 
     @XmlAttribute(name = "extract")
-    var extract: String? = null
+    var extract: String? = extract
 }

@@ -3,10 +3,7 @@ package eu.k5.tolerantxml.client.repair
 import eu.k5.soapui.fx.NewTabEvent
 import eu.k5.soapui.fx.SoapUiModule
 import eu.k5.tolerant.converter.TolerantConverter
-import eu.k5.tolerant.converter.config.ReaderConfig
-import eu.k5.tolerant.converter.config.TolerantConverterConfiguration
-import eu.k5.tolerant.converter.config.WriterConfig
-import eu.k5.tolerant.converter.config.XsdContent
+import eu.k5.tolerant.converter.config.*
 import javafx.scene.control.Tab
 import tornadofx.Component
 import tornadofx.find
@@ -29,8 +26,7 @@ class RepairModule : Component(), SoapUiModule {
         println(event.xsds)
 
 
-
-        val scope = RepairScope(     createTolerantConverter(event))
+        val scope = RepairScope(createTolerantConverter(event))
 
         val view = find<RepairView>(scope)
 
@@ -69,6 +65,16 @@ class RepairModule : Component(), SoapUiModule {
     private fun createWriterConfiguration(event: CreateTolerantConverter): WriterConfig {
         val writerConfig = WriterConfig()
         writerConfig.key = event.name
+
+        writerConfig.explicitPrefix = explicitPrefix()
         return writerConfig
+    }
+
+    private fun explicitPrefix(): List<Explicit> {
+        val soap = Explicit("http://schemas.xmlsoap.org/wsdl/soap/", "soap")
+        val env = Explicit("http://schemas.xmlsoap.org/soap/envelope/", "soapenv")
+        val xsi = Explicit("http://www.w3.org/2001/XMLSchema-instance", "xsi")
+
+        return listOf(soap, env, xsi)
     }
 }

@@ -22,16 +22,6 @@ class RepairView(
             }
         }
 
-/*
-        textarea {
-            bind(model.input)
-
-        }
-        textarea {
-
-            bind(model.repaired)
-        }
-*/
     }
 
 
