@@ -47,7 +47,10 @@ object Schema {
         all.put(stream.absolutPath, init)
         readRecursive(source, init, all)
 
-        return XsRegistry(init, all)
+        println("All " + all)
+        val xsRegistry = XsRegistry(init, all)
+        xsRegistry.writeDebugOut()
+        return xsRegistry
     }
 
     private fun readRecursive(source: StreamSource, current: XsSchema, resolved: MutableMap<String, XsSchema>) {

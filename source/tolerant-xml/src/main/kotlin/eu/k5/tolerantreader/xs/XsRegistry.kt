@@ -46,9 +46,9 @@ class XsRegistry(val initSchema: XsSchema, private val allSchemas: Map<String, X
         return first
     }
 
-    fun getComplexTypeByLocalName(localName:String) : XsComplexType{
-        for((qName, type) in complexTypes){
-            if (qName.localPart == localName){
+    fun getComplexTypeByLocalName(localName: String): XsComplexType {
+        for ((qName, type) in complexTypes) {
+            if (qName.localPart == localName) {
                 return type;
             }
         }
@@ -63,18 +63,18 @@ class XsRegistry(val initSchema: XsSchema, private val allSchemas: Map<String, X
         return complexTypes[name]
 
 
-    /*    for (xsSchema in allSchemas.values) {
+        /*    for (xsSchema in allSchemas.values) {
 
-            xsSchema.complexTypes[name]
-            for (xsComplexType in xsSchema.complexTypes) {
-                if (xsComplexType.getQualifiedName() == name) {
-                    return xsComplexType
+                xsSchema.complexTypes[name]
+                for (xsComplexType in xsSchema.complexTypes) {
+                    if (xsComplexType.getQualifiedName() == name) {
+                        return xsComplexType
+                    }
                 }
             }
-        }
 
-        throw IllegalStateException("Unknown complextype with localName: " + localName)
-*/
+            throw IllegalStateException("Unknown complextype with localName: " + localName)
+    */
     }
 
     fun getElement(s: String): XsElement {
@@ -94,5 +94,14 @@ class XsRegistry(val initSchema: XsSchema, private val allSchemas: Map<String, X
         return elements.values
     }
 
+    fun writeDebugOut() {
+        println("ComplexTypes")
+        println(complexTypes)
+        println("SimpleTypes")
+        println(simpleTypes)
+        println("Elements")
+        println(elements)
+
+    }
 
 }
