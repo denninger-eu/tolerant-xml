@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.io.InputStream
+import java.lang.IllegalArgumentException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -69,6 +70,9 @@ object Schema {
 
     private fun read(stream: Stream): XsSchema {
         stream.openStream().use {
+            if (it == null) {
+                throw IllegalArgumentException("Stream for path " + stream.absolutPath + " is null")
+            }
             val obj = context.createUnmarshaller().unmarshal(it)
             if (obj is XsSchema) {
                 obj.schemaLocation = stream.absolutPath
