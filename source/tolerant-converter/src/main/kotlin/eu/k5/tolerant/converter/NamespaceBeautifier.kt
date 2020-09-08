@@ -49,12 +49,33 @@ class NamespaceBeautifier(
 
         for (index in 0 until element.attributes.length) {
             val attribute = element.attributes.item(index)
+
+            val content = if (attribute.localName != "type") {
+                attribute.textContent
+            } else if (!attribute.textContent.contains(':')) {
+                attribute.textContent
+            } else {
+                val valuePrefix = attribute.textContent.substring(0, attribute.textContent.indexOf(':'))
+                val valueNamespaceUri = attribute.lookupNamespaceURI(valuePrefix)
+                if (valueNamespaceUri != null) {
+                    if (newElement.lookupNamespaceURI(valueNamespaceUri) == null) {
+                        newElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + getNamespacePrefix(valueNamespaceUri), valueNamespaceUri)
+
+                    }
+                    getNamespacePrefix(valueNamespaceUri) + ":" + attribute.textContent.substring(attribute.textContent.indexOf(':') + 1)
+
+                } else {
+                    attribute.textContent
+                }
+            }
+
             if (attribute.namespaceURI.isNullOrEmpty()) {
-                newElement.setAttribute(attribute.localName, attribute.textContent)
+                newElement.setAttribute(attribute.localName, content)
             } else {
                 if (attribute.namespaceURI != "http://www.w3.org/2000/xmlns/") {
+
                     val prefix = getNamespacePrefix(attribute.namespaceURI)
-                    newElement.setAttributeNS(attribute.namespaceURI, prefix + ":" + attribute.localName, attribute.textContent)
+                    newElement.setAttributeNS(attribute.namespaceURI, prefix + ":" + attribute.localName, content)
                 }
             }
         }

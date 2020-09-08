@@ -42,24 +42,28 @@ class NamespaceBeautifierTest {
         assertSimilar("""<empty attribute="value"/>""", result)
     }
 
+
     @Test
     fun explicitPrefix_usesPrefix() {
-        val explicit = Explicit("http://exp", "exp")
-        val result = beautify("""<ns:env xmlns:ns="http://exp" />""", explicitStrategy(explicit))
+        val result = beautify("""<ns:env xmlns:ns="http://exp" />""", explicitStrategy())
         assertSimilar("""<exp:env xmlns:exp="http://exp"/>""", result)
     }
 
     @Test
     fun explicitAttributeNamespace_usesPrefix() {
-        val explicit = Explicit("http://exp", "exp")
-        val result = beautify("""<ns:env xmlns:ns="http://exp" ns:attribute="value" />""", explicitStrategy(explicit))
+        val result = beautify("""<ns:env xmlns:ns="http://exp" ns:attribute="value" />""", explicitStrategy())
         assertSimilar("""<exp:env xmlns:exp="http://exp" exp:attribute="value"/>""", result)
     }
 
     @Test
+    fun explicitAttributeValueWithNamespace_usesPrefix() {
+        val result = beautify("<empty type=\"ns:value\" xmlns:ns=\"http://exp\" />", explicitStrategy())
+        assertSimilar("""<empty xmlns:exp="http://exp" type="exp:value"/>""", result)
+    }
+
+    @Test
     fun explicit_nestedElements_usesPrefix() {
-        val explicit = Explicit("http://exp", "exp")
-        val result = beautify("""<ns:env xmlns:ns="http://exp" ><ns:nested /></ns:env>""", explicitStrategy(explicit))
+        val result = beautify("""<ns:env xmlns:ns="http://exp" ><ns:nested /></ns:env>""", explicitStrategy())
         assertSimilar("""<exp:env xmlns:exp="http://exp">
 <exp:nested/>
 </exp:env>""", result)
@@ -104,7 +108,7 @@ class NamespaceBeautifierTest {
         return resultWriter.toString().replace("\r\n", "\n")
     }
 
-    private fun explicitStrategy(explicit: Explicit): NamespaceStrategy {
+    private fun explicitStrategy(): NamespaceStrategy {
         val config = NamespaceStrategyConfiguration()
         config.explicit[explicit.namespace!!] = explicit.prefix!!
         return ConfigurableNamespaceStrategy(config)
@@ -120,6 +124,7 @@ class NamespaceBeautifierTest {
     companion object {
         private val dbf = DocumentBuilderFactory.newInstance()!!
         private val transformerFactory = TransformerFactory.newInstance()!!
+        private val explicit = Explicit("http://exp", "exp")
 
         init {
             dbf.isNamespaceAware = true
