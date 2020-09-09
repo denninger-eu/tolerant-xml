@@ -16,9 +16,21 @@ class NamespaceBeautifier(
 
     private fun getNamespacePrefix(namespace: String): String {
         return prefixes.computeIfAbsent(namespace) {
-            namespaceStrategy.createNamespacePrefix(namespace)
+            ensureUnique(namespaceStrategy.createNamespacePrefix(namespace))
         }
     }
+
+    private fun ensureUnique(prefix: String): String {
+        if (!prefixes.containsValue(prefix)) {
+            return prefix
+        }
+        var candidate = 0
+        while (prefixes.containsValue(prefix + candidate)) {
+            candidate++
+        }
+        return prefix + candidate
+    }
+
 
     fun beautify(input: Document): Document {
         val documentElement = document.documentElement

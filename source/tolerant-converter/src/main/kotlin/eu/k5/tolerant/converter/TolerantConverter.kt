@@ -35,7 +35,7 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
     private val reader: TolerantReader
     private val readerConfig: TolerantReaderConfiguration = TolerantReaderConfiguration(configuration.configs)
     private val documentBuilderFactory = DocumentBuilderFactory.newInstance()
-    private val namespaceBeautifier = NamespaceBeautifier(configuration.configs[NamespaceStrategy::class.java] as NamespaceStrategy)
+    private val namespaceStrategy = configuration.configs[NamespaceStrategy::class.java] as NamespaceStrategy
 
     init {
         val writer: TolerantWriter = DomWriter()
@@ -115,7 +115,7 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
         val doc = dBuilder.parse(ByteArrayInputStream(asString.toByteArray(StandardCharsets.UTF_8)))
 
-        val docbeautified = namespaceBeautifier.beautify(doc)
+        val docbeautified = NamespaceBeautifier(namespaceStrategy).beautify(doc)
         return toString(docbeautified.documentElement)
     }
 

@@ -83,7 +83,7 @@ class RepairModule : Component(), SoapUiModule {
     }
 
     private fun patterns(): List<Pattern> {
-        val pattern = Pattern("http://.*/[a-zA-Z]+/V[0-9]+", "http://.*/(:<prefix>[a-zA-Z]+)/V[0-9]+")
+        val pattern = Pattern("http://.*/[a-zA-Z]+/V[0-9]+", "http://.*/(?<prefix>[a-zA-Z]+)/V[0-9]+")
         return listOf(pattern)
     }
 }
