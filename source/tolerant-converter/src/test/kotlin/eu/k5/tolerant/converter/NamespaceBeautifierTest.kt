@@ -77,6 +77,27 @@ class NamespaceBeautifierTest {
     }
 
 
+    @Test
+    fun oneSection_allNamespaceAtRoot() {
+        val result = beautify("""<ns><ns:one xmlns:ns="http://exp" /><ns:two xmlns:ns="http://exp" /></ns>""", explicitStrategy())
+        assertSimilar("""<ns xmlns:exp="http://exp">
+<exp:one/>
+<exp:two/>
+</ns>""", result)
+    }
+
+    @Test
+    fun twoSection_allNamespaceAtRoot() {
+        val strategy = explicitStrategy()
+
+        var sections = listOf("ns.one", "ns.two")
+        val result = beautify("""<ns><ns:one xmlns:ns="http://exp" /><ns:two xmlns:ns="http://exp" /></ns>""", strategy, sections)
+        assertSimilar("""<ns>
+<exp:one xmlns:exp="http://exp"/>
+<exp:two xmlns:exp="http://exp"/>
+</ns>""", result)
+    }
+
     private fun assertSimilar(expected: String, actual: String) {
         if (sanitized(expected) != sanitized(actual)) {
             println(sanitized(actual))
@@ -90,10 +111,11 @@ class NamespaceBeautifierTest {
         return sanitized
     }
 
-    private fun beautify(xml: String, strategy: NamespaceStrategy = DefaultNamespaceStrategy): String {
+    private fun beautify(xml: String, strategy: NamespaceStrategy = DefaultNamespaceStrategy, sections: List<String> = ArrayList<String>()): String {
+
         val documentBuilder = dbf.newDocumentBuilder()
         val document = documentBuilder.parse(xml.byteInputStream(StandardCharsets.UTF_8))
-        val beautifier = NamespaceBeautifier(strategy)
+        val beautifier = NamespaceBeautifier(strategy, sections)
         return toString(beautifier.beautify(document))
     }
 

@@ -53,6 +53,7 @@ class NamespaceStrategyConfiguration(val fallback: String = "ns") {
 
     val pattern: MutableList<Conditional> = ArrayList()
 
+    val sections: MutableList<String> = ArrayList()
 
     fun addPattern(use: String, extract: String) {
         pattern.add(Conditional(use, extract))

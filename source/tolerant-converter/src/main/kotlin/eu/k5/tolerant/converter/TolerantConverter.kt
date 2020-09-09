@@ -115,7 +115,7 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
         val doc = dBuilder.parse(ByteArrayInputStream(asString.toByteArray(StandardCharsets.UTF_8)))
 
-        val docbeautified = NamespaceBeautifier(namespaceStrategy).beautify(doc)
+        val docbeautified = NamespaceBeautifier(namespaceStrategy, listOf()).beautify(doc)
         return toString(docbeautified.documentElement)
     }
 
