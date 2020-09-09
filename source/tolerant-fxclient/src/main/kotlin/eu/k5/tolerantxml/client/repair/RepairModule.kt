@@ -28,9 +28,7 @@ class RepairModule : Component(), SoapUiModule {
 
         println(event.xsds)
 
-
         val scope = RepairScope(createTolerantConverter(event))
-
         val view = find<RepairView>(scope)
 
         val tab = Tab("Repair " + event.name)
@@ -44,7 +42,7 @@ class RepairModule : Component(), SoapUiModule {
         val writerConfig = createWriterConfiguration(event)
         val readerConfig = createReaderConfig(event)
 
-        val config = TolerantConverterConfiguration(key = "id", name = "test", reader = readerConfig)
+        val config = TolerantConverterConfiguration(key = "id", name = "test", reader = readerConfig, writer = writerConfig)
 
         config.configs[NamespaceStrategy::class.java] = writerConfig.createNamespaceStrategy()
         return TolerantConverter(config)
@@ -78,9 +76,11 @@ class RepairModule : Component(), SoapUiModule {
 
     private fun explicitPrefix(): List<Explicit> {
         val soap = Explicit("http://schemas.xmlsoap.org/wsdl/soap/", "soap")
-        val env = Explicit("http://schemas.xmlsoap.org/soap/envelope/", "env")
+        val env = Explicit("http://schemas.xmlsoap.org/soap/envelope/", "soap")
+        val wsse = Explicit("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "wsse")
+        val wsu = Explicit("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd", "wsu")
         val xsi = Explicit("http://www.w3.org/2001/XMLSchema-instance", "xsi")
-        return listOf(soap, env, xsi)
+        return listOf(soap, wsse, wsu, env, xsi)
     }
 
     private fun patterns(): List<Pattern> {

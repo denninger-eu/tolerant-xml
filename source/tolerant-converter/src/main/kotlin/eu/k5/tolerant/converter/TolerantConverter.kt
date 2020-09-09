@@ -1,6 +1,7 @@
 package eu.k5.tolerant.converter
 
 import eu.k5.tolerant.converter.config.TolerantConverterConfiguration
+import eu.k5.tolerant.converter.config.WriterConfig
 import eu.k5.tolerantreader.InitContext
 import eu.k5.tolerantreader.reader.TolerantReader
 import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
@@ -33,6 +34,7 @@ import javax.xml.xpath.XPathFactory
 class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
     private val reader: TolerantReader
+    private val writerConfig: WriterConfig = configuration.writer
     private val readerConfig: TolerantReaderConfiguration = TolerantReaderConfiguration(configuration.configs)
     private val documentBuilderFactory = DocumentBuilderFactory.newInstance()
     private val namespaceStrategy = configuration.configs[NamespaceStrategy::class.java] as NamespaceStrategy
@@ -63,6 +65,7 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
 //            val extracted = extract(request)
 
+            
             val result = reader.read(createStream(request.content!!), readerConfig)
 
             val document = result.instance
@@ -115,7 +118,7 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
         val doc = dBuilder.parse(ByteArrayInputStream(asString.toByteArray(StandardCharsets.UTF_8)))
 
-        val docbeautified = NamespaceBeautifier(namespaceStrategy, listOf()).beautify(doc)
+        val docbeautified = NamespaceBeautifier(namespaceStrategy, writerConfig.sections ?: listOf()).beautify(doc)
         return toString(docbeautified.documentElement)
     }
 

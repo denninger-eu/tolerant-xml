@@ -103,13 +103,13 @@ class TolerantConverterConfiguration(
         val key: String,
         val name: String,
         val reader: ReaderConfig,
-
+        val writer: WriterConfig,
         val configs: MutableMap<Class<*>, Any> = HashMap()
 
 ) {
 
     constructor(converterConfig: ConverterConfig, readerConfig: ReaderConfig, writerConfig: WriterConfig, configs: Map<Class<*>, Any>)
-            : this(key = converterConfig.key!!, name = converterConfig.name!!, reader = readerConfig, configs = HashMap(configs))
+            : this(key = converterConfig.key!!, name = converterConfig.name!!, reader = readerConfig, writer = writerConfig, configs = HashMap(configs))
 }
 
 
