@@ -4,6 +4,7 @@ import eu.k5.tolerant.converter.TolerantConverter
 import eu.k5.tolerant.converter.config.TolerantConverterConfiguration
 import eu.k5.tolerant.converter.TolerantConverterRequest
 import eu.k5.tolerant.converter.config.ReaderConfig
+import eu.k5.tolerant.converter.config.WriterConfig
 import eu.k5.tolerant.converter.config.XsdContent
 import org.junit.jupiter.api.Test
 import java.io.BufferedReader
@@ -17,7 +18,7 @@ class TolerantConvertertTest {
     fun withPath() {
         val reader = ReaderConfig()
         reader.xsd = "classpath:xs/import.xsd"
-        val config = TolerantConverterConfiguration(key = "id", name = "test", reader = reader)
+        val config = TolerantConverterConfiguration(key = "id", name = "test", reader = reader, writer = WriterConfig())
 
         val tolerantConverter = TolerantConverter(config)
 
@@ -36,7 +37,7 @@ class TolerantConvertertTest {
         val files = ArrayList<String>()
         files.add("xs/stock.wsdl")
 
-        val config = TolerantConverterConfiguration(key = "id", name = "test", reader = readerConfig(files))
+        val config = TolerantConverterConfiguration(key = "id", name = "test", reader = readerConfig(files), writer = WriterConfig())
         val tolerantConverter = TolerantConverter(config)
         val request = TolerantConverterRequest()
         request.content = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:stoc=\"http://example.com/stockquote.xsd\">\n" +
@@ -71,8 +72,7 @@ class TolerantConvertertTest {
         files.add("xs/strict/strict-minimal.xsd")
 
 
-
-        val config = TolerantConverterConfiguration(key = "id", name = "test", reader = readerConfig(files))
+        val config = TolerantConverterConfiguration(key = "id", name = "test", reader = readerConfig(files), writer = WriterConfig())
         val tolerantConverter = TolerantConverter(config)
 
         val request = TolerantConverterRequest()

@@ -14,7 +14,8 @@ object AnalysePrefixes {
     data class Prefixes(
             var missing: Set<String>,
             val declared: Set<String>,
-            val used: Set<String>
+            val used: Set<String>,
+            val document: Document
     )
 
     fun ana(xml: String): Prefixes {
@@ -23,17 +24,17 @@ object AnalysePrefixes {
         val documentBuilder = documentBuilderFactory.newDocumentBuilder()
         val document = documentBuilder.parse(InputSource(StringReader(xml)))
 
-        return ana(document.documentElement)
+        return ana(document)
     }
 
-    fun ana(element: Element): Prefixes {
+    fun ana(document: Document): Prefixes {
         val context = AnalyseContext()
-        analyse(context, element)
+        analyse(context, document.documentElement)
 
         val missing = context.getMissing()
 
         return Prefixes(missing = missing, declared = Collections.unmodifiableSet(context.getAllDeclared()),
-                used = Collections.unmodifiableSet(context.getAllUsed()))
+                used = Collections.unmodifiableSet(context.getAllUsed()), document = document)
     }
 
     private fun analyseElement(context: AnalyseContext, element: Element) {
@@ -120,12 +121,10 @@ object AnalysePrefixes {
             }
         }
 
-        fun getAllUsed(): Set<String>
-                = allUsed
+        fun getAllUsed(): Set<String> = allUsed
 
 
-        fun getAllDeclared(): Set<String>
-                = allDeclared
+        fun getAllDeclared(): Set<String> = allDeclared
 
         fun addUsed(prefix: String) {
             allUsed.add(prefix)

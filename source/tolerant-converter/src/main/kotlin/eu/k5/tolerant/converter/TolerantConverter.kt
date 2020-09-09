@@ -65,9 +65,10 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
 //            val extracted = extract(request)
 
+            val content = EnsurePrefixesPreprocessor().ensurePrefixes(request.content!!)
 
 
-            val result = reader.read(createStream(request.content!!), readerConfig)
+            val result = reader.read(createStream(content), readerConfig)
 
             val document = result.instance
             if (document is Document) {
