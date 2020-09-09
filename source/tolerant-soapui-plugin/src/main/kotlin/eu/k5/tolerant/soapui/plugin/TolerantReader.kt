@@ -9,7 +9,7 @@ fun createTolerantConverter(iface: WsdlInterface): TolerantConverter {
     val writerConfig = createWriterConfiguration()
     val readerConfig = createReaderConfig(iface)
 
-    val config = TolerantConverterConfiguration(key = "id", name = "test", reader = readerConfig)
+    val config = TolerantConverterConfiguration(key = "id", name = "test", reader = readerConfig, writer = writerConfig)
     return TolerantConverter(config)
 }
 

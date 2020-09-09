@@ -65,7 +65,8 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
 //            val extracted = extract(request)
 
-            
+
+
             val result = reader.read(createStream(request.content!!), readerConfig)
 
             val document = result.instance
