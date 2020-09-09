@@ -70,6 +70,7 @@ class NamespaceBeautifier(
             }
 
             if (attribute.namespaceURI.isNullOrEmpty()) {
+                println(attribute.localName)
                 newElement.setAttribute(attribute.localName, content)
             } else {
                 if (attribute.namespaceURI != "http://www.w3.org/2000/xmlns/") {

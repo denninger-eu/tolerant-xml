@@ -107,17 +107,16 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
     private fun beautify(document: Document): String {
 
-        val doc = namespaceBeautifier.beautify(document)
+        val asString = toString(document.documentElement)
 
 
+        documentBuilderFactory.isNamespaceAware = true
         val dBuilder = documentBuilderFactory.newDocumentBuilder()
 
-/*
         val doc = dBuilder.parse(ByteArrayInputStream(asString.toByteArray(StandardCharsets.UTF_8)))
 
-        val beautifier = NamespaceBeautifier(strategy)
-*/
-        return toString(doc.documentElement)
+        val docbeautified = namespaceBeautifier.beautify(doc)
+        return toString(docbeautified.documentElement)
     }
 
     private fun toString(document: Element): String {
