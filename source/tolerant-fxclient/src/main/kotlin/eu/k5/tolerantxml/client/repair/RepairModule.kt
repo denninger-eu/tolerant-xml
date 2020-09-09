@@ -65,16 +65,20 @@ class RepairModule : Component(), SoapUiModule {
     private fun createWriterConfiguration(event: CreateTolerantConverter): WriterConfig {
         val writerConfig = WriterConfig()
         writerConfig.key = event.name
-
         writerConfig.explicitPrefix = explicitPrefix()
-        return writerConfig
+        writerConfig.patternPrefix =
+                return writerConfig
     }
 
     private fun explicitPrefix(): List<Explicit> {
         val soap = Explicit("http://schemas.xmlsoap.org/wsdl/soap/", "soap")
         val env = Explicit("http://schemas.xmlsoap.org/soap/envelope/", "soapenv")
         val xsi = Explicit("http://www.w3.org/2001/XMLSchema-instance", "xsi")
-
         return listOf(soap, env, xsi)
+    }
+
+    private fun patterns(): List<Pattern> {
+        val pattern = Pattern("http://.*/[a-zA-Z]+/V[0-9]+", "http://.*/(:<prefix>[a-zA-Z]+)/V[0-9]+")
+        return listOf(pattern)
     }
 }

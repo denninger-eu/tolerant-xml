@@ -6,6 +6,7 @@ import eu.k5.tolerantreader.reader.TolerantReader
 import eu.k5.tolerantreader.reader.TolerantReaderConfiguration
 import eu.k5.tolerantreader.binding.TolerantWriter
 import eu.k5.tolerantreader.binding.dom.DomWriter
+import eu.k5.tolerantreader.binding.dom.NamespaceStrategy
 import eu.k5.tolerantreader.tolerant.TolerantSchemaBuilder
 import eu.k5.tolerantreader.transformer.Transformers
 import eu.k5.tolerantreader.xs.Schema
@@ -34,6 +35,7 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
     private val reader: TolerantReader
     private val readerConfig: TolerantReaderConfiguration = TolerantReaderConfiguration(configuration.configs)
     private val documentBuilderFactory = DocumentBuilderFactory.newInstance()
+    private val namespaceBeautifier = NamespaceBeautifier(configuration.configs[NamespaceStrategy::class.java] as NamespaceStrategy)
 
     init {
         val writer: TolerantWriter = DomWriter()
@@ -105,12 +107,16 @@ class TolerantConverter(configuration: TolerantConverterConfiguration) {
 
     private fun beautify(document: Document): String {
 
-        val asString = toString(document.documentElement)
+        val doc = namespaceBeautifier.beautify(document)
 
 
         val dBuilder = documentBuilderFactory.newDocumentBuilder()
 
+/*
         val doc = dBuilder.parse(ByteArrayInputStream(asString.toByteArray(StandardCharsets.UTF_8)))
+
+        val beautifier = NamespaceBeautifier(strategy)
+*/
         return toString(doc.documentElement)
     }
 
