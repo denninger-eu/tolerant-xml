@@ -104,7 +104,7 @@ class TolerantConverterConfiguration(
         val name: String,
         val reader: ReaderConfig,
 
-        val configs: Map<Class<*>, Any> = HashMap()
+        val configs: MutableMap<Class<*>, Any> = HashMap()
 
 ) {
 

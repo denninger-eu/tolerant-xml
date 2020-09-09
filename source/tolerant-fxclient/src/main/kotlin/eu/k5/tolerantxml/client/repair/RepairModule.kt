@@ -2,8 +2,11 @@ package eu.k5.tolerantxml.client.repair
 
 import eu.k5.soapui.fx.NewTabEvent
 import eu.k5.soapui.fx.SoapUiModule
+import eu.k5.tolerant.converter.NamespaceBeautifier
 import eu.k5.tolerant.converter.TolerantConverter
 import eu.k5.tolerant.converter.config.*
+import eu.k5.tolerantreader.binding.dom.ConfigurableNamespaceStrategy
+import eu.k5.tolerantreader.binding.dom.NamespaceStrategy
 import javafx.scene.control.Tab
 import tornadofx.Component
 import tornadofx.find
@@ -42,6 +45,8 @@ class RepairModule : Component(), SoapUiModule {
         val readerConfig = createReaderConfig(event)
 
         val config = TolerantConverterConfiguration(key = "id", name = "test", reader = readerConfig)
+
+        config.configs[NamespaceStrategy::class.java] = writerConfig.createNamespaceStrategy()
         return TolerantConverter(config)
     }
 
@@ -66,8 +71,8 @@ class RepairModule : Component(), SoapUiModule {
         val writerConfig = WriterConfig()
         writerConfig.key = event.name
         writerConfig.explicitPrefix = explicitPrefix()
-        writerConfig.patternPrefix =
-                return writerConfig
+        writerConfig.patternPrefix = patterns()
+        return writerConfig
     }
 
     private fun explicitPrefix(): List<Explicit> {

@@ -21,7 +21,7 @@ class WriterConfig {
     var explicitPrefix: List<Explicit>? = null
 
     @XmlElement(name = "patternPrefix")
-    val patternPrefix: List<Pattern>? = null
+    var patternPrefix: List<Pattern>? = null
 
     fun createNamespaceStrategy(): NamespaceStrategy {
         val nsConfig = NamespaceStrategyConfiguration(fallbackPrefix)

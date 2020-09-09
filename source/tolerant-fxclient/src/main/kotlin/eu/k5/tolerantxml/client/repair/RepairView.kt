@@ -14,18 +14,27 @@ class RepairView(
     override val root = splitpane() {
 
         scrollpane {
-            this += XmlTextArea.newCodeArea { model.input.bind(it.textProperty()) }
-            hbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
-            vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
+            this += XmlTextArea.newCodeArea {
+                model.input.bind(it.textProperty())
+                it.prefHeightProperty().bind(this.heightProperty())
+                it.prefWidthProperty().bind(this.widthProperty())
+            }
+            hbarPolicy = ScrollPane.ScrollBarPolicy.ALWAYS
+            vbarPolicy = ScrollPane.ScrollBarPolicy.ALWAYS
+            this.prefHeightProperty().bind(this@splitpane.heightProperty())
+            this.prefWidthProperty().bind(this@splitpane.widthProperty())
         }
 
         scrollpane {
             this += XmlTextArea.newCodeArea {
                 model.repaired.addListener { _, _, newText -> it.replaceText(0, it.textProperty().value.length, newText) }
-                hbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
-                vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
-
+                it.prefHeightProperty().bind(this.heightProperty())
+                it.prefWidthProperty().bind(this.widthProperty())
             }
+            hbarPolicy = ScrollPane.ScrollBarPolicy.ALWAYS
+            vbarPolicy = ScrollPane.ScrollBarPolicy.ALWAYS
+            this.prefHeightProperty().bind(this@splitpane.heightProperty())
+            this.prefWidthProperty().bind(this@splitpane.widthProperty())
         }
 
     }
