@@ -1,7 +1,6 @@
 package eu.k5.tolerantreader.xs
 
 import com.google.common.base.Joiner
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
@@ -21,7 +20,12 @@ import javax.xml.bind.JAXBContext
 import kotlin.collections.HashMap
 
 object Schema {
-    val context = JAXBContext.newInstance(XsSchema::class.java, WsdlDefinitions::class.java)
+    val context = try {
+        JAXBContext.newInstance(XsSchema::class.java, WsdlDefinitions::class.java)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        throw java.lang.RuntimeException(e)
+    }
 
 
     fun parse(location: String): XsRegistry {
@@ -55,6 +59,19 @@ object Schema {
 
     private fun readRecursive(source: StreamSource, current: XsSchema, resolved: MutableMap<String, XsSchema>) {
 
+        for (include in current.includes) {
+            val stream = source.resolveRelative(current.schemaLocation!!, include.schemaLocation!!)
+            val included: XsSchema
+            if (resolved.containsKey(stream.absolutPath)) {
+                included = resolved[stream.absolutPath]!!
+            } else {
+                included = read(stream)
+                resolved.put(stream.absolutPath, included)
+                readRecursive(source, included, resolved)
+            }
+
+        }
+
         for (im in current.imports) {
 
             val stream = source.resolveRelative(current.schemaLocation!!, im.schemaLocation!!)
@@ -72,11 +89,12 @@ object Schema {
 
 
     private fun read(stream: Stream): XsSchema {
+        println("reading " + stream.absolutPath)
         stream.openStream().use {
             if (it == null) {
                 throw IllegalArgumentException("Stream for path " + stream.absolutPath + " is null")
             }
-            val obj = context.createUnmarshaller().unmarshal(it)
+            val obj: Any? = context.createUnmarshaller().unmarshal(it)
             if (obj is XsSchema) {
                 obj.schemaLocation = stream.absolutPath
                 obj.complete()
@@ -91,6 +109,7 @@ object Schema {
             }
         }
     }
+
 
 }
 
@@ -240,7 +259,7 @@ class StringStream(private val content: String?, absolutPath: String) : Stream(a
 private fun resolveRelative(parent: String, location: String, delimiter: Char): String {
     val resolved = ArrayDeque(parent.split(delimiter).reversed())
     resolved.pop() // remove filename from stack
-    for (part in location.split(':')) {
+    for (part in location.split(delimiter)) {
         when (part) {
             "." -> {
             }

@@ -96,11 +96,11 @@ class XsRegistry(val initSchema: XsSchema, private val allSchemas: Map<String, X
 
     fun writeDebugOut() {
         println("ComplexTypes")
-        println(complexTypes)
+        println(getAllComplexTypes())
         println("SimpleTypes")
-        println(simpleTypes)
+        println(getAllSimpleTypes())
         println("Elements")
-        println(elements)
+        println(getAllElements())
 
     }
 

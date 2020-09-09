@@ -1,5 +1,6 @@
 package eu.k5.tolerantxml.client.repair
 
+import javafx.scene.control.ScrollPane
 import tornadofx.*
 
 class RepairView(
@@ -14,11 +15,16 @@ class RepairView(
 
         scrollpane {
             this += XmlTextArea.newCodeArea { model.input.bind(it.textProperty()) }
+            hbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
+            vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
         }
 
         scrollpane {
             this += XmlTextArea.newCodeArea {
                 model.repaired.addListener { _, _, newText -> it.replaceText(0, it.textProperty().value.length, newText) }
+                hbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
+                vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
+
             }
         }
 
