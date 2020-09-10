@@ -3,6 +3,7 @@ package eu.k5.tolerantxml.client.repair
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.value.ObservableValue
 import javafx.scene.paint.Color
+import javafx.scene.text.FontPosture
 import javafx.scene.text.FontWeight
 import org.fxmisc.richtext.CodeArea
 import org.fxmisc.richtext.LineNumberFactory
@@ -17,18 +18,21 @@ class XmlTextArea {
 
     companion object {
         private val XML_TAG = Pattern.compile(
-                "(?<ELEMENT>(</?\\h*)(\\w+)([^<>]*)(\\h*/?>))"
+                "(?<ELEMENT>(</?\\h*)(\\w+)(:\\w+)?([^<>]*)(\\h*/?>))"
                         + "|(?<COMMENT><!--[^<>]+-->)"
         )
         private val ATTRIBUTES =
-                Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")")
+                Pattern.compile("(\\w+:)?(\\w+\\h*)(=)(\\h*\"[^\"]+\")")
         private const val GROUP_OPEN_BRACKET = 2
         private const val GROUP_ELEMENT_NAME = 3
-        private const val GROUP_ATTRIBUTES_SECTION = 4
-        private const val GROUP_CLOSE_BRACKET = 5
-        private const val GROUP_ATTRIBUTE_NAME = 1
-        private const val GROUP_EQUAL_SYMBOL = 2
-        private const val GROUP_ATTRIBUTE_VALUE = 3
+        private const val GROUP_ELEMENT_NAME2 = 4
+
+        private const val GROUP_ATTRIBUTES_SECTION = 5
+        private const val GROUP_CLOSE_BRACKET = 6
+        private const val GROUP_ATTRIBUTE_PREFIX = 1
+        private const val GROUP_ATTRIBUTE_NAME = 2
+        private const val GROUP_EQUAL_SYMBOL = 3
+        private const val GROUP_ATTRIBUTE_VALUE = 4
 
 
         fun newCodeArea(bindings: (CodeArea) -> Unit): CodeArea {
@@ -62,16 +66,35 @@ class XmlTextArea {
                                 setOf("tagmark"),
                                 matcher.end(GROUP_OPEN_BRACKET) - matcher.start(GROUP_OPEN_BRACKET)
                         )
-                        spansBuilder.add(
-                                setOf("anytag"),
-                                matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET)
-                        )
+                        if (matcher.group(GROUP_ELEMENT_NAME2).isNullOrEmpty()) {
+                            spansBuilder.add(
+                                    setOf("anytag"),
+                                    matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET)
+                            )
+                        } else {
+                            spansBuilder.add(
+                                    setOf("prefix"),
+                                    matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET)
+                            )
+                            spansBuilder.add(
+                                    setOf("anytag"),
+                                    matcher.end(GROUP_ELEMENT_NAME2) - matcher.end(GROUP_ELEMENT_NAME)
+                            )
+                        }
                         if (!attributesText.isEmpty()) {
                             lastKwEnd = 0
                             val amatcher =
                                     ATTRIBUTES.matcher(attributesText)
                             while (amatcher.find()) {
                                 spansBuilder.add(emptyList(), amatcher.start() - lastKwEnd)
+                                if (!amatcher.group(GROUP_ATTRIBUTE_PREFIX).isNullOrEmpty()) {
+                                    spansBuilder.add(
+                                            setOf("prefix"),
+                                            amatcher.end(GROUP_ATTRIBUTE_PREFIX) - amatcher.start(
+                                                    GROUP_ATTRIBUTE_PREFIX
+                                            )
+                                    )
+                                }
                                 spansBuilder.add(
                                         setOf("attribute"),
                                         amatcher.end(GROUP_ATTRIBUTE_NAME) - amatcher.start(
@@ -117,6 +140,7 @@ class XmlTextArea {
             val anytag by cssclass()
             val paren by cssclass()
             val attribute by cssclass()
+            val prefix by cssclass()
             val avalue by cssclass()
             val comment by cssclass()
         }
@@ -138,12 +162,17 @@ class XmlTextArea {
                 fill = Color.DARKVIOLET
             }
 
+            prefix {
+                fill = Color.DARKORCHID
+            }
+
             avalue {
-                fill = Color.BLACK
+                fill = Color.DARKGREEN
             }
 
             comment {
-                fill = Color.TEAL
+                fill = Color.DARKGRAY
+                fontStyle = FontPosture.ITALIC
             }
         }
 

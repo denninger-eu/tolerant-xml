@@ -202,6 +202,9 @@ class BindContext(
         return replays
     }
 
+    fun pushSkipped(skipped: String) = addComment(skipped)
+
+
 }
 
 class NameFrame(

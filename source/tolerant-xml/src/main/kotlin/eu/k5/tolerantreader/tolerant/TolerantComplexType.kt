@@ -44,7 +44,8 @@ class TolerantComplexType(private val name: QName,
                 return complexType
             }
         }
-        throw RuntimeException("unable to create subtype")
+        return this
+        //throw RuntimeException("unable to create subtype")
     }
 
     private fun attributeValue(name: QName, stream: XMLStreamReader): String {

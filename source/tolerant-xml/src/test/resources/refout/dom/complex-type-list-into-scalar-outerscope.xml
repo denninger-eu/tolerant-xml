@@ -1,0 +1,5 @@
+<ns:FullPerson xmlns:ns="http://k5.eu/tr/model">
+    <ns:Info ns:attrib="InfoAttrib">
+        <ns:firstname>SecondFirstName</ns:firstname>
+    </ns:Info>
+</ns:FullPerson>

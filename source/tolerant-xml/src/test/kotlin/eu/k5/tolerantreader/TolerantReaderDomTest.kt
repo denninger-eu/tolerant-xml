@@ -100,7 +100,11 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
     fun readComplexTypesInheritance() {
         testModel("complex-type-inheritance")
     }
-
+    @Test
+    @DisplayName("Read model type. Inheritance InvalidType")
+    fun readComplexTypesInheritanceInvalidType() {
+        testModel("complex-type-inheritance-invalid-type")
+    }
 
     @Test
     @DisplayName("Read model type. Inheritance different ns")
@@ -144,7 +148,12 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
     fun readModelListIntoScalar() {
         testModel("complex-type-list-into-scalar")
     }
+    @Test
+    @DisplayName("Model. List Into Scalar")
+    fun readModelListIntoScalarOuterscope() {
 
+        testModel("complex-type-list-into-scalar-outerscope")
+    }
     @Test
     @DisplayName("Model. List Into Scalar")
     fun readModelComplexTypeListIntoScalar() {

@@ -1,7 +1,11 @@
 package eu.k5.tolerantreader.reader
 
-import eu.k5.tolerantreader.tolerant.*
+import eu.k5.tolerantreader.tolerant.TolerantSchema
+import java.io.StringWriter
+import javax.xml.namespace.QName
+import javax.xml.stream.XMLOutputFactory
 import javax.xml.stream.XMLStreamReader
+import javax.xml.stream.XMLStreamWriter
 import javax.xml.stream.events.XMLEvent
 
 enum class ViolationType {
@@ -69,7 +73,8 @@ class TolerantReader(val schema: TolerantSchema) {
                         context.pushFrameElement(stream)
                     } else {
                         context.addViolation(ViolationType.UNKNOWN_CONTENT, "Element: " + qName)
-                        skipToEndElement(context, stream)
+                        val skipped = skipToEndElement(context, stream, qName)
+                        context.pushSkipped(skipped)
                     }
                     continue
                 }
@@ -127,24 +132,44 @@ class TolerantReader(val schema: TolerantSchema) {
     }
 
 
-    private fun skipToEndElement(context: BindContext, stream: XMLStreamReader) {
+    private fun skipToEndElement(context: BindContext, stream: XMLStreamReader, qname: QName): String {
+        val stringWriter = StringWriter()
+        val xmlWriter = factory.createXMLStreamWriter(stringWriter)
+
+        xmlWriter.writeStartElement(qname.localPart)
         var balance = 1
         while (stream.hasNext()) {
             val event = stream.next()
 
             if (XMLEvent.START_ELEMENT == event) {
-
+                xmlWriter.writeStartElement(stream.localName)
+                for (attribute in 0 until stream.attributeCount) {
+                    xmlWriter.writeAttribute(stream.getAttributeLocalName(attribute), stream.getAttributeValue(attribute))
+                }
                 balance++
             } else if (XMLEvent.END_ELEMENT == event) {
+                xmlWriter.writeEndElement()
+
+
+
                 balance--
                 if (balance == 0) {
-                    return
+                    xmlWriter.flush()
+                    return stringWriter.toString()
                 }
+            } else if (XMLEvent.CHARACTERS == event) {
+                xmlWriter.writeCharacters(stream.text)
             } else if (XMLEvent.END_DOCUMENT == event) {
-                return
+                xmlWriter.flush()
+                return stringWriter.toString()
             }
         }
+        xmlWriter.flush()
+        return stringWriter.toString()
+    }
 
+    companion object {
+        var factory: XMLOutputFactory = XMLOutputFactory.newInstance()
     }
 }
 
