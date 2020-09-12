@@ -82,12 +82,16 @@ class TolerantComplexType(private val name: QName,
     private fun handleAttributes(context: ReaderContext, stream: XMLStreamReader, instance: Any) {
         for (index in 0 until stream.attributeCount) {
             val localName = stream.getAttributeLocalName(index)
-            val attributeElement = elements.get(localName)
+            val attributeElement = elements[localName]
             val type = attributeElement?.type
             if (type is TolerantSimpleType) {
-                val value = type.parse(context, stream.getAttributeValue(index))
-                if (value != null) {
-                    attributeElement?.assigner?.assign(context, instance, value)
+                try {
+                    val value = type.parse(context, stream.getAttributeValue(index))
+                    if (value != null) {
+                        attributeElement?.assigner?.assign(context, instance, value)
+                    }
+                } catch (parseException: ValueParseException) {
+                    
                 }
             }
         }

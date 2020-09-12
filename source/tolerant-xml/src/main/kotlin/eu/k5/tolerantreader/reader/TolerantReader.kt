@@ -1,6 +1,7 @@
 package eu.k5.tolerantreader.reader
 
 import eu.k5.tolerantreader.tolerant.TolerantSchema
+import eu.k5.tolerantreader.tolerant.ValueParseException
 import java.io.StringWriter
 import javax.xml.namespace.QName
 import javax.xml.stream.XMLOutputFactory
@@ -17,7 +18,9 @@ enum class ViolationType {
 
     INVALID_ENUM_LITERAL,
 
-    INVALID_CLASS_STRUCTURE
+    INVALID_CLASS_STRUCTURE,
+
+    INVALID_NUMBER
 
 }
 
@@ -83,8 +86,12 @@ class TolerantReader(val schema: TolerantSchema) {
 
                 val type = element.type.asSubtype(context, stream)
 
-
-                val readValue = type.readValue(context, element, context.getCurrentInstance(), stream)
+                val readValue: Any? = try {
+                    type.readValue(context, element, context.getCurrentInstance(), stream)
+                } catch (parseException: ValueParseException) {
+                    context.addComment(qName.localPart, parseException.rawXml)
+                    null
+                }
                 if (readValue != null) {
 
                     element.assigner.assign(context, context.getCurrentInstance()!!, readValue)

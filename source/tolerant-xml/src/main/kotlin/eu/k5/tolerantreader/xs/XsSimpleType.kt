@@ -27,7 +27,10 @@ class XsSimpleType : XsNamed() {
     }
 
     fun isEnum(): Boolean {
-        return restriction?.base?.equals(xsString) ?: false && restriction?.isEnum() ?: false
+        if (restriction?.isEnum() == true) {
+            return restriction?.base?.equals(xsString) == true
+        }
+        return false
     }
 
 
@@ -45,10 +48,10 @@ class XsSimpleTypeRestriction {
     @XmlAttribute(name = "base")
     var base: QName? = null
 
-    @XmlElement(name = "enumeration")
-    var enumeration: List<XsEnumerationRestriction> = ArrayList()
+    @XmlElement(namespace = XSD_NAMESPACE, name = "enumeration")
+    var enumeration: List<XsEnumerationRestriction>? = ArrayList()
 
-    fun isEnum(): Boolean = !enumeration.isEmpty()
+    fun isEnum(): Boolean = enumeration?.isEmpty()?.not() ?: false
 
 }
 

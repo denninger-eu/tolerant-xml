@@ -139,6 +139,12 @@ class BindContext(
         }
     }
 
+    fun addComment(localName: String, comment: String) {
+        if (trackComments) {
+            comments.add("<$localName>$comment</$localName>")
+        }
+    }
+
     override fun retrieveComments(): List<String> {
         if (!trackComments) {
             return comments

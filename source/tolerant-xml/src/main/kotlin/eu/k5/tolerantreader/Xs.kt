@@ -53,17 +53,13 @@ abstract class XsNamed {
 
     abstract fun localPartName(): String
 
-    fun getQualifiedName(): QName {
-        val namespace = owningSchema?.targetNamespace ?: ""
-        var localPart = localPartName()
+    val qualifiedName
+        get() = QName(owningSchema?.targetNamespace ?: "", localPartName())
 
-        return QName(namespace, localPart)
-    }
 
     open fun postSchemaMarshall(schema: XsSchema) {
         owningSchema = schema
     }
-
 
 
 }

@@ -1,7 +1,5 @@
 package eu.k5.tolerantreader.xs
 
-import java.nio.file.Path
-import javax.xml.bind.JAXBContext
 import javax.xml.namespace.QName
 
 
@@ -13,17 +11,17 @@ class XsRegistry(val initSchema: XsSchema, private val allSchemas: Map<String, X
 
     private val elements: MutableMap<QName, XsElement> = HashMap()
 
-    fun init() {
+    fun init(): XsRegistry {
 
         for (schema in allSchemas.values) {
             for (complexType in schema.complexTypes) {
-                complexTypes.put(complexType.getQualifiedName(), complexType)
+                complexTypes[complexType.qualifiedName] = complexType
             }
             for (simpleType in schema.simpleTypes) {
-                simpleTypes.put(simpleType.getQualifiedName(), simpleType)
+                simpleTypes[simpleType.qualifiedName] = simpleType
             }
             for (element in schema.elements) {
-                elements.put(element.getQualifiedName(), element)
+                elements[element.qualifiedName] = element
             }
             schema.registry = this
         }
@@ -32,11 +30,12 @@ class XsRegistry(val initSchema: XsSchema, private val allSchemas: Map<String, X
             if (!complexType.isAbstract()) {
                 var baseComplexType = complexType.getBaseComplexType()
                 while (baseComplexType != null) {
-                    baseComplexType.addConcreteSubtype(complexType.getQualifiedName())
+                    baseComplexType.addConcreteSubtype(complexType.qualifiedName)
                     baseComplexType = baseComplexType.getBaseComplexType()
                 }
             }
         }
+        return this
     }
 
     fun getSimpleType(localName: String): XsSimpleType {
@@ -53,7 +52,7 @@ class XsRegistry(val initSchema: XsSchema, private val allSchemas: Map<String, X
             }
         }
 
-        throw IllegalStateException("Unknown complextype with localName: " + localName)
+        throw IllegalStateException("Unknown ComplexType with localName: $localName")
 
     }
 
@@ -77,8 +76,8 @@ class XsRegistry(val initSchema: XsSchema, private val allSchemas: Map<String, X
     */
     }
 
-    fun getElement(s: String): XsElement {
-        return elements.values.first { s.equals(it.localName) }
+    fun getElement(name: String): XsElement {
+        return elements.values.first { name == it.localName }
     }
 
     fun getAllSimpleTypes(): Collection<XsSimpleType> {

@@ -34,14 +34,14 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
         val mapBuilder = TolerantMapBuilder<XsElement>(false)
         for (element in xsRegistry.getAllElements()) {
-            mapBuilder.append(element.getQualifiedName(), element);
+            mapBuilder.append(element.qualifiedName, element);
         }
         this.xsElements = mapBuilder.build()
 
 
         val ctMapBuilder = TolerantMapBuilder<XsComplexType>(false)
         for (element in xsRegistry.getAllComplexTypes()) {
-            ctMapBuilder.append(element.getQualifiedName(), element);
+            ctMapBuilder.append(element.qualifiedName, element);
         }
         this.xsComplexTypes = ctMapBuilder.build()
 
@@ -55,7 +55,7 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
 
         for (xsSimpleType in xsRegistry.getAllSimpleTypes()) {
-            val qname = xsSimpleType.getQualifiedName()
+            val qname = xsSimpleType.qualifiedName
             simpleAdapters.put(qname, ToStringAdapter)
             namespaces.add(qname.namespaceURI)
         }
@@ -83,9 +83,9 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
             val strictComplexType = createComplexType(element, xsComplexType!!)
 
-            strictElements.put(strictComplexType.type, StrictElement(xsElement.getQualifiedName(), strictComplexType))
+            strictElements.put(strictComplexType.type, StrictElement(xsElement.qualifiedName, strictComplexType))
 
-            namespaces.add(xsElement.getQualifiedName().namespaceURI)
+            namespaces.add(xsElement.qualifiedName.namespaceURI)
         }
 
     }
@@ -118,7 +118,7 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
     private fun createComplexType(type: XjcType, xsComplexType: XsComplexType): StrictComplexType {
         val clazz = type.type
-        val strictType = StrictComplexTypeBuilder(xsComplexType.getQualifiedName(), type)
+        val strictType = StrictComplexTypeBuilder(xsComplexType.qualifiedName, type)
 
         strictComplexTypes.put(type.type, strictType)
 
@@ -147,13 +147,13 @@ class StrictSchemaBuilder(private val xjcRegistry: XjcRegistry, private val xsRe
 
                     val get = simpleAdapters.get(element.type)
                     if (get != null) {
-                        val strictElement = StrictSimpleElementType(element.getQualifiedName(), get)
-                        val strictComplexElement = StrictComplexElement(element.getQualifiedName(), reader, strictElement, field.type, element.globalWeight, element.isList())
+                        val strictElement = StrictSimpleElementType(element.qualifiedName, get)
+                        val strictComplexElement = StrictComplexElement(element.qualifiedName, reader, strictElement, field.type, element.globalWeight, element.isList())
                         strictType.elements.add(strictComplexElement)
                     } else {
                         val get1 = strictComplexTypes.get(fieldType)
                         if (get1 != null) {
-                            val strictComplexElement = StrictComplexElement(element.getQualifiedName(), reader, get1.proxy, field.type, element.globalWeight, element.isList())
+                            val strictComplexElement = StrictComplexElement(element.qualifiedName, reader, get1.proxy, field.type, element.globalWeight, element.isList())
                             strictType.elements.add(strictComplexElement)
                         }
 

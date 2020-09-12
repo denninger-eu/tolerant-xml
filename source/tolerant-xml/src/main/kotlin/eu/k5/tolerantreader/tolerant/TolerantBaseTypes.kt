@@ -2,7 +2,8 @@ package eu.k5.tolerantreader.tolerant
 
 import com.google.common.collect.ImmutableMap
 import eu.k5.tolerantreader.*
-import eu.k5.tolerantreader.reader.BindContext
+import eu.k5.tolerantreader.reader.ViolationType
+import java.lang.NumberFormatException
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
@@ -121,8 +122,7 @@ class TolerantBaseTypes(private val initContext: InitContext) {
         return detectNumeric.build()
     }
 
-    fun getBaseType(qName: QName): TolerantSimpleType?
-            = simpleTypes[qName]
+    fun getBaseType(qName: QName): TolerantSimpleType? = simpleTypes[qName]
 
 
     companion object {
@@ -174,8 +174,14 @@ class TolerantTemporalType(name: QName) : TolerantSimpleType(name, name) {
 
 
 class TolerantNumericType(name: QName, private val parser: (String) -> Any) : TolerantSimpleType(name, name) {
-    override fun parse(context: ReaderContext, text: String)
-            : Any = parser(text)
+    override fun parse(context: ReaderContext, text: String): Any? {
+        try {
+            return parser(text)
+        } catch (exception: NumberFormatException) {
+            context.addViolation(ViolationType.INVALID_NUMBER, "")
+            throw ValueParseException(ViolationType.INVALID_NUMBER, text, exception.message ?: "")
+        }
+    }
 
     override fun toString()
             : String = getQualifiedName().toString()

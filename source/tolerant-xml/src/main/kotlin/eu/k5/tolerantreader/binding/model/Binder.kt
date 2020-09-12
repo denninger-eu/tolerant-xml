@@ -31,42 +31,42 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
     private val classCache: MutableMap<QName, Class<*>> = HashMap()
 
     init {
-        classCache.put(xsString, java.lang.String::class.java)
-        classCache.put(xsBase64Binary, ByteArray::class.java)
-        classCache.put(xsBoolean, Boolean::class.java)
-        classCache.put(xsHexBinary, ByteArray::class.java)
-        classCache.put(xsQname, QName::class.java)
-        classCache.put(xsDate, XMLGregorianCalendar::class.java)
-        classCache.put(xsDatetime, XMLGregorianCalendar::class.java)
-        classCache.put(xsDuration, Duration::class.java)
-        classCache.put(xsGDay, XMLGregorianCalendar::class.java)
-        classCache.put(xsGMonth, XMLGregorianCalendar::class.java)
-        classCache.put(xsGMonthDay, XMLGregorianCalendar::class.java)
-        classCache.put(xsGYear, XMLGregorianCalendar::class.java)
-        classCache.put(xsGYearMonth, XMLGregorianCalendar::class.java)
-        classCache.put(xsTime, XMLGregorianCalendar::class.java)
+        classCache[xsString] = java.lang.String::class.java
+        classCache[xsBase64Binary] = ByteArray::class.java
+        classCache[xsBoolean] = Boolean::class.java
+        classCache[xsHexBinary] = ByteArray::class.java
+        classCache[xsQname] = QName::class.java
+        classCache[xsDate] = XMLGregorianCalendar::class.java
+        classCache[xsDatetime] = XMLGregorianCalendar::class.java
+        classCache[xsDuration] = Duration::class.java
+        classCache[xsGDay] = XMLGregorianCalendar::class.java
+        classCache[xsGMonth] = XMLGregorianCalendar::class.java
+        classCache[xsGMonthDay] = XMLGregorianCalendar::class.java
+        classCache[xsGYear] = XMLGregorianCalendar::class.java
+        classCache[xsGYearMonth] = XMLGregorianCalendar::class.java
+        classCache[xsTime] = XMLGregorianCalendar::class.java
 
 
-        classCache.put(xsByte, Byte::class.java)
-        classCache.put(xsDecimal, BigDecimal::class.java)
-        classCache.put(xsInt, Int::class.java)
-        classCache.put(xsInteger, BigInteger::class.java)
-        classCache.put(xsLong, Long::class.java)
-        classCache.put(xsNegativeInteger, BigInteger::class.java)
-        classCache.put(xsNonNegativeInteger, BigInteger::class.java)
-        classCache.put(xsNonPositiveInteger, BigInteger::class.java)
-        classCache.put(xsPositiveInteger, BigInteger::class.java)
-        classCache.put(xsShort, Short::class.java)
-        classCache.put(xsUnsignedLong, BigInteger::class.java)
-        classCache.put(xsUnsignedInt, Long::class.java)
-        classCache.put(xsUnsignedShort, Int::class.java)
-        classCache.put(xsUnsignedByte, Short::class.java)
-        classCache.put(xsDouble, Double::class.java)
-        classCache.put(xsFloat, Float::class.java)
+        classCache[xsByte] = Byte::class.java
+        classCache[xsDecimal] = BigDecimal::class.java
+        classCache[xsInt] = Int::class.java
+        classCache[xsInteger] = BigInteger::class.java
+        classCache[xsLong] = Long::class.java
+        classCache[xsNegativeInteger] = BigInteger::class.java
+        classCache[xsNonNegativeInteger] = BigInteger::class.java
+        classCache[xsNonPositiveInteger] = BigInteger::class.java
+        classCache[xsPositiveInteger] = BigInteger::class.java
+        classCache[xsShort] = Short::class.java
+        classCache[xsUnsignedLong] = BigInteger::class.java
+        classCache[xsUnsignedInt] = Long::class.java
+        classCache[xsUnsignedShort] = Int::class.java
+        classCache[xsUnsignedByte] = Short::class.java
+        classCache[xsDouble] = Double::class.java
+        classCache[xsFloat] = Float::class.java
 
 
-        classCache.put(xsIdRef, Object::class.java)
-        classCache.put(xsId, String::class.java)
+        classCache[xsIdRef] = Object::class.java
+        classCache[xsId] = String::class.java
     }
 
     private fun resolveJavaClass(name: QName): Class<*> {
@@ -77,7 +77,7 @@ class Binder(private val packageMapping: PackageMapping) : TolerantWriter {
 
         val klassName = utils.sanitizeAsClassName(name.localPart)
         val klass = Class.forName(packge + "." + klassName)
-        classCache.put(name, klass)
+        classCache[name] = klass
         return klass
     }
 
@@ -265,6 +265,7 @@ class ListAppendAssigner(private val getter: Method) : Assigner {
     override fun assign(context: ReaderContext, instance: Any, value: Any?) {
 
         val obj = getter.invoke(instance)
+
         @Suppress("UNCHECKED_CAST")
         val list = obj as MutableList<Any?>
         list.add(value)
@@ -300,12 +301,11 @@ class IdAssigner(private val delegate: Assigner) : Assigner {
 
 class GetterRetriever(private val getter: Method) : Retriever {
     override fun retrieve(context: ReaderContext, instance: Any): Any? {
-        try {
-            val obj = getter.invoke(instance)
-            return obj
+        return try {
+            getter.invoke(instance)
         } catch (exception: Exception) {
             context.addViolation(ViolationType.INVALID_CLASS_STRUCTURE, exception.message ?: "No message")
-            return null
+            null
         }
     }
 

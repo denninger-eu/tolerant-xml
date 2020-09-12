@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns:NumericTypes xmlns:ns="http://k5.eu/tr/model">
+    <!--<byte>x</byte>-->
+    <!--<decimal>x</decimal>-->
+    <!--<int>x</int>-->
+    <!--<long>1.01</long>-->
+    <!--<integer>x</integer>-->
+    <!--<negativeInteger>x</negativeInteger>-->
+    <!--<nonNegativeInteger>x</nonNegativeInteger>-->
+    <!--<nonPositiveInteger>x</nonPositiveInteger>-->
+    <!--<positiveInteger>x</positiveInteger>-->
+    <!--<short>x</short>-->
+    <!--<unsignedLong>x</unsignedLong>-->
+    <!--<unsignedInt>x</unsignedInt>-->
+    <!--<unsignedShort>x</unsignedShort>-->
+    <!--<unsignedByte>x</unsignedByte>-->
+    <!--<double>x</double>-->
+    <!--<float>x</float>-->
+</ns:NumericTypes>

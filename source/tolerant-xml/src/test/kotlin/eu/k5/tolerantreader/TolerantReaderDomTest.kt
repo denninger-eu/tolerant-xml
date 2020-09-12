@@ -58,6 +58,11 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
     }
 
     @Test
+    fun readSimpleTypesNumericInvalidNumbers() {
+        testModel("simple-type-numeric-invalidnumbers")
+    }
+
+    @Test
     @DisplayName("Read model type. idref")
     fun readModelIdref() {
         testModel("complex-type-idref")
@@ -100,6 +105,7 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
     fun readComplexTypesInheritance() {
         testModel("complex-type-inheritance")
     }
+
     @Test
     @DisplayName("Read model type. Inheritance InvalidType")
     fun readComplexTypesInheritanceInvalidType() {
@@ -148,12 +154,14 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
     fun readModelListIntoScalar() {
         testModel("complex-type-list-into-scalar")
     }
+
     @Test
     @DisplayName("Model. List Into Scalar")
     fun readModelListIntoScalarOuterscope() {
 
         testModel("complex-type-list-into-scalar-outerscope")
     }
+
     @Test
     @DisplayName("Model. List Into Scalar")
     fun readModelComplexTypeListIntoScalar() {
@@ -165,11 +173,6 @@ class TolerantReaderDomTest : AbstractTolerantReaderTest() {
     fun readModelTransformerInheritedTransformer() {
         testModel("transformer-inherited-transformer")
     }
-
-
-
-
-
 
 
     private fun testMinimal(testCase: String) {

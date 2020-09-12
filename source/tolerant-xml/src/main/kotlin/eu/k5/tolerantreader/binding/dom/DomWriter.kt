@@ -7,6 +7,7 @@ import eu.k5.tolerantreader.binding.model.NoOpAssigner
 import eu.k5.tolerantreader.binding.model.NoOpRetriever
 import eu.k5.tolerantreader.reader.ViolationType
 import eu.k5.tolerantreader.tolerant.IdRefType
+import eu.k5.tolerantreader.tolerant.ValueParseException
 import eu.k5.tolerantreader.tolerant.XSI_NAMESPACE
 import org.w3c.dom.Node
 import java.util.*
@@ -132,13 +133,12 @@ class DomWriter : TolerantWriter {
                                     literals: Collection<String>):
             EnumSupplier {
 
-        return EnumSupplier(xsString) { content: ReaderContext, value: String
-            ->
+        return EnumSupplier(xsString) { content: ReaderContext, value: String ->
             if (literals.contains(value)) {
                 value
             } else {
                 content.addViolation(ViolationType.INVALID_ENUM_LITERAL, value)
-                null
+                throw ValueParseException(ViolationType.INVALID_ENUM_LITERAL, value, "InvalidLiteral")
             }
         }
 

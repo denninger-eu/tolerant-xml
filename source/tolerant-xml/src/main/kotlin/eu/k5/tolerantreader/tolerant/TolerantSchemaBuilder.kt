@@ -105,8 +105,8 @@ class TolerantSchemaBuilder(
 
                 val literals = simpleType.enumLiterals()
 
-                val enumSupplier = writer.createEnumSupplier(initContext, simpleType.getQualifiedName(), literals)
-                simpleTypes.put(simpleType.getQualifiedName(), TolerantEnumType(simpleType.getQualifiedName(), enumSupplier))
+                val enumSupplier = writer.createEnumSupplier(initContext, simpleType.qualifiedName, literals)
+                simpleTypes[simpleType.qualifiedName] = TolerantEnumType(simpleType.qualifiedName, enumSupplier)
 
 
             } else {
@@ -114,8 +114,8 @@ class TolerantSchemaBuilder(
                 val baseType = getSimpleType(simpleType.restriction!!.base!!)
 
                 if (baseType != null) {
-                    val type = TolerantSimpleRestriction(simpleType.getQualifiedName(), baseType)
-                    simpleTypes.put(type.getQualifiedName(), type)
+                    val type = TolerantSimpleRestriction(simpleType.qualifiedName, baseType)
+                    simpleTypes[type.getQualifiedName()] = type
                 }
 
 /*                if (xsString.equals(base)) {
@@ -145,10 +145,10 @@ class TolerantSchemaBuilder(
     }
 
     private fun prepareComplexType(xsComplexType: XsComplexType) {
-        val qname = xsComplexType.getQualifiedName()
-        val createSupplier = writer.createSupplier(initContext, qname)
-        var builder = ComplexTypeBuilder(qname, createSupplier, xsComplexType, TolerantComplexProxy(qname), writer.createCloser(initContext))
-        complexTypeBuilders[xsComplexType.getQualifiedName()] = builder
+        val qName = xsComplexType.qualifiedName
+        val createSupplier = writer.createSupplier(initContext, qName)
+        var builder = ComplexTypeBuilder(qName, createSupplier, xsComplexType, TolerantComplexProxy(qName), writer.createCloser(initContext))
+        complexTypeBuilders[xsComplexType.qualifiedName] = builder
 
         val simpleContent = xsComplexType.simpleContent
         if (simpleContent != null) {
@@ -160,7 +160,7 @@ class TolerantSchemaBuilder(
 
             val elementName = QName(XSD_NAMESPACE, "value")
 
-            val assigner = writer.createElementAssigner(initContext, qname, elementName, baseType!!.getTypeName(), parameters)
+            val assigner = writer.createElementAssigner(initContext, qName, elementName, baseType!!.getTypeName(), parameters)
 
             builder.simpleContext = TolerantSimpleContent(baseType!!, assigner)
 
@@ -215,7 +215,7 @@ class TolerantSchemaBuilder(
 
                 val parameters = ElementParameters(element.isList(), elementWeight, false)
 
-                val assigner = writer.createElementAssigner(initContext, qualifiedName, element.getQualifiedName(), tolerantType.getTypeName(), parameters)
+                val assigner = writer.createElementAssigner(initContext, qualifiedName, element.qualifiedName, tolerantType.getTypeName(), parameters)
 
                 val qname = QName(qualifiedName.namespaceURI, element.name)
 
@@ -243,16 +243,16 @@ class TolerantSchemaBuilder(
                 val complexType = tolerantComplexTypes?.get(element.type!!)
 
 
-                val bindElement = TolerantElement(element.getQualifiedName(), complexType!!, writer.rootAssigner(element.getQualifiedName()), NoOpRetriever, false)
+                val bindElement = TolerantElement(element.qualifiedName, complexType!!, writer.rootAssigner(element.qualifiedName), NoOpRetriever, false)
 
-                elements.put(element.getQualifiedName(), bindElement)
+                elements[element.qualifiedName] = bindElement
             } else if (element.complexType != null) {
 
-                val complexType = tolerantComplexTypes?.get(element.getQualifiedName())
+                val complexType = tolerantComplexTypes?.get(element.qualifiedName)
 
-                val bindElement = TolerantElement(element.getQualifiedName(), complexType!!, writer.rootAssigner(element.getQualifiedName()), NoOpRetriever, false)
+                val bindElement = TolerantElement(element.qualifiedName, complexType!!, writer.rootAssigner(element.qualifiedName), NoOpRetriever, false)
 
-                elements.put(element.getQualifiedName(), bindElement)
+                elements[element.qualifiedName] = bindElement
 
             }
 
